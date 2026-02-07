@@ -1,0 +1,38 @@
+.test-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.test-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 28px 16px;
+  border: 2px solid #0b5ed7;
+  border-radius: 12px;
+  background: #fff;
+  color: #0b5ed7;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.test-card:hover {
+  background: #0b5ed7;
+  color: #fff;
+}
+
+.test-card h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.test-card p {
+  margin-top: 8px;
+  font-size: 14px;
+  opacity: 0.9;
+  text-align: center;
+}
