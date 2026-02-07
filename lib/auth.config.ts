@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
 
                 // Check if account is locked
                 if (user.isLocked()) {
-                    const lockTime = Math.ceil((user.lockUntil - new Date()) / 1000 / 60);
+                    const lockTime = Math.ceil((new Date(user.lockUntil).getTime() - Date.now()) / 1000 / 60);
                     throw new Error(`Account is locked. Try again in ${lockTime} minutes`);
                 }
 

@@ -6,7 +6,7 @@ export default function MicTest({ onBack }: { onBack: () => void }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
-    const animationRef = useRef<number>();
+    const animationRef = useRef<number | null>(null);
 
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [recording, setRecording] = useState(false);
