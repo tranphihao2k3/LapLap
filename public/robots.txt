@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://laplap.vercel.app/sitemap.xml
+
+# Disallow admin pages from search engines
+User-agent: *
+Disallow: /admin/

@@ -1,4 +1,6 @@
 import mongoose, { Schema, models } from "mongoose";
+import "./Brand"; // Ensure Brand model is registered
+import "./Category"; // Ensure Category model is registered
 
 const ProductSchema = new Schema(
     {
