@@ -127,36 +127,75 @@ export default function HomePage() {
           </div>
         ) : (
           <div className="space-y-12">
-            {/* Hero Section */}
-            <section className="relative w-full h-[300px] md:h-[400px] lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
-              <Image
-                src="/banner.jpg"
-                alt="Laptop Cần Thơ - LapLap Store"
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30 flex items-center">
-                <div className="container mx-auto px-8">
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-                    Laptop Cần Thơ Chính Hãng
-                  </h1>
-                  <p className="text-xl md:text-2xl text-gray-200 mb-6">
-                    Laptop mới, laptop cũ giá tốt nhất tại Cần Thơ
-                  </p>
-                  <div className="flex flex-wrap gap-4">
-                    <Link
-                      href="/laptops"
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-                    >
-                      Xem Laptop
-                    </Link>
-                    <Link
-                      href="/test"
-                      className="bg-white hover:bg-gray-100 text-gray-800 px-8 py-3 rounded-lg font-semibold transition-colors"
-                    >
-                      Test Laptop Miễn Phí
-                    </Link>
+            {/* Hero Section - CSS Gradient Banner */}
+            <section className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl">
+              {/* Animated Gradient Background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 animate-gradient">
+                {/* Overlay Pattern */}
+                <div className="absolute inset-0 opacity-10">
+                  <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+                  <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="relative h-full flex items-center">
+                <div className="container mx-auto px-6 md:px-12">
+                  <div className="max-w-3xl">
+                    {/* Badge */}
+                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+                      <MapPin className="w-4 h-4 text-yellow-300" />
+                      <span className="text-white font-medium text-sm">Cần Thơ</span>
+                    </div>
+
+                    {/* Main Heading */}
+                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight">
+                      Laptop Cần Thơ
+                      <br />
+                      <span className="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
+                        Chính Hãng
+                      </span>
+                    </h1>
+
+                    {/* Subtitle */}
+                    <p className="text-xl md:text-2xl text-blue-100 mb-8 leading-relaxed">
+                      Laptop mới, laptop cũ giá tốt nhất tại Cần Thơ
+                      <br />
+                      <span className="text-yellow-300 font-semibold">Giao hàng tận nơi • Bảo hành uy tín</span>
+                    </p>
+
+                    {/* CTA Buttons */}
+                    <div className="flex flex-wrap gap-4">
+                      <Link
+                        href="/laptops"
+                        className="group bg-white hover:bg-yellow-300 text-blue-900 px-8 py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2"
+                      >
+                        Xem Laptop
+                        <span className="group-hover:translate-x-1 transition-transform">→</span>
+                      </Link>
+                      <Link
+                        href="/test"
+                        className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border-2 border-white/30 px-8 py-4 rounded-xl font-bold transition-all hover:scale-105"
+                      >
+                        Test Laptop Miễn Phí
+                      </Link>
+                    </div>
+
+                    {/* Stats */}
+                    <div className="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/20">
+                      <div>
+                        <div className="text-3xl font-bold text-yellow-300">100+</div>
+                        <div className="text-sm text-blue-100">Sản phẩm</div>
+                      </div>
+                      <div>
+                        <div className="text-3xl font-bold text-yellow-300">24/7</div>
+                        <div className="text-sm text-blue-100">Hỗ trợ</div>
+                      </div>
+                      <div>
+                        <div className="text-3xl font-bold text-yellow-300">100%</div>
+                        <div className="text-sm text-blue-100">Chính hãng</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
