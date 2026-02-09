@@ -1,19 +1,28 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Itim } from "next/font/google";
+import { MapPin } from "lucide-react";
+
 const itim = Itim({
     subsets: ["latin", "vietnamese"],
     weight: "400",
     display: "swap",
 });
+
 export default function Header() {
     return (
         <header className="w-full">
             {/* Logo */}
-            <div className="bg-white py-6 flex justify-center">
-                <Link href="/" className={itim.className}>
-                    Lap Lap Store
-                </Link>
+            <div className="bg-white py-6">
+                <div className="container mx-auto flex justify-between items-center px-4">
+                    <Link href="/" className={itim.className + " text-2xl font-bold"}>
+                        Lap Lap Store
+                    </Link>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <MapPin className="w-4 h-4 text-blue-600" />
+                        <span className="font-medium">Cần Thơ</span>
+                    </div>
+                </div>
             </div>
 
             {/* Menu */}

@@ -5,11 +5,11 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    default: "LapLap - Laptop Cần Thơ | Test & Mua Bán Laptop Uy Tín",
-    template: "%s | LapLap"
+    default: "LapLap - Laptop Cần Thơ | Mua Bán Laptop Chính Hãng Giá Tốt",
+    template: "%s | LapLap Cần Thơ"
   },
-  description: "LapLap - Chuyên mua bán laptop tại Cần Thơ. Công cụ test laptop miễn phí online. Laptop chính hãng, giá tốt, bảo hành uy tín.",
-  keywords: ["laptop cần thơ", "mua laptop", "test laptop", "laptop cũ", "laptop mới", "LapLap"],
+  description: "LapLap - Chuyên laptop tại Cần Thơ. Laptop mới, laptop cũ chính hãng, giá tốt nhất. Giao hàng tận nơi, bảo hành uy tín. Test laptop miễn phí online.",
+  keywords: ["laptop cần thơ", "mua laptop cần thơ", "laptop giá rẻ cần thơ", "test laptop", "laptop cũ cần thơ", "LapLap"],
   authors: [{ name: "LapLap" }],
   icons: {
     icon: "/favicon.ico",
@@ -17,7 +17,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "vi_VN",
-    siteName: "LapLap",
+    siteName: "LapLap - Laptop Cần Thơ",
+    title: "Laptop Cần Thơ - Mua Bán Laptop Chính Hãng",
+    description: "Chuyên laptop tại Cần Thơ. Giao hàng tận nơi, bảo hành uy tín.",
   },
 };
 

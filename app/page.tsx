@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "./laptops/ProductCard";
 import { useEffect, useState } from 'react';
+import { MapPin, Truck, Shield, TestTube } from 'lucide-react';
 
 interface LaptopSpec {
   cpu: string;
@@ -48,6 +49,34 @@ export default function HomePage() {
 
   useEffect(() => {
     fetchData();
+
+    // Add structured data for local SEO
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "LapLap - Laptop Cần Thơ",
+      "description": "Chuyên laptop chính hãng tại Cần Thơ. Laptop mới, cũ giá tốt. Giao hàng tận nơi, bảo hành uy tín.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Cần Thơ",
+        "addressRegion": "Cần Thơ",
+        "addressCountry": "VN"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "10.0452",
+        "longitude": "105.7469"
+      },
+      "url": "https://laplap.vercel.app",
+      "priceRange": "$$",
+      "areaServed": "Cần Thơ"
+    });
+    document.head.appendChild(script);
+    return () => {
+      document.head.removeChild(script);
+    };
   }, []);
 
   const fetchData = async () => {
@@ -99,15 +128,81 @@ export default function HomePage() {
         ) : (
           <div className="space-y-12">
             {/* Hero Section */}
-            {/* Banner Section */}
             <section className="relative w-full h-[300px] md:h-[400px] lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
               <Image
                 src="/banner.jpg"
-                alt="LapLap Store Banner"
+                alt="Laptop Cần Thơ - LapLap Store"
                 fill
                 className="object-cover"
                 priority
               />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/30 flex items-center">
+                <div className="container mx-auto px-8">
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+                    Laptop Cần Thơ Chính Hãng
+                  </h1>
+                  <p className="text-xl md:text-2xl text-gray-200 mb-6">
+                    Laptop mới, laptop cũ giá tốt nhất tại Cần Thơ
+                  </p>
+                  <div className="flex flex-wrap gap-4">
+                    <Link
+                      href="/laptops"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                    >
+                      Xem Laptop
+                    </Link>
+                    <Link
+                      href="/test"
+                      className="bg-white hover:bg-gray-100 text-gray-800 px-8 py-3 rounded-lg font-semibold transition-colors"
+                    >
+                      Test Laptop Miễn Phí
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Benefits Section */}
+            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-3 mb-3">
+                  <MapPin className="w-8 h-8 text-blue-600" />
+                  <h3 className="font-bold text-lg">Tại Cần Thơ</h3>
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Phục vụ khách hàng tại Cần Thơ và các tỉnh lân cận
+                </p>
+              </div>
+
+              <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-3 mb-3">
+                  <Truck className="w-8 h-8 text-green-600" />
+                  <h3 className="font-bold text-lg">Giao Hàng Tận Nơi</h3>
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Miễn phí giao hàng nội thành Cần Thơ
+                </p>
+              </div>
+
+              <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-3 mb-3">
+                  <Shield className="w-8 h-8 text-purple-600" />
+                  <h3 className="font-bold text-lg">Bảo Hành Uy Tín</h3>
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Bảo hành chính hãng, hỗ trợ tận tâm
+                </p>
+              </div>
+
+              <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-3 mb-3">
+                  <TestTube className="w-8 h-8 text-orange-600" />
+                  <h3 className="font-bold text-lg">Test Miễn Phí</h3>
+                </div>
+                <p className="text-gray-600 text-sm">
+                  Công cụ test laptop online miễn phí
+                </p>
+              </div>
             </section>
 
             {/* Categories */}

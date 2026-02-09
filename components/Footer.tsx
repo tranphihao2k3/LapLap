@@ -12,9 +12,9 @@ const Footer = () => {
 
                     {/* Brand Column */}
                     <div className="space-y-4">
-                        <h2 className="text-2xl font-bold text-white">LapLap</h2>
+                        <h2 className="text-2xl font-bold text-white">LapLap - Laptop Cần Thơ</h2>
                         <p className="text-sm leading-relaxed">
-                            Chuyên cung cấp các dòng laptop chất lượng cao, phục vụ nhu cầu học tập, làm việc và giải trí. Uy tín tạo nên thương hiệu.
+                            Chuyên cung cấp laptop chính hãng tại Cần Thơ. Laptop mới, laptop cũ giá tốt. Giao hàng tận nơi, bảo hành uy tín. Test laptop miễn phí.
                         </p>
                         <div className="flex space-x-4 pt-2">
                             <a href="#" className="hover:text-white transition-colors">
@@ -37,32 +37,32 @@ const Footer = () => {
                                 <Link href="/" className="hover:text-blue-400 transition-colors">Trang chủ</Link>
                             </li>
                             <li>
-                                <Link href="/about" className="hover:text-blue-400 transition-colors">Giới thiệu</Link>
+                                <Link href="/laptops" className="hover:text-blue-400 transition-colors">Laptop</Link>
                             </li>
                             <li>
-                                <Link href="/products" className="hover:text-blue-400 transition-colors">Sản phẩm</Link>
+                                <Link href="/test" className="hover:text-blue-400 transition-colors">Test Laptop</Link>
                             </li>
                             <li>
-                                <Link href="/blog" className="hover:text-blue-400 transition-colors">Tin tức</Link>
+                                <Link href="/sua-chua-laptop" className="hover:text-blue-400 transition-colors">Sửa chữa laptop</Link>
                             </li>
                         </ul>
                     </div>
 
                     {/* Customer Service Column */}
                     <div>
-                        <h3 className="text-lg font-semibold text-white mb-4">Hỗ trợ khách hàng</h3>
+                        <h3 className="text-lg font-semibold text-white mb-4">Dịch vụ</h3>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/faq" className="hover:text-blue-400 transition-colors">Câu hỏi thường gặp</Link>
+                                <Link href="/ve-sinh-laptop" className="hover:text-blue-400 transition-colors">Vệ sinh laptop</Link>
                             </li>
                             <li>
-                                <Link href="/policy/warranty" className="hover:text-blue-400 transition-colors">Chính sách bảo hành</Link>
+                                <Link href="/test" className="hover:text-blue-400 transition-colors">Kiểm tra laptop miễn phí</Link>
                             </li>
                             <li>
-                                <Link href="/policy/return" className="hover:text-blue-400 transition-colors">Chính sách đổi trả</Link>
+                                <span className="text-gray-400">Giao hàng tận nơi Cần Thơ</span>
                             </li>
                             <li>
-                                <Link href="/policy/privacy" className="hover:text-blue-400 transition-colors">Chính sách bảo mật</Link>
+                                <span className="text-gray-400">Bảo hành chính hãng</span>
                             </li>
                         </ul>
                     </div>
@@ -72,15 +72,15 @@ const Footer = () => {
                         <h3 className="text-lg font-semibold text-white mb-4">Liên hệ</h3>
                         <ul className="space-y-3">
                             <li className="flex items-start space-x-3">
-                                <MapPin size={20} className="mt-1 flex-shrink-0" />
-                                <span>123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh</span>
+                                <MapPin size={20} className="mt-1 flex-shrink-0 text-blue-400" />
+                                <span>Cần Thơ, Việt Nam</span>
                             </li>
                             <li className="flex items-center space-x-3">
-                                <Phone size={20} className="flex-shrink-0" />
-                                <span>0912 345 678</span>
+                                <Phone size={20} className="flex-shrink-0 text-blue-400" />
+                                <span>Liên hệ qua website</span>
                             </li>
                             <li className="flex items-center space-x-3">
-                                <Mail size={20} className="flex-shrink-0" />
+                                <Mail size={20} className="flex-shrink-0 text-blue-400" />
                                 <span>contact@laplap.vn</span>
                             </li>
                         </ul>
