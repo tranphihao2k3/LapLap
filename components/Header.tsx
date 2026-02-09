@@ -23,7 +23,7 @@ export default function Header() {
                     {/* <li className={itim.className + " text-xl"}><Link href="/phu-kien">Phụ kiện</Link></li> */}
                     {/* <li className={itim.className + " text-xl"}><Link href="/nang-cap">Nâng cấp máy</Link></li> */}
                     <li className={itim.className + " text-xl"}><Link href="/ve-sinh-laptop">Vệ sinh máy</Link></li>
-                    {/* <li className={itim.className + " text-xl"}><Link href="/sua-chua-laptop">Sửa chữa thay thế</Link></li> */}
+                    <li className={itim.className + " text-xl"}><Link href="/sua-chua-laptop">Sửa chữa thay thế</Link></li>
                     <li className={itim.className + " text-xl"}><Link href="/test" >Kiểm tra máy</Link></li>
                 </ul>
             </nav>
