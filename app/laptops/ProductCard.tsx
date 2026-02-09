@@ -21,7 +21,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
     return (
-        <div className="border-2 border-[#1e73be] rounded-2xl bg-white hover:shadow-2xl transition-all duration-300 overflow-hidden group">
+        <div className="border-2 border-[var(--color-border)] rounded-2xl bg-white hover:shadow-2xl transition-all duration-300 overflow-hidden group">
 
             {/* IMAGE - Larger */}
             <div className="relative w-full h-[280px] bg-gradient-to-br from-gray-50 to-white p-6">
@@ -37,26 +37,26 @@ export default function ProductCard({ product }: ProductCardProps) {
             <div className="p-5 flex flex-col gap-4">
 
                 {/* NAME - Larger and bolder */}
-                <h3 className="font-bold text-lg text-[#003b78] text-center line-clamp-2 min-h-[56px]">
+                <h3 className="font-bold text-lg text-[var(--color-text-brand)] text-center line-clamp-2 min-h-[56px]">
                     {product.name}
                 </h3>
 
                 {/* SPECS - Grid 2 columns like the image */}
                 <div className="grid grid-cols-2 gap-3">
                     <div className="flex items-center gap-2 bg-blue-50 p-2.5 rounded-lg">
-                        <Cpu className="w-5 h-5 text-[#1e73be] flex-shrink-0" />
+                        <Cpu className="w-5 h-5 text-[var(--color-border)] flex-shrink-0" />
                         <span className="text-sm font-semibold text-gray-800 truncate">
                             {product.specs.cpu}
                         </span>
                     </div>
                     <div className="flex items-center gap-2 bg-blue-50 p-2.5 rounded-lg">
-                        <Zap className="w-5 h-5 text-[#1e73be] flex-shrink-0" />
+                        <Zap className="w-5 h-5 text-[var(--color-border)] flex-shrink-0" />
                         <span className="text-sm font-semibold text-gray-800 truncate">
                             {product.specs.gpu}
                         </span>
                     </div>
                     <div className="flex items-center gap-2 bg-blue-50 p-2.5 rounded-lg">
-                        <MemoryStick className="w-5 h-5 text-[#1e73be] flex-shrink-0" />
+                        <MemoryStick className="w-5 h-5 text-[var(--color-border)] flex-shrink-0" />
                         <span className="text-sm font-semibold text-gray-800 truncate">
                             {product.specs.ram}
                         </span>

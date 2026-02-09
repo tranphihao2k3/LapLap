@@ -19,7 +19,7 @@ export default function RepairServicePage() {
             <main className="min-h-screen bg-white text-slate-800 pb-20">
 
                 {/* --- 1. BANNER TIÊU ĐỀ --- */}
-                <section className="bg-[#1e4275] text-white py-10 px-4 text-center">
+                <section className="bg-[var(--color-secondary)] text-white py-10 px-4 text-center">
                     <div className="container mx-auto space-y-3">
                         <h1 className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-3">
                             🛠️ Laptop gặp sự cố – Không lên nguồn – Lỗi màn hình?
@@ -35,7 +35,7 @@ export default function RepairServicePage() {
 
                     {/* --- 2. CÁC LỖI THƯỜNG GẶP (Grid) --- */}
                     <section className="mb-16">
-                        <h2 className="text-xl font-bold flex items-center gap-2 border-l-4 border-[#1e4275] pl-3 mb-8">
+                        <h2 className="text-xl font-bold flex items-center gap-2 border-l-4 border-[var(--color-secondary)] pl-3 mb-8">
                             <AlertTriangle className="text-red-500" /> Các lỗi Laptop thường gặp cần xử lý ngay
                         </h2>
 
@@ -75,7 +75,7 @@ export default function RepairServicePage() {
 
                     {/* --- 3. QUY TRÌNH SỬA CHỮA MINH BẠCH --- */}
                     <section className="bg-sky-50 rounded-2xl p-8 mb-16 border border-sky-200">
-                        <h2 className="text-xl font-bold text-[#1e4275] text-center mb-8 uppercase">
+                        <h2 className="text-xl font-bold text-[var(--color-secondary)] text-center mb-8 uppercase">
                             Quy trình sửa chữa minh bạch tại LapLap
                         </h2>
                         <div className="grid md:grid-cols-4 gap-4 text-center">
@@ -103,7 +103,7 @@ export default function RepairServicePage() {
                     </section>
 
                     {/* --- 4. CAM KẾT VÀ BÁO GIÁ --- */}
-                    <section className="flex flex-col md:flex-row gap-8 items-center bg-[#1e4275] p-8 rounded-xl text-white shadow-xl">
+                    <section className="flex flex-col md:flex-row gap-8 items-center bg-[var(--color-secondary)] p-8 rounded-xl text-white shadow-xl">
                         <div className="flex-1 space-y-4">
                             <h2 className="text-2xl font-bold">Cam kết dịch vụ từ LapLap</h2>
                             <ul className="space-y-2">
@@ -114,7 +114,7 @@ export default function RepairServicePage() {
                             </ul>
                         </div>
                         <div className="w-full md:w-auto text-center space-y-4">
-                            <div className="p-6 bg-white rounded-lg text-[#1e4275]">
+                            <div className="p-6 bg-white rounded-lg text-[var(--color-secondary)]">
                                 <p className="text-sm font-bold uppercase">Kiểm tra lỗi máy</p>
                                 <h3 className="text-3xl font-black">MIỄN PHÍ</h3>
                                 <p className="text-xs mt-1 italic">* Không sửa không thu phí</p>

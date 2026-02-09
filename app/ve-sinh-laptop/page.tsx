@@ -16,7 +16,7 @@ export default function CleaningServicePage() {
             <main className="min-h-screen bg-slate-50 text-slate-800 pb-24">
 
                 {/* ================= BANNER ================= */}
-                <section className="bg-gradient-to-r from-[#1e4275] to-[#16345f] text-white py-14 px-4">
+                <section className="bg-gradient-to-r from-[var(--color-secondary)] to-[var(--color-secondary-dark)] text-white py-14 px-4">
                     <div className="container mx-auto max-w-4xl text-center space-y-4">
                         <h1 className="text-2xl md:text-3xl font-extrabold flex items-center justify-center gap-3">
                             <Flame className="text-yellow-400" />
@@ -27,7 +27,7 @@ export default function CleaningServicePage() {
                             Đã bao lâu rồi bạn chưa vệ sinh laptop?
                         </p>
 
-                        <div className="bg-yellow-400 text-[#1e4275] font-bold text-xl py-3 px-6 rounded-lg inline-block shadow-lg">
+                        <div className="bg-yellow-400 text-[var(--color-secondary)] font-bold text-xl py-3 px-6 rounded-lg inline-block shadow-lg">
                             Vệ sinh – bảo dưỡng laptop chỉ từ <span className="text-2xl">150K</span>
                         </div>
                     </div>
@@ -38,7 +38,7 @@ export default function CleaningServicePage() {
                     {/* ================= QUY TRÌNH ================= */}
                     <section>
                         <h2 className="text-xl font-bold flex items-center gap-3 mb-10">
-                            <Wrench className="text-[#1e4275]" />
+                            <Wrench className="text-[var(--color-secondary)]" />
                             Quy trình vệ sinh laptop chuyên sâu
                         </h2>
 
@@ -78,7 +78,7 @@ export default function CleaningServicePage() {
                     </section>
 
                     {/* ================= ƯU ĐÃI ================= */}
-                    <section className="bg-[#1e4275] rounded-2xl p-8 text-white shadow-xl">
+                    <section className="bg-[var(--color-secondary)] rounded-2xl p-8 text-white shadow-xl">
                         <h2 className="text-xl font-bold flex items-center gap-3 justify-center mb-8">
                             <Gift className="text-yellow-400" />
                             Ưu đãi khi vệ sinh laptop tại LapLap Cần Thơ
@@ -96,7 +96,7 @@ export default function CleaningServicePage() {
                     </section>
 
                     {/* ================= CAM KẾT ================= */}
-                    <section className="bg-white rounded-xl p-8 shadow-md border-l-4 border-[#1e4275] text-center space-y-4">
+                    <section className="bg-white rounded-xl p-8 shadow-md border-l-4 border-[var(--color-secondary)] text-center space-y-4">
                         <p className="text-lg font-bold text-[#1e4275]">
                             LapLap Cần Thơ – Vệ sinh laptop uy tín – sạch – nhanh – giá tốt
                         </p>
