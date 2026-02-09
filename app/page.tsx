@@ -130,7 +130,7 @@ export default function HomePage() {
             {/* Hero Section - CSS Gradient Banner */}
             <section className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl">
               {/* Animated Gradient Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 animate-gradient">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#004e9a] via-[#1e4275] to-[#003366] animate-gradient">
                 {/* Overlay Pattern */}
                 <div className="absolute inset-0 opacity-10">
                   <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
@@ -144,7 +144,7 @@ export default function HomePage() {
                   <div className="max-w-3xl">
                     {/* Badge */}
                     <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-                      <MapPin className="w-4 h-4 text-yellow-300" />
+                      <MapPin className="w-4 h-4 text-[#A2D8EF]" />
                       <span className="text-white font-medium text-sm">Cần Thơ</span>
                     </div>
 
@@ -152,7 +152,7 @@ export default function HomePage() {
                     <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight">
                       Laptop Cần Thơ
                       <br />
-                      <span className="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
+                      <span className="bg-gradient-to-r from-[#A2D8EF] to-white bg-clip-text text-transparent">
                         Chính Hãng
                       </span>
                     </h1>
@@ -161,14 +161,14 @@ export default function HomePage() {
                     <p className="text-xl md:text-2xl text-blue-100 mb-8 leading-relaxed">
                       Laptop mới, laptop cũ giá tốt nhất tại Cần Thơ
                       <br />
-                      <span className="text-yellow-300 font-semibold">Giao hàng tận nơi • Bảo hành uy tín</span>
+                      <span className="text-[#A2D8EF] font-semibold">Giao hàng tận nơi • Bảo hành uy tín</span>
                     </p>
 
                     {/* CTA Buttons */}
                     <div className="flex flex-wrap gap-4">
                       <Link
                         href="/laptops"
-                        className="group bg-white hover:bg-yellow-300 text-blue-900 px-8 py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2"
+                        className="group bg-white hover:bg-[#A2D8EF] text-[#004e9a] px-8 py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2"
                       >
                         Xem Laptop
                         <span className="group-hover:translate-x-1 transition-transform">→</span>
@@ -184,15 +184,15 @@ export default function HomePage() {
                     {/* Stats */}
                     <div className="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/20">
                       <div>
-                        <div className="text-3xl font-bold text-yellow-300">100+</div>
+                        <div className="text-3xl font-bold text-[#A2D8EF]">100+</div>
                         <div className="text-sm text-blue-100">Sản phẩm</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-bold text-yellow-300">24/7</div>
+                        <div className="text-3xl font-bold text-[#A2D8EF]">24/7</div>
                         <div className="text-sm text-blue-100">Hỗ trợ</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-bold text-yellow-300">100%</div>
+                        <div className="text-3xl font-bold text-[#A2D8EF]">100%</div>
                         <div className="text-sm text-blue-100">Chính hãng</div>
                       </div>
                     </div>
