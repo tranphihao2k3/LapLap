@@ -7,7 +7,6 @@ import {
     HardDrive,
     ShieldCheck,
     Stethoscope,
-    Stethoscope,
     PenTool,
     Facebook,
     MessageCircle
