@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { ChevronRight, Cpu, Monitor, CheckCircle, Zap, Shield, TrendingUp, Gift } from 'lucide-react';
+import { ChevronRight, Cpu, Monitor, CheckCircle, Zap, Shield, TrendingUp, Gift, CreditCard } from 'lucide-react';
 
 import { Product } from '../types';
 
@@ -180,7 +180,7 @@ export default function ProductDetailPage() {
                         </div>
 
                         {/* Thumbnail gallery */}
-                        <div className="grid grid-cols-6 gap-3">
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
                             {productImages.map((img, index) => (
                                 <button
                                     key={index}
@@ -210,16 +210,11 @@ export default function ProductDetailPage() {
                                     Thông số nổi bật
                                 </h3>
                             </div>
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {[
                                     { icon: Cpu, label: 'CPU', value: product.specs.cpu },
                                     {
-                                        icon: () => (
-                                            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                                <rect x="2" y="6" width="20" height="12" rx="2" />
-                                                <path d="M6 10h4v4H6z" fill="white" />
-                                            </svg>
-                                        ),
+                                        icon: CreditCard,
                                         label: 'VGA',
                                         value: product.specs.gpu
                                     },
@@ -389,15 +384,42 @@ export default function ProductDetailPage() {
                             </div>
                         )}
 
-                        {/* Purchase button */}
-                        <button className="w-full relative group overflow-hidden rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-[1.02]">
-                            <div className="absolute inset-0 bg-gradient-to-r from-[#004e9a] via-[#0066cc] to-[#004e9a] bg-[length:200%_100%] group-hover:bg-[position:100%_0] transition-all duration-500" />
-                            <div className="relative px-6 py-5 flex items-center justify-center gap-3">
-                                <span className="text-white font-bold text-xl">Liên hệ mua ngay</span>
-                                <ChevronRight className="w-6 h-6 text-white group-hover:translate-x-1 transition-transform duration-300" />
-                            </div>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                        </button>
+                        {/* Contact buttons */}
+                        <div className="grid grid-cols-2 gap-4">
+                            {/* Facebook Button */}
+                            <a
+                                href="https://www.facebook.com/profile.php?id=61582947329036"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="relative group overflow-hidden rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-[1.02] block"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-r from-[#1877f2] via-[#4267B2] to-[#1877f2] bg-[length:200%_100%] group-hover:bg-[position:100%_0] transition-all duration-500" />
+                                <div className="relative px-6 py-5 flex items-center justify-center gap-3">
+                                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                                    </svg>
+                                    <span className="text-white font-bold text-lg">Facebook</span>
+                                </div>
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                            </a>
+
+                            {/* Zalo Button */}
+                            <a
+                                href="https://zalo.me/0978648720"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="relative group overflow-hidden rounded-xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-[1.02] block"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-r from-[#0068FF] via-[#0084FF] to-[#0068FF] bg-[length:200%_100%] group-hover:bg-[position:100%_0] transition-all duration-500" />
+                                <div className="relative px-6 py-5 flex items-center justify-center gap-3">
+                                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 0C5.373 0 0 4.975 0 11.111c0 3.497 1.745 6.616 4.472 8.652V24l4.086-2.242c1.09.301 2.246.464 3.442.464 6.627 0 12-4.974 12-11.111C24 4.975 18.627 0 12 0zm.699 14.97l-3.11-3.315-6.068 3.315 6.676-7.087 3.187 3.315 6.008-3.315-6.693 7.087z" />
+                                    </svg>
+                                    <span className="text-white font-bold text-lg">Zalo</span>
+                                </div>
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                            </a>
+                        </div>
 
                         {/* Trust badges */}
                         <div className="grid grid-cols-3 gap-3">

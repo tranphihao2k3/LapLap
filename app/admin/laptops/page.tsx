@@ -61,13 +61,13 @@ export default function LaptopsPage() {
     const [selectedGPUs, setSelectedGPUs] = useState<string[]>([]);
     const [selectedScreens, setSelectedScreens] = useState<string[]>([]);
     const [expandedSections, setExpandedSections] = useState({
-        brands: true,
-        price: true,
-        cpu: true,
-        ram: true,
-        ssd: true,
-        gpu: true,
-        screen: true,
+        brands: false,
+        price: false,
+        cpu: false,
+        ram: false,
+        ssd: false,
+        gpu: false,
+        screen: false,
     });
     const [formData, setFormData] = useState({
         name: '',
@@ -77,8 +77,8 @@ export default function LaptopsPage() {
         price: 0,
         image: '',
         images: [''],
-        gift: '',
-        warrantyMonths: 12,
+        gift: 'Balo, túi chống sốc, lót chuột, sạc zin',
+        warrantyMonths: 3,
         specs: {
             cpu: '',
             gpu: '',
@@ -97,6 +97,38 @@ export default function LaptopsPage() {
     useEffect(() => {
         fetchData();
     }, []);
+
+    // Close dropdowns when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            // Check if click is outside all filter dropdowns
+            // We need to check if the click is NOT inside any dropdown container or its children
+            const clickedInsideDropdown = target.closest('.filter-dropdown');
+
+            if (!clickedInsideDropdown) {
+                setExpandedSections({
+                    brands: false,
+                    price: false,
+                    cpu: false,
+                    ram: false,
+                    ssd: false,
+                    gpu: false,
+                    screen: false,
+                });
+            }
+        };
+
+        // Only add listener when at least one dropdown is open
+        const hasOpenDropdown = Object.values(expandedSections).some(v => v);
+        if (hasOpenDropdown) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [expandedSections]);
 
     const fetchData = async () => {
         try {
@@ -362,8 +394,8 @@ export default function LaptopsPage() {
                 </button>
             </div>
 
-            {/* Search Bar and Filter Toggle */}
-            <div className="flex gap-4 mb-6">
+            {/* Search Bar */}
+            <div className="flex gap-4 mb-4">
                 <div className="flex-1 relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
@@ -384,338 +416,347 @@ export default function LaptopsPage() {
                     <Filter className="w-5 h-5" />
                     Filters
                 </button>
+                {(selectedBrands.length > 0 || selectedCPUs.length > 0 || selectedRAMs.length > 0 || selectedSSDs.length > 0 || selectedGPUs.length > 0 || selectedScreens.length > 0) && (
+                    <button
+                        onClick={clearAllFilters}
+                        className="px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
+                    >
+                        Xóa bộ lọc
+                    </button>
+                )}
             </div>
 
-            {/* Main Content with Filters and Table */}
-            <div className="flex gap-6">
-                {/* Filter Sidebar */}
-                {showFilters && (
-                    <div className="w-80 flex-shrink-0">
-                        <div className="bg-white rounded-xl shadow-sm p-6 sticky top-4">
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-lg font-bold text-gray-800">Bộ lọc tìm kiếm</h2>
-                                <button
-                                    onClick={clearAllFilters}
-                                    className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                                >
-                                    Xóa tất cả
-                                </button>
-                            </div>
-
-                            <div className="space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto">
-                                {/* Brand Filter */}
-                                <div className="border-b border-gray-200 pb-4">
-                                    <button
-                                        onClick={() => toggleSection('brands')}
-                                        className="flex items-center justify-between w-full text-left font-semibold text-gray-800 mb-3"
-                                    >
-                                        Hãng sản xuất
-                                        {expandedSections.brands ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                                    </button>
-                                    {expandedSections.brands && (
-                                        <div className="space-y-2">
-                                            {brands.map(brand => (
-                                                <label key={brand._id} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedBrands.includes(brand._id)}
-                                                        onChange={(e) => {
-                                                            if (e.target.checked) {
-                                                                setSelectedBrands([...selectedBrands, brand._id]);
-                                                            } else {
-                                                                setSelectedBrands(selectedBrands.filter(id => id !== brand._id));
-                                                            }
-                                                        }}
-                                                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                    <span className="text-sm text-gray-700">{brand.name}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Price Range Filter */}
-                                <div className="border-b border-gray-200 pb-4">
-                                    <button
-                                        onClick={() => toggleSection('price')}
-                                        className="flex items-center justify-between w-full text-left font-semibold text-gray-800 mb-3"
-                                    >
-                                        Mức giá
-                                        {expandedSections.price ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                                    </button>
-                                    {expandedSections.price && (
-                                        <div className="space-y-3">
-                                            <div className="flex gap-2">
+            {/* Horizontal Filters */}
+            {showFilters && (
+                <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Danh mục phân loại</h3>
+                    <div className="flex flex-wrap gap-3">
+                        {/* Brand Filter */}
+                        <div className="relative filter-dropdown">
+                            <button
+                                onClick={() => toggleSection('brands')}
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                            >
+                                Theo hãng
+                                <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.brands ? 'rotate-180' : ''}`} />
+                            </button>
+                            {expandedSections.brands && (
+                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-[200px]">
+                                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                                        {brands.map(brand => (
+                                            <label key={brand._id} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
                                                 <input
-                                                    type="number"
-                                                    placeholder="Min"
-                                                    value={priceRange.min}
-                                                    onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value) })}
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                                                    type="checkbox"
+                                                    checked={selectedBrands.includes(brand._id)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedBrands([...selectedBrands, brand._id]);
+                                                        } else {
+                                                            setSelectedBrands(selectedBrands.filter(id => id !== brand._id));
+                                                        }
+                                                    }}
+                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
                                                 />
+                                                <span className="text-sm text-gray-700">{brand.name}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* CPU Filter */}
+                        <div className="relative filter-dropdown">
+                            <button
+                                onClick={() => toggleSection('cpu')}
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                            >
+                                CPU
+                                <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.cpu ? 'rotate-180' : ''}`} />
+                            </button>
+                            {expandedSections.cpu && (
+                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-[200px]">
+                                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                                        {filterOptions.cpus.map(cpu => (
+                                            <label key={cpu} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
                                                 <input
-                                                    type="number"
-                                                    placeholder="Max"
-                                                    value={priceRange.max}
-                                                    onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value) })}
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                                                    type="checkbox"
+                                                    checked={selectedCPUs.includes(cpu)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedCPUs([...selectedCPUs, cpu]);
+                                                        } else {
+                                                            setSelectedCPUs(selectedCPUs.filter(c => c !== cpu));
+                                                        }
+                                                    }}
+                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
                                                 />
-                                            </div>
-                                            <p className="text-xs text-gray-500">
-                                                {formatPrice(priceRange.min)} - {formatPrice(priceRange.max)}
-                                            </p>
-                                        </div>
-                                    )}
+                                                <span className="text-sm text-gray-700">{cpu}</span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
+                            )}
+                        </div>
 
-                                {/* CPU Filter */}
-                                <div className="border-b border-gray-200 pb-4">
-                                    <button
-                                        onClick={() => toggleSection('cpu')}
-                                        className="flex items-center justify-between w-full text-left font-semibold text-gray-800 mb-3"
-                                    >
-                                        CPU
-                                        {expandedSections.cpu ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                                    </button>
-                                    {expandedSections.cpu && (
-                                        <div className="space-y-2 max-h-48 overflow-y-auto">
-                                            {filterOptions.cpus.map(cpu => (
-                                                <label key={cpu} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedCPUs.includes(cpu)}
-                                                        onChange={(e) => {
-                                                            if (e.target.checked) {
-                                                                setSelectedCPUs([...selectedCPUs, cpu]);
-                                                            } else {
-                                                                setSelectedCPUs(selectedCPUs.filter(c => c !== cpu));
-                                                            }
-                                                        }}
-                                                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                    <span className="text-sm text-gray-700">{cpu}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    )}
+                        {/* SSD Filter */}
+                        <div className="relative filter-dropdown">
+                            <button
+                                onClick={() => toggleSection('ssd')}
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                            >
+                                SSD HDD
+                                <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.ssd ? 'rotate-180' : ''}`} />
+                            </button>
+                            {expandedSections.ssd && (
+                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-[200px]">
+                                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                                        {filterOptions.ssds.map(ssd => (
+                                            <label key={ssd} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedSSDs.includes(ssd)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedSSDs([...selectedSSDs, ssd]);
+                                                        } else {
+                                                            setSelectedSSDs(selectedSSDs.filter(s => s !== ssd));
+                                                        }
+                                                    }}
+                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                                                />
+                                                <span className="text-sm text-gray-700">{ssd}</span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
+                            )}
+                        </div>
 
-                                {/* RAM Filter */}
-                                <div className="border-b border-gray-200 pb-4">
-                                    <button
-                                        onClick={() => toggleSection('ram')}
-                                        className="flex items-center justify-between w-full text-left font-semibold text-gray-800 mb-3"
-                                    >
-                                        RAM
-                                        {expandedSections.ram ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                                    </button>
-                                    {expandedSections.ram && (
-                                        <div className="space-y-2">
-                                            {filterOptions.rams.map(ram => (
-                                                <label key={ram} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedRAMs.includes(ram)}
-                                                        onChange={(e) => {
-                                                            if (e.target.checked) {
-                                                                setSelectedRAMs([...selectedRAMs, ram]);
-                                                            } else {
-                                                                setSelectedRAMs(selectedRAMs.filter(r => r !== ram));
-                                                            }
-                                                        }}
-                                                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                    <span className="text-sm text-gray-700">{ram}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    )}
+                        {/* GPU Filter */}
+                        <div className="relative filter-dropdown">
+                            <button
+                                onClick={() => toggleSection('gpu')}
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                            >
+                                VGA
+                                <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.gpu ? 'rotate-180' : ''}`} />
+                            </button>
+                            {expandedSections.gpu && (
+                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-[200px]">
+                                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                                        {filterOptions.gpus.map(gpu => (
+                                            <label key={gpu} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedGPUs.includes(gpu)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedGPUs([...selectedGPUs, gpu]);
+                                                        } else {
+                                                            setSelectedGPUs(selectedGPUs.filter(g => g !== gpu));
+                                                        }
+                                                    }}
+                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                                                />
+                                                <span className="text-sm text-gray-700">{gpu}</span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
+                            )}
+                        </div>
 
-                                {/* SSD Filter */}
-                                <div className="border-b border-gray-200 pb-4">
-                                    <button
-                                        onClick={() => toggleSection('ssd')}
-                                        className="flex items-center justify-between w-full text-left font-semibold text-gray-800 mb-3"
-                                    >
-                                        SSD
-                                        {expandedSections.ssd ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                                    </button>
-                                    {expandedSections.ssd && (
-                                        <div className="space-y-2">
-                                            {filterOptions.ssds.map(ssd => (
-                                                <label key={ssd} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedSSDs.includes(ssd)}
-                                                        onChange={(e) => {
-                                                            if (e.target.checked) {
-                                                                setSelectedSSDs([...selectedSSDs, ssd]);
-                                                            } else {
-                                                                setSelectedSSDs(selectedSSDs.filter(s => s !== ssd));
-                                                            }
-                                                        }}
-                                                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                    <span className="text-sm text-gray-700">{ssd}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    )}
+                        {/* RAM Filter */}
+                        <div className="relative filter-dropdown">
+                            <button
+                                onClick={() => toggleSection('ram')}
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                            >
+                                Theo giá
+                                <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.ram ? 'rotate-180' : ''}`} />
+                            </button>
+                            {expandedSections.ram && (
+                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-[200px]">
+                                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                                        {filterOptions.rams.map(ram => (
+                                            <label key={ram} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedRAMs.includes(ram)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedRAMs([...selectedRAMs, ram]);
+                                                        } else {
+                                                            setSelectedRAMs(selectedRAMs.filter(r => r !== ram));
+                                                        }
+                                                    }}
+                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                                                />
+                                                <span className="text-sm text-gray-700">{ram}</span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
+                            )}
+                        </div>
 
-                                {/* GPU Filter */}
-                                <div className="border-b border-gray-200 pb-4">
-                                    <button
-                                        onClick={() => toggleSection('gpu')}
-                                        className="flex items-center justify-between w-full text-left font-semibold text-gray-800 mb-3"
-                                    >
-                                        GPU
-                                        {expandedSections.gpu ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                                    </button>
-                                    {expandedSections.gpu && (
-                                        <div className="space-y-2 max-h-48 overflow-y-auto">
-                                            {filterOptions.gpus.map(gpu => (
-                                                <label key={gpu} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedGPUs.includes(gpu)}
-                                                        onChange={(e) => {
-                                                            if (e.target.checked) {
-                                                                setSelectedGPUs([...selectedGPUs, gpu]);
-                                                            } else {
-                                                                setSelectedGPUs(selectedGPUs.filter(g => g !== gpu));
-                                                            }
-                                                        }}
-                                                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                    <span className="text-sm text-gray-700">{gpu}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    )}
+                        {/* Screen Filter */}
+                        <div className="relative filter-dropdown">
+                            <button
+                                onClick={() => toggleSection('screen')}
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                            >
+                                Kích thước màn hình
+                                <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.screen ? 'rotate-180' : ''}`} />
+                            </button>
+                            {expandedSections.screen && (
+                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-[200px]">
+                                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                                        {filterOptions.screens.map(screen => (
+                                            <label key={screen} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedScreens.includes(screen)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedScreens([...selectedScreens, screen]);
+                                                        } else {
+                                                            setSelectedScreens(selectedScreens.filter(s => s !== screen));
+                                                        }
+                                                    }}
+                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                                                />
+                                                <span className="text-sm text-gray-700">{screen}</span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
+                            )}
+                        </div>
 
-                                {/* Screen Filter */}
-                                <div className="pb-4">
-                                    <button
-                                        onClick={() => toggleSection('screen')}
-                                        className="flex items-center justify-between w-full text-left font-semibold text-gray-800 mb-3"
-                                    >
-                                        Màn hình
-                                        {expandedSections.screen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                                    </button>
-                                    {expandedSections.screen && (
-                                        <div className="space-y-2">
-                                            {filterOptions.screens.map(screen => (
-                                                <label key={screen} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedScreens.includes(screen)}
-                                                        onChange={(e) => {
-                                                            if (e.target.checked) {
-                                                                setSelectedScreens([...selectedScreens, screen]);
-                                                            } else {
-                                                                setSelectedScreens(selectedScreens.filter(s => s !== screen));
-                                                            }
-                                                        }}
-                                                        className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                    <span className="text-sm text-gray-700">{screen}</span>
-                                                </label>
-                                            ))}
+                        {/* Price Range Filter */}
+                        <div className="relative filter-dropdown">
+                            <button
+                                onClick={() => toggleSection('price')}
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                            >
+                                Tình trạng
+                                <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.price ? 'rotate-180' : ''}`} />
+                            </button>
+                            {expandedSections.price && (
+                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 min-w-[280px]">
+                                    <div className="space-y-3">
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="number"
+                                                placeholder="Min"
+                                                value={priceRange.min}
+                                                onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value) })}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                            />
+                                            <span className="text-gray-500 self-center">-</span>
+                                            <input
+                                                type="number"
+                                                placeholder="Max"
+                                                value={priceRange.max}
+                                                onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value) })}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                            />
                                         </div>
-                                    )}
+                                        <p className="text-xs text-gray-500">
+                                            {formatPrice(priceRange.min)} - {formatPrice(priceRange.max)}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Products Table */}
+            <div>
+                {loading ? (
+                    <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+                        <p className="text-gray-600 mt-4">Loading...</p>
+                    </div>
+                ) : (
+                    <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Image</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Name</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Model</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Category</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Brand</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Price</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
+                                        <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                    {filteredLaptops.map((laptop) => (
+                                        <tr key={laptop._id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-6 py-4">
+                                                {laptop.image || (laptop.images && laptop.images.length > 0 && laptop.images[0]) ? (
+                                                    <img
+                                                        src={laptop.image || laptop.images[0]}
+                                                        alt={laptop.name}
+                                                        className="w-16 h-12 object-cover rounded"
+                                                    />
+                                                ) : (
+                                                    <div className="w-16 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                                        <ImageIcon className="w-6 h-6 text-gray-400" />
+                                                    </div>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 font-medium text-gray-800">{laptop.name}</td>
+                                            <td className="px-6 py-4 text-gray-600 font-mono text-sm">{laptop.model}</td>
+                                            <td className="px-6 py-4 text-gray-600">{laptop.categoryId?.name || '-'}</td>
+                                            <td className="px-6 py-4 text-gray-600">{laptop.brandId?.name || '-'}</td>
+                                            <td className="px-6 py-4 text-gray-800 font-semibold">{formatPrice(laptop.price)}</td>
+                                            <td className="px-6 py-4">
+                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${laptop.status === 'active'
+                                                    ? 'bg-green-100 text-green-700'
+                                                    : 'bg-gray-100 text-gray-700'
+                                                    }`}>
+                                                    {laptop.status}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <button
+                                                        onClick={() => handleEdit(laptop)}
+                                                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                                    >
+                                                        <Edit2 className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(laptop._id)}
+                                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {laptops.length === 0 && (
+                                        <tr>
+                                            <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
+                                                No laptops found. Click "Add Laptop" to create one.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 )}
-
-                {/* Products Table */}
-                <div className="flex-1">
-                    {loading ? (
-                        <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-                            <p className="text-gray-600 mt-4">Loading...</p>
-                        </div>
-                    ) : (
-                        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                            <div className="overflow-x-auto">
-                                <table className="w-full">
-                                    <thead className="bg-gray-50 border-b border-gray-200">
-                                        <tr>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Image</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Name</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Model</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Category</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Brand</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Price</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
-                                            <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-200">
-                                        {filteredLaptops.map((laptop) => (
-                                            <tr key={laptop._id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-6 py-4">
-                                                    {laptop.image || (laptop.images && laptop.images.length > 0 && laptop.images[0]) ? (
-                                                        <img
-                                                            src={laptop.image || laptop.images[0]}
-                                                            alt={laptop.name}
-                                                            className="w-16 h-12 object-cover rounded"
-                                                        />
-                                                    ) : (
-                                                        <div className="w-16 h-12 bg-gray-200 rounded flex items-center justify-center">
-                                                            <ImageIcon className="w-6 h-6 text-gray-400" />
-                                                        </div>
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-4 font-medium text-gray-800">{laptop.name}</td>
-                                                <td className="px-6 py-4 text-gray-600 font-mono text-sm">{laptop.model}</td>
-                                                <td className="px-6 py-4 text-gray-600">{laptop.categoryId?.name || '-'}</td>
-                                                <td className="px-6 py-4 text-gray-600">{laptop.brandId?.name || '-'}</td>
-                                                <td className="px-6 py-4 text-gray-800 font-semibold">{formatPrice(laptop.price)}</td>
-                                                <td className="px-6 py-4">
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${laptop.status === 'active'
-                                                        ? 'bg-green-100 text-green-700'
-                                                        : 'bg-gray-100 text-gray-700'
-                                                        }`}>
-                                                        {laptop.status}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 text-right">
-                                                    <div className="flex items-center justify-end gap-2">
-                                                        <button
-                                                            onClick={() => handleEdit(laptop)}
-                                                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                                                        >
-                                                            <Edit2 className="w-4 h-4" />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDelete(laptop._id)}
-                                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                        {laptops.length === 0 && (
-                                            <tr>
-                                                <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
-                                                    No laptops found. Click "Add Laptop" to create one.
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
-                </div>
             </div>
 
             {/* Add/Edit Modal */}
@@ -914,9 +955,9 @@ export default function LaptopsPage() {
                                     onChange={(e) => setFormData({ ...formData, warrantyMonths: Number(e.target.value) })}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                 >
+                                    <option value={3}>3 tháng</option>
                                     <option value={1}>1 tháng</option>
                                     <option value={2}>2 tháng</option>
-                                    <option value={3}>3 tháng</option>
                                     <option value={6}>6 tháng</option>
                                     <option value={12}>12 tháng</option>
                                     <option value={18}>18 tháng</option>

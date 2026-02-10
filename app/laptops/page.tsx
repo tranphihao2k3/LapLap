@@ -506,7 +506,7 @@ export default function LaptopsPage() {
                     ) : (
                         <>
                             {/* Products Grid */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
                                 {paginatedProducts.map(product => (
                                     <a key={product._id} href={`/laptops/${product._id}`}>
                                         <ProductCard product={product} />
