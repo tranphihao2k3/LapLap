@@ -7,7 +7,10 @@ import {
     HardDrive,
     ShieldCheck,
     Stethoscope,
-    PenTool
+    Stethoscope,
+    PenTool,
+    Facebook,
+    MessageCircle
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -114,14 +117,27 @@ export default function RepairServicePage() {
                             </ul>
                         </div>
                         <div className="w-full md:w-auto text-center space-y-4">
-                            <div className="p-6 bg-white rounded-lg text-[var(--color-secondary)]">
-                                <p className="text-sm font-bold uppercase">Kiểm tra lỗi máy</p>
-                                <h3 className="text-3xl font-black">MIỄN PHÍ</h3>
+                            <a
+                                href="https://facebook.com/profile.php?id=61582947329036"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block p-6 bg-white rounded-lg text-[var(--color-secondary)] hover:shadow-lg hover:scale-105 transition-all text-center group cursor-pointer"
+                            >
+                                <p className="text-sm font-bold uppercase flex items-center justify-center gap-2">
+                                    <Facebook className="w-4 h-4" /> Kiểm tra lỗi máy
+                                </p>
+                                <h3 className="text-3xl font-black group-hover:text-blue-600 transition-colors">MIỄN PHÍ</h3>
                                 <p className="text-xs mt-1 italic">* Không sửa không thu phí</p>
-                            </div>
-                            <button className="w-full py-4 bg-yellow-400 text-slate-900 font-bold rounded-lg hover:bg-yellow-300 transition-colors uppercase tracking-wider">
-                                Nhận tư vấn ngay
-                            </button>
+                            </a>
+
+                            <a
+                                href="https://zalo.me/0978648720"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full py-4 bg-yellow-400 text-slate-900 font-bold rounded-lg hover:bg-yellow-300 transition-colors uppercase tracking-wider flex items-center justify-center gap-2"
+                            >
+                                <MessageCircle className="w-5 h-5" /> Nhận tư vấn Zalo
+                            </a>
                         </div>
                     </section>
 
