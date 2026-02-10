@@ -39,7 +39,7 @@ export default function Header() {
 
                         {/* Fanpage Button - Highlights */}
                         <a
-                            href="https://facebook.com/laplapstore"
+                            href="https://facebook.com/profile.php?id=61582947329036"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-full hover:shadow-lg transition-all transform hover:-translate-y-0.5 group relative overflow-hidden"
@@ -113,7 +113,7 @@ export default function Header() {
                     {/* Mobile Fanpage Button */}
                     <div className="px-6 pb-2 pt-4">
                         <a
-                            href="https://facebook.com/laplapstore"
+                            href="https://facebook.com/profile.php?id=61582947329036"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-[#1877F2] text-white rounded-xl shadow-md font-bold active:scale-95 transition-transform"
