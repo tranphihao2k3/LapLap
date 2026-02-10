@@ -115,27 +115,33 @@ export default function RepairServicePage() {
                                 <li className="flex items-center gap-2"><ShieldCheck className="text-green-400" /> Sửa chữa lấy liền với các lỗi đơn giản.</li>
                             </ul>
                         </div>
-                        <div className="w-full md:w-auto text-center space-y-4">
+                        <div className="w-full md:w-auto flex flex-col gap-4 min-w-[280px]">
+                            <div className="text-center mb-1">
+                                <p className="text-sm font-medium text-white/90">Bạn đang gặp sự cố?</p>
+                                <h3 className="text-2xl font-black text-yellow-400 uppercase tracking-wide drop-shadow-sm">
+                                    Kiểm tra lỗi miễn phí
+                                </h3>
+                                <p className="text-xs text-white/70 italic">* Không sửa không thu phí</p>
+                            </div>
+
                             <a
                                 href="https://facebook.com/profile.php?id=61582947329036"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="block p-6 bg-white rounded-lg text-[var(--color-secondary)] hover:shadow-lg hover:scale-105 transition-all text-center group cursor-pointer"
+                                className="flex items-center justify-center gap-3 w-full py-3.5 bg-[#1877F2] text-white rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all font-bold group"
                             >
-                                <p className="text-sm font-bold uppercase flex items-center justify-center gap-2">
-                                    <Facebook className="w-4 h-4" /> Kiểm tra lỗi máy
-                                </p>
-                                <h3 className="text-3xl font-black group-hover:text-blue-600 transition-colors">MIỄN PHÍ</h3>
-                                <p className="text-xs mt-1 italic">* Không sửa không thu phí</p>
+                                <Facebook className="w-6 h-6 group-hover:animate-bounce" />
+                                <span>Chat Facebook</span>
                             </a>
 
                             <a
                                 href="https://zalo.me/0978648720"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full py-4 bg-yellow-400 text-slate-900 font-bold rounded-lg hover:bg-yellow-300 transition-colors uppercase tracking-wider flex items-center justify-center gap-2"
+                                className="flex items-center justify-center gap-3 w-full py-3.5 bg-white text-[#0068FF] rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all font-bold border-2 border-white hover:bg-gray-50"
                             >
-                                <MessageCircle className="w-5 h-5" /> Nhận tư vấn Zalo
+                                <MessageCircle className="w-6 h-6" />
+                                <span>Chat Zalo: 0978.648.720</span>
                             </a>
                         </div>
                     </section>
