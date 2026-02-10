@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Itim } from "next/font/google";
-import { MapPin, Menu, X } from "lucide-react";
+import { MapPin, Menu, X, Facebook } from "lucide-react";
 import { useState } from "react";
 
 const itim = Itim({
@@ -36,6 +36,18 @@ export default function Header() {
                             <MapPin className="w-4 h-4 text-blue-600" />
                             <span className="font-medium">Cần Thơ</span>
                         </div>
+
+                        {/* Fanpage Button - Highlights */}
+                        <a
+                            href="https://facebook.com/laplapstore"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-full hover:shadow-lg transition-all transform hover:-translate-y-0.5 group relative overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                            <Facebook className="w-4 h-4 animate-bounce" />
+                            <span className="font-bold text-sm">Ghé thăm Fanpage</span>
+                        </a>
 
                         {/* Mobile Menu Button */}
                         <button
@@ -96,6 +108,19 @@ export default function Header() {
                             <MapPin className="w-4 h-4 text-blue-600" />
                             <span className="font-medium">Cần Thơ</span>
                         </div>
+                    </div>
+
+                    {/* Mobile Fanpage Button */}
+                    <div className="px-6 pb-2 pt-4">
+                        <a
+                            href="https://facebook.com/laplapstore"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-[#1877F2] text-white rounded-xl shadow-md font-bold active:scale-95 transition-transform"
+                        >
+                            <Facebook className="w-5 h-5 animate-pulse" />
+                            <span>Ghé thăm Fanpage</span>
+                        </a>
                     </div>
 
                     {/* Menu Items */}
