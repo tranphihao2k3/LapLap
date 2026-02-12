@@ -9,7 +9,14 @@ import MicTest from "./components/MicTest";
 import SpeakerTest from "./components/SpeakerTest";
 import ScreenTest from "./components/ScreenTest";
 
-type TestType = "camera" | "mic" | "speaker" | "screen";
+type TestType = "camera" | "mic" | "speaker" | "screen" | "keyboard";
+
+interface TestItem {
+    id: TestType;
+    title: string;
+    desc: string;
+    link?: string;
+}
 
 export default function UnifiedTestPage() {
     const [activeTest, setActiveTest] = useState<TestType | null>(null);
@@ -38,11 +45,12 @@ export default function UnifiedTestPage() {
         };
     }, []);
 
-    const tests = [
+    const tests: TestItem[] = [
         { id: "camera" as TestType, title: "📷 Camera", desc: "Kiểm tra camera laptop" },
         { id: "mic" as TestType, title: "🎙️ Microphone", desc: "Kiểm tra micro laptop" },
         { id: "speaker" as TestType, title: "🔊 Loa", desc: "Kiểm tra loa/âm thanh laptop" },
         { id: "screen" as TestType, title: "🖥️ Màn hình", desc: "Kiểm tra màn hình laptop" },
+        { id: "keyboard" as TestType, title: "⌨️ Bàn phím", desc: "Kiểm tra bàn phím laptop", link: "/test/keyboard" },
     ];
 
     if (activeTest) {
@@ -92,103 +100,122 @@ export default function UnifiedTestPage() {
                     </div>
 
                     {/* Test Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                         {tests.map((test) => (
-                            <button
-                                key={test.id}
-                                onClick={() => setActiveTest(test.id)}
-                                className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-blue-500"
-                            >
-                                <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
-                                    {test.title.split(" ")[0]}
-                                </div>
-                                <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                                    {test.title.split(" ").slice(1).join(" ")}
-                                </h2>
-                                <p className="text-gray-600">{test.desc}</p>
-                                <div className="mt-4 text-blue-600 font-semibold group-hover:translate-x-2 transition-transform inline-block">
-                                    Bắt đầu test →
-                                </div>
-                            </button>
+                            test.link ? (
+                                <a
+                                    key={test.id}
+                                    href={test.link}
+                                    className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-blue-500 h-full flex flex-col items-center text-center"
+                                >
+                                    <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
+                                        {test.title.split(" ")[0]}
+                                    </div>
+                                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                                        {test.title.split(" ").slice(1).join(" ")}
+                                    </h2>
+                                    <p className="text-gray-600 flex-grow">{test.desc}</p>
+                                    <div className="mt-4 text-blue-600 font-semibold group-hover:translate-x-2 transition-transform inline-block">
+                                        Bắt đầu test →
+                                    </div>
+                                </a>
+                            ) : (
+                                <button
+                                    key={test.id}
+                                    onClick={() => setActiveTest(test.id as TestType)}
+                                    className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-blue-500 h-full flex flex-col items-center text-center"
+                                >
+                                    <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
+                                        {test.title.split(" ")[0]}
+                                    </div>
+                                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                                        {test.title.split(" ").slice(1).join(" ")}
+                                    </h2>
+                                    <p className="text-gray-600 flex-grow">{test.desc}</p>
+                                    <div className="mt-4 text-blue-600 font-semibold group-hover:translate-x-2 transition-transform inline-block">
+                                        Bắt đầu test →
+                                    </div>
+                                </button>
+                            )
                         ))}
                     </div>
 
-                    {/* Keyboard Test - Separate Link */}
-                    <div className="flex justify-center mt-6">
-                        <a
-                            href="/test/keyboard"
-                            className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-blue-500 text-center w-full md:w-96"
-                        >
-                            <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
-                                ⌨️
-                            </div>
-                            <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                                Bàn phím
+                    {/* Information Sections Grid */}
+                    <div className="grid md:grid-cols-2 gap-8 mb-8">
+                        {/* Location Info */}
+                        <div className="bg-white rounded-xl p-8 shadow-md h-full">
+                            <h2 className="font-bold text-xl text-gray-800 mb-4 flex items-center gap-2">
+                                📍 Test Laptop Tại Cần Thơ
                             </h2>
-                            <p className="text-gray-600">Kiểm tra bàn phím</p>
-                            <div className="mt-4 text-blue-600 font-semibold group-hover:translate-x-2 transition-transform inline-block">
-                                Bắt đầu test →
+                            <p className="text-gray-600 mb-6 leading-relaxed">
+                                LapLap cung cấp công cụ test laptop miễn phí, hoàn toàn online, phục vụ khách hàng tại Cần Thơ và toàn quốc.
+                                Không cần cài đặt phần mềm, chỉ cần trình duyệt web là có thể kiểm tra ngay.
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700">
+                                <div className="space-y-2">
+                                    <p className="flex items-center gap-2">
+                                        <span className="text-green-500 font-bold">✓</span> Miễn phí 100%
+                                    </p>
+                                    <p className="flex items-center gap-2">
+                                        <span className="text-green-500 font-bold">✓</span> Nhanh chóng
+                                    </p>
+                                </div>
+                                <div className="space-y-2">
+                                    <p className="flex items-center gap-2">
+                                        <span className="text-green-500 font-bold">✓</span> Chính xác
+                                    </p>
+                                    <p className="flex items-center gap-2">
+                                        <span className="text-green-500 font-bold">✓</span> An toàn
+                                    </p>
+                                </div>
                             </div>
-                        </a>
-                    </div>
+                        </div>
 
-                    {/* Location Info */}
-                    <div className="mt-8 bg-white rounded-xl p-6 shadow-md">
-                        <h2 className="font-bold text-xl text-gray-800 mb-3">
-                            📍 Test Laptop Tại Cần Thơ
-                        </h2>
-                        <p className="text-gray-600 mb-4">
-                            LapLap cung cấp công cụ test laptop miễn phí, hoàn toàn online, phục vụ khách hàng tại Cần Thơ và toàn quốc.
-                            Không cần cài đặt phần mềm, chỉ cần trình duyệt web là có thể kiểm tra laptop ngay lập tức.
-                        </p>
-                        <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
-                            <div>
-                                <p><strong>✓ Miễn phí 100%</strong> - Không mất phí</p>
-                                <p><strong>✓ Nhanh chóng</strong> - Kết quả tức thì</p>
-                            </div>
-                            <div>
-                                <p><strong>✓ Chính xác</strong> - Công nghệ hiện đại</p>
-                                <p><strong>✓ An toàn</strong> - Không cài đặt phần mềm</p>
-                            </div>
+                        {/* Guide Info */}
+                        <div className="bg-white rounded-xl p-8 shadow-md h-full">
+                            <h3 className="font-bold text-xl text-gray-800 mb-4 flex items-center gap-2">
+                                ℹ️ Hướng dẫn sử dụng
+                            </h3>
+                            <ul className="space-y-4 text-gray-600">
+                                <li className="flex items-start gap-3">
+                                    <span className="bg-blue-100 text-blue-600 font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-sm">1</span>
+                                    <span>Chọn công cụ test bạn muốn kiểm tra từ danh sách trên.</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                    <span className="bg-blue-100 text-blue-600 font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-sm">2</span>
+                                    <span>Cho phép truy cập thiết bị (camera, micro) khi trình duyệt yêu cầu.</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                    <span className="bg-blue-100 text-blue-600 font-bold rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 text-sm">3</span>
+                                    <span>Làm theo hướng dẫn trên màn hình để hoàn thành bài test.</span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
 
                     {/* FAQ Section */}
-                    <div className="mt-8 bg-white rounded-xl p-6 shadow-md">
-                        <h2 className="font-bold text-xl text-gray-800 mb-4">
+                    <div className="bg-white rounded-xl p-8 shadow-md">
+                        <h2 className="font-bold text-xl text-gray-800 mb-6 flex items-center gap-2">
                             ❓ Câu Hỏi Thường Gặp
                         </h2>
-                        <div className="space-y-4 text-gray-600">
+                        <div className="grid md:grid-cols-2 gap-8">
                             <div>
-                                <h3 className="font-semibold text-gray-800 mb-1">Tại sao nên test laptop trước khi mua?</h3>
-                                <p className="text-sm">Test laptop giúp phát hiện lỗi phần cứng như camera hỏng, loa rè, màn hình lỗi pixel, bàn phím không nhạy. Đặc biệt quan trọng khi mua laptop cũ tại Cần Thơ.</p>
+                                <h3 className="font-semibold text-gray-800 mb-2">Tại sao nên test laptop trước khi mua?</h3>
+                                <p className="text-sm text-gray-600 leading-relaxed">Test laptop giúp phát hiện lỗi phần cứng như camera hỏng, loa rè, màn hình lỗi pixel, bàn phím không nhạy. Đặc biệt quan trọng khi mua laptop cũ.</p>
                             </div>
                             <div>
-                                <h3 className="font-semibold text-gray-800 mb-1">Công cụ test laptop có miễn phí không?</h3>
-                                <p className="text-sm">Hoàn toàn miễn phí! Bạn chỉ cần truy cập website và bắt đầu test ngay, không cần đăng ký tài khoản hay thanh toán.</p>
+                                <h3 className="font-semibold text-gray-800 mb-2">Công cụ test laptop có miễn phí không?</h3>
+                                <p className="text-sm text-gray-600 leading-relaxed">Hoàn toàn miễn phí! Bạn chỉ cần truy cập website và bắt đầu test ngay, không cần đăng ký tài khoản hay thanh toán.</p>
                             </div>
                             <div>
-                                <h3 className="font-semibold text-gray-800 mb-1">Test laptop ở Cần Thơ có chính xác không?</h3>
-                                <p className="text-sm">Công cụ sử dụng công nghệ web hiện đại, cho kết quả chính xác tương đương phần mềm test chuyên dụng. Phù hợp cho cả cá nhân và cửa hàng laptop tại Cần Thơ.</p>
+                                <h3 className="font-semibold text-gray-800 mb-2">Độ chính xác thế nào?</h3>
+                                <p className="text-sm text-gray-600 leading-relaxed">Công cụ sử dụng công nghệ web chuẩn HTML5, cho kết quả chính xác tương đương phần mềm chuyên dụng.</p>
                             </div>
                             <div>
-                                <h3 className="font-semibold text-gray-800 mb-1">Cần chuẩn bị gì để test laptop?</h3>
-                                <p className="text-sm">Chỉ cần laptop có kết nối internet và trình duyệt web (Chrome, Edge, Firefox). Cho phép truy cập camera, micro khi trình duyệt yêu cầu.</p>
+                                <h3 className="font-semibold text-gray-800 mb-2">Cần chuẩn bị gì?</h3>
+                                <p className="text-sm text-gray-600 leading-relaxed">Chỉ cần laptop có kết nối internet và trình duyệt web (Chrome, Edge, Firefox, Safari) là đủ.</p>
                             </div>
                         </div>
-                    </div>
-
-                    {/* Info */}
-                    <div className="mt-8 bg-white rounded-xl p-6 shadow-md">
-                        <h3 className="font-bold text-lg text-gray-800 mb-3">
-                            ℹ️ Hướng dẫn sử dụng
-                        </h3>
-                        <ul className="space-y-2 text-gray-600">
-                            <li>✅ Chọn công cụ test bạn muốn kiểm tra</li>
-                            <li>✅ Cho phép truy cập thiết bị khi trình duyệt yêu cầu</li>
-                            <li>✅ Làm theo hướng dẫn trên màn hình</li>
-                            <li>✅ Nhấn "Quay lại" để chọn test khác</li>
-                        </ul>
                     </div>
                 </div>
             </main>

@@ -761,9 +761,9 @@ export default function LaptopsPage() {
 
             {/* Add/Edit Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-                    <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full my-8">
-                        <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white rounded-t-xl">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col">
+                        <div className="flex items-center justify-between p-6 border-b border-gray-200 shrink-0">
                             <h2 className="text-xl font-bold text-gray-800">
                                 {editingLaptop ? 'Edit Laptop' : 'Add Laptop'}
                             </h2>
@@ -775,7 +775,7 @@ export default function LaptopsPage() {
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                        <form id="laptop-form" onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto flex-1">
                             {/* Basic Info */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
@@ -980,7 +980,10 @@ export default function LaptopsPage() {
                                 </select>
                             </div>
 
-                            <div className="flex gap-3 pt-4 border-t border-gray-200 sticky bottom-0 bg-white">
+                        </form>
+
+                        <div className="p-6 border-t border-gray-200 bg-gray-50 rounded-b-xl shrink-0">
+                            <div className="flex gap-3">
                                 <button
                                     type="button"
                                     onClick={handleCloseModal}
@@ -990,12 +993,13 @@ export default function LaptopsPage() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all"
+                                    form="laptop-form"
+                                    className="flex-1 px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all font-medium shadow-md hover:shadow-lg"
                                 >
-                                    {editingLaptop ? 'Update' : 'Create'}
+                                    {editingLaptop ? 'Update Laptop' : 'Create Laptop'}
                                 </button>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             )}

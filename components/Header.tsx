@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { Itim } from "next/font/google";
-import { MapPin, Menu, X, Facebook } from "lucide-react";
-import { useState } from "react";
+import { MapPin, Menu, X, Facebook, Search } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const itim = Itim({
     subsets: ["latin", "vietnamese"],
@@ -13,6 +13,34 @@ const itim = Itim({
 
 export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Debounce search
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(async () => {
+            if (searchTerm.trim()) {
+                setIsLoading(true);
+                try {
+                    const res = await fetch(`/api/products?search=${encodeURIComponent(searchTerm)}&limit=5`);
+                    const data = await res.json();
+                    if (data.success) {
+                        setSearchResults(data.data);
+                    }
+                } catch (error) {
+                    console.error("Search error:", error);
+                } finally {
+                    setIsLoading(false);
+                }
+            } else {
+                setSearchResults([]);
+            }
+        }, 300);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchTerm]);
 
     const menuItems = [
         { href: "/laptops", label: "Laptop" },
@@ -23,13 +51,66 @@ export default function Header() {
     ];
 
     return (
-        <header className="w-full relative">
+        <header className="w-full sticky top-0 z-50 shadow-md bg-white">
             {/* Logo */}
             <div className="bg-white py-6">
                 <div className="container mx-auto flex justify-between items-center px-4">
                     <Link href="/" className={itim.className + " text-2xl font-bold"}>
                         Lap Lap Store
                     </Link>
+
+                    {/* Search Bar */}
+                    <div className="flex-1 max-w-xl mx-4 relative hidden md:block">
+                        <div className="relative">
+                            <input
+                                type="text"
+                                placeholder="Tìm kiếm laptop..."
+                                className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onFocus={() => setIsSearchFocused(true)}
+                                onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+                            />
+                            <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                        </div>
+
+                        {/* Search Results Dropdown */}
+                        {isSearchFocused && (searchTerm.length > 0 || searchResults.length > 0) && (
+                            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-100 max-h-96 overflow-y-auto z-50">
+                                {isLoading ? (
+                                    <div className="p-4 text-center text-gray-500">Đang tìm kiếm...</div>
+                                ) : searchResults.length > 0 ? (
+                                    <ul>
+                                        {searchResults.map((product) => (
+                                            <li key={product._id}>
+                                                <Link
+                                                    href={`/laptops/${product._id}`}
+                                                    className="flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
+                                                    onClick={() => setIsSearchFocused(false)}
+                                                >
+                                                    <div className="w-12 h-12 relative flex-shrink-0">
+                                                        <img
+                                                            src={product.images?.[0] || 'https://placehold.co/100x100?text=No+Image'}
+                                                            alt={product.name}
+                                                            className="w-full h-full object-cover rounded-md"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-sm font-medium text-gray-800 line-clamp-1">{product.name}</h4>
+                                                        <p className="text-xs text-blue-600 font-bold">
+                                                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
+                                                        </p>
+                                                    </div>
+                                                </Link>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : searchTerm.length > 0 ? (
+                                    <div className="p-4 text-center text-gray-500">Không tìm thấy sản phẩm nào</div>
+                                ) : null}
+                            </div>
+                        )}
+                    </div>
 
                     <div className="flex items-center gap-4">
                         <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600">
