@@ -9,7 +9,7 @@ import MicTest from "./components/MicTest";
 import SpeakerTest from "./components/SpeakerTest";
 import ScreenTest from "./components/ScreenTest";
 import SoftwareDownload from "./components/SoftwareDownload";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 type TestType = "camera" | "mic" | "speaker" | "screen" | "keyboard" | "software";
 
@@ -58,7 +58,7 @@ export default function UnifiedTestPage() {
         { id: "keyboard" as TestType, title: "⌨️ Bàn phím", desc: "Kiểm tra bàn phím laptop", link: "/test/keyboard" },
     ];
 
-    const containerVariants = {
+    const containerVariants: Variants = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
@@ -66,7 +66,7 @@ export default function UnifiedTestPage() {
         }
     };
 
-    const itemVariants = {
+    const itemVariants: Variants = {
         hidden: { opacity: 0, y: 30 },
         visible: {
             opacity: 1,

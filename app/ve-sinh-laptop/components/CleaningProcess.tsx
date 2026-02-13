@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Wrench } from "lucide-react";
 
 export default function CleaningProcess() {
@@ -38,7 +38,7 @@ export default function CleaningProcess() {
         }
     ];
 
-    const containerVariants = {
+    const containerVariants: Variants = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
@@ -46,7 +46,7 @@ export default function CleaningProcess() {
         }
     };
 
-    const itemVariants = {
+    const itemVariants: Variants = {
         hidden: { opacity: 0, x: -20 },
         visible: {
             opacity: 1,

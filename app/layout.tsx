@@ -25,6 +25,14 @@ export const metadata: Metadata = {
   },
 };
 
+import { Be_Vietnam_Pro } from "next/font/google";
+
+const beVietnamPro = Be_Vietnam_Pro({
+  subsets: ["latin", "vietnamese"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+});
+
 export default function RootLayout({
   children,
 }: {
@@ -32,7 +40,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
-      <body className="min-h-screen flex flex-col">
+      <body className={`${beVietnamPro.className} min-h-screen flex flex-col`}>
         {children}
         <FacebookMessenger />
       </body>

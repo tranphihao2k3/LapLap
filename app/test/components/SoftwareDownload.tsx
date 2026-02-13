@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Download, HardDrive, Battery, Cpu } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 interface SoftwareDownloadProps {
     onBack: () => void;
@@ -33,7 +33,7 @@ export default function SoftwareDownload({ onBack }: SoftwareDownloadProps) {
         }
     ];
 
-    const containerVariants = {
+    const containerVariants: Variants = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
@@ -41,7 +41,7 @@ export default function SoftwareDownload({ onBack }: SoftwareDownloadProps) {
         }
     };
 
-    const itemVariants = {
+    const itemVariants: Variants = {
         hidden: { opacity: 0, scale: 0.8 },
         visible: {
             opacity: 1,

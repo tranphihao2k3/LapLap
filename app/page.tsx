@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import ProductCard from "./laptops/ProductCard";
 import { useEffect, useState } from 'react';
 import { MapPin, Truck, Shield, TestTube } from 'lucide-react';
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 interface LaptopSpec {
   cpu: string;
@@ -110,7 +110,7 @@ export default function HomePage() {
     }
   };
 
-  const fadeInUp = {
+  const fadeInUp: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
@@ -119,7 +119,7 @@ export default function HomePage() {
     }
   };
 
-  const stagger = {
+  const stagger: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
