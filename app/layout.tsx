@@ -5,6 +5,7 @@ import FacebookMessenger from "@/components/FacebookMessenger";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://laplapcantho.store"),
   title: {
     default: "LapLap - Laptop Cần Thơ | Mua Bán Laptop Chính Hãng Giá Tốt",
     template: "%s | LapLap Cần Thơ"

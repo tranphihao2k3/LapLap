@@ -1,13 +1,12 @@
 import {
-    Wrench,
-    CheckCircle2,
     Clock,
     ShieldCheck,
-    Gift,
     Flame
 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CleaningProcess from "./components/CleaningProcess";
+import CleaningBenefits from "./components/CleaningBenefits";
 
 export default function CleaningServicePage() {
     return (
@@ -36,64 +35,10 @@ export default function CleaningServicePage() {
                 <div className="container mx-auto max-w-4xl px-4 py-16 space-y-20">
 
                     {/* ================= QUY TRÌNH ================= */}
-                    <section>
-                        <h2 className="text-xl font-bold flex items-center gap-3 mb-10">
-                            <Wrench className="text-[var(--color-secondary)]" />
-                            Quy trình vệ sinh laptop chuyên sâu
-                        </h2>
-
-                        <div className="grid gap-6">
-                            <ProcessItem
-                                index={1}
-                                title="Vệ sinh ngoại quan A – B – C – D"
-                                description="Làm sạch toàn bộ vỏ ngoài, bản lề, khe tản nhiệt."
-                            />
-                            <ProcessItem
-                                index={2}
-                                title="Vệ sinh bên trong máy"
-                                description="Thổi bụi main, quạt, RAM, SSD – loại bỏ bụi gây nóng."
-                            />
-                            <ProcessItem
-                                index={3}
-                                title="Thay keo tản nhiệt CPU – GPU"
-                                description="Giảm 10–25°C, máy mát – bền – chạy ổn định hơn."
-                                highlight
-                            />
-                            <ProcessItem
-                                index={4}
-                                title="Làm sạch hệ thống tản nhiệt"
-                                description="Quạt – ống đồng – khe gió được vệ sinh kỹ."
-                            />
-                            <ProcessItem
-                                index={5}
-                                title="Vệ sinh bàn phím – khe phím"
-                                description="Loại bỏ bụi, tóc, mồ hôi – phím nhạy hơn."
-                            />
-                            <ProcessItem
-                                index={6}
-                                title="Test tổng thể & tư vấn miễn phí"
-                                description="Kiểm tra nhiệt độ – hiệu năng sau vệ sinh."
-                            />
-                        </div>
-                    </section>
+                    <CleaningProcess />
 
                     {/* ================= ƯU ĐÃI ================= */}
-                    <section className="bg-[var(--color-secondary)] rounded-2xl p-8 text-white shadow-xl">
-                        <h2 className="text-xl font-bold flex items-center gap-3 justify-center mb-8">
-                            <Gift className="text-yellow-400" />
-                            Ưu đãi khi vệ sinh laptop tại LapLap Cần Thơ
-                        </h2>
-
-                        <ul className="grid md:grid-cols-2 gap-5">
-                            <BenefitItem text="Miễn phí kiểm tra tình trạng laptop" />
-                            <BenefitItem text="Tư vấn nâng cấp SSD – RAM phù hợp" />
-                            <BenefitItem text="Bảo hành keo tản nhiệt theo gói" />
-                            <BenefitItem
-                                text="Giảm 10% cho học sinh – sinh viên"
-                                highlight
-                            />
-                        </ul>
-                    </section>
+                    <CleaningBenefits />
 
                     {/* ================= CAM KẾT ================= */}
                     <section className="bg-white rounded-xl p-8 shadow-md border-l-4 border-[var(--color-secondary)] text-center space-y-4">
@@ -127,7 +72,6 @@ export default function CleaningServicePage() {
                             highlight
                         />
                     </section>
-
                 </div>
             </main>
             <Footer />
@@ -136,45 +80,6 @@ export default function CleaningServicePage() {
 }
 
 /* ================= SUB COMPONENTS ================= */
-
-function ProcessItem({
-    index,
-    title,
-    description,
-    highlight = false
-}: {
-    index: number;
-    title: string;
-    description: string;
-    highlight?: boolean;
-}) {
-    return (
-        <div
-            className={`flex gap-4 p-5 rounded-xl border transition-all
-            ${highlight
-                    ? "bg-yellow-50 border-yellow-400"
-                    : "bg-white hover:shadow-md"
-                }`}
-        >
-            <div className="text-[#1e4275] font-black text-xl">
-                {index}
-            </div>
-            <div>
-                <h4 className="font-bold text-slate-900">{title}</h4>
-                <p className="text-slate-600">{description}</p>
-            </div>
-        </div>
-    );
-}
-
-function BenefitItem({ text, highlight = false }: { text: string; highlight?: boolean }) {
-    return (
-        <li className={`flex items-center gap-3 ${highlight ? "font-bold text-yellow-300" : ""}`}>
-            <CheckCircle2 className="text-green-400 flex-shrink-0" />
-            {text}
-        </li>
-    );
-}
 
 function PriceCard({
     title,

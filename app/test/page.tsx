@@ -8,8 +8,10 @@ import CameraTest from "./components/CameraTest";
 import MicTest from "./components/MicTest";
 import SpeakerTest from "./components/SpeakerTest";
 import ScreenTest from "./components/ScreenTest";
+import SoftwareDownload from "./components/SoftwareDownload";
+import { motion } from "framer-motion";
 
-type TestType = "camera" | "mic" | "speaker" | "screen" | "keyboard";
+type TestType = "camera" | "mic" | "speaker" | "screen" | "keyboard" | "software";
 
 interface TestItem {
     id: TestType;
@@ -19,7 +21,9 @@ interface TestItem {
 }
 
 export default function UnifiedTestPage() {
-    const [activeTest, setActiveTest] = useState<TestType | null>(null);
+    const activeTestState = useState<TestType | null>(null);
+    const activeTest = activeTestState[0];
+    const setActiveTest = activeTestState[1];
 
     // Add structured data for SEO
     useEffect(() => {
@@ -35,7 +39,7 @@ export default function UnifiedTestPage() {
                 "addressLocality": "Cần Thơ",
                 "addressCountry": "VN"
             },
-            "url": "https://laplap.vercel.app/test",
+            "url": "https://laplapcantho.store/test",
             "priceRange": "Miễn phí",
             "areaServed": "Cần Thơ"
         });
@@ -46,6 +50,7 @@ export default function UnifiedTestPage() {
     }, []);
 
     const tests: TestItem[] = [
+        { id: "software" as TestType, title: "⬇️ Tải Phần Mềm", desc: "Tải phần mềm test laptop (BatteryMon, HDSentinel...)" },
         { id: "camera" as TestType, title: "📷 Camera", desc: "Kiểm tra camera laptop" },
         { id: "mic" as TestType, title: "🎙️ Microphone", desc: "Kiểm tra micro laptop" },
         { id: "speaker" as TestType, title: "🔊 Loa", desc: "Kiểm tra loa/âm thanh laptop" },
@@ -53,9 +58,27 @@ export default function UnifiedTestPage() {
         { id: "keyboard" as TestType, title: "⌨️ Bàn phím", desc: "Kiểm tra bàn phím laptop", link: "/test/keyboard" },
     ];
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, y: 30 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { type: "spring", stiffness: 100 }
+        }
+    };
+
     if (activeTest) {
         return (
             <div className="min-h-screen bg-white">
+                {activeTest === "software" && <SoftwareDownload onBack={() => setActiveTest(null)} />}
                 {activeTest === "camera" && <CameraTest onBack={() => setActiveTest(null)} />}
                 {activeTest === "mic" && <MicTest onBack={() => setActiveTest(null)} />}
                 {activeTest === "speaker" && <SpeakerTest onBack={() => setActiveTest(null)} />}
@@ -77,36 +100,59 @@ export default function UnifiedTestPage() {
                 <meta property="og:title" content="Test Laptop Cần Thơ - Kiểm Tra Laptop Miễn Phí" />
                 <meta property="og:description" content="Công cụ test laptop miễn phí tại Cần Thơ. Kiểm tra camera, micro, loa, màn hình, bàn phím laptop online." />
                 <meta property="og:type" content="website" />
-                <meta property="og:url" content="https://laplap.vercel.app/test" />
+                <meta property="og:url" content="https://laplapcantho.store/test" />
                 <meta property="og:locale" content="vi_VN" />
 
                 {/* Canonical URL */}
-                <link rel="canonical" href="https://laplap.vercel.app/test" />
+                <link rel="canonical" href="https://laplapcantho.store/test" />
             </Head>
             <Header />
             <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-16 px-4">
                 <div className="max-w-5xl mx-auto">
                     {/* Header */}
                     <div className="text-center mb-12">
-                        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+                        <motion.h1
+                            className="text-4xl md:text-5xl font-bold text-gray-800 mb-4"
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6 }}
+                        >
                             🔧 Test Laptop Cần Thơ - Kiểm Tra Laptop Miễn Phí
-                        </h1>
-                        <p className="text-gray-600 text-lg mb-2">
+                        </motion.h1>
+                        <motion.p
+                            className="text-gray-600 text-lg mb-2"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.3, duration: 0.6 }}
+                        >
                             Công cụ test laptop online chuyên nghiệp tại Cần Thơ
-                        </p>
-                        <p className="text-gray-500">
+                        </motion.p>
+                        <motion.p
+                            className="text-gray-500"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.5, duration: 0.6 }}
+                        >
                             Kiểm tra toàn diện camera, micro, loa, màn hình, bàn phím laptop
-                        </p>
+                        </motion.p>
                     </div>
 
                     {/* Test Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                    <motion.div
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
                         {tests.map((test) => (
                             test.link ? (
-                                <a
+                                <motion.a
                                     key={test.id}
                                     href={test.link}
-                                    className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-blue-500 h-full flex flex-col items-center text-center"
+                                    variants={itemVariants}
+                                    whileHover={{ scale: 1.05, y: -5 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-blue-500 h-full flex flex-col items-center text-center cursor-pointer"
                                 >
                                     <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
                                         {test.title.split(" ")[0]}
@@ -118,12 +164,15 @@ export default function UnifiedTestPage() {
                                     <div className="mt-4 text-blue-600 font-semibold group-hover:translate-x-2 transition-transform inline-block">
                                         Bắt đầu test →
                                     </div>
-                                </a>
+                                </motion.a>
                             ) : (
-                                <button
+                                <motion.button
                                     key={test.id}
                                     onClick={() => setActiveTest(test.id as TestType)}
-                                    className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-transparent hover:border-blue-500 h-full flex flex-col items-center text-center"
+                                    variants={itemVariants}
+                                    whileHover={{ scale: 1.05, y: -5 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-blue-500 h-full flex flex-col items-center text-center w-full"
                                 >
                                     <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
                                         {test.title.split(" ")[0]}
@@ -135,15 +184,21 @@ export default function UnifiedTestPage() {
                                     <div className="mt-4 text-blue-600 font-semibold group-hover:translate-x-2 transition-transform inline-block">
                                         Bắt đầu test →
                                     </div>
-                                </button>
+                                </motion.button>
                             )
                         ))}
-                    </div>
+                    </motion.div>
 
                     {/* Information Sections Grid */}
                     <div className="grid md:grid-cols-2 gap-8 mb-8">
                         {/* Location Info */}
-                        <div className="bg-white rounded-xl p-8 shadow-md h-full">
+                        <motion.div
+                            className="bg-white rounded-xl p-8 shadow-md h-full"
+                            initial={{ opacity: 0, x: -50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.6 }}
+                            viewport={{ once: true, amount: 0.2 }}
+                        >
                             <h2 className="font-bold text-xl text-gray-800 mb-4 flex items-center gap-2">
                                 📍 Test Laptop Tại Cần Thơ
                             </h2>
@@ -169,10 +224,16 @@ export default function UnifiedTestPage() {
                                     </p>
                                 </div>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Guide Info */}
-                        <div className="bg-white rounded-xl p-8 shadow-md h-full">
+                        <motion.div
+                            className="bg-white rounded-xl p-8 shadow-md h-full"
+                            initial={{ opacity: 0, x: 50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.6 }}
+                            viewport={{ once: true, amount: 0.2 }}
+                        >
                             <h3 className="font-bold text-xl text-gray-800 mb-4 flex items-center gap-2">
                                 ℹ️ Hướng dẫn sử dụng
                             </h3>
@@ -190,11 +251,17 @@ export default function UnifiedTestPage() {
                                     <span>Làm theo hướng dẫn trên màn hình để hoàn thành bài test.</span>
                                 </li>
                             </ul>
-                        </div>
+                        </motion.div>
                     </div>
 
                     {/* FAQ Section */}
-                    <div className="bg-white rounded-xl p-8 shadow-md">
+                    <motion.div
+                        className="bg-white rounded-xl p-8 shadow-md"
+                        initial={{ opacity: 0, y: 50 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                        viewport={{ once: true, amount: 0.2 }}
+                    >
                         <h2 className="font-bold text-xl text-gray-800 mb-6 flex items-center gap-2">
                             ❓ Câu Hỏi Thường Gặp
                         </h2>
@@ -216,7 +283,7 @@ export default function UnifiedTestPage() {
                                 <p className="text-sm text-gray-600 leading-relaxed">Chỉ cần laptop có kết nối internet và trình duyệt web (Chrome, Edge, Firefox, Safari) là đủ.</p>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             </main>
             <Footer />

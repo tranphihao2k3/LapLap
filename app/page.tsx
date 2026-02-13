@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import ProductCard from "./laptops/ProductCard";
 import { useEffect, useState } from 'react';
 import { MapPin, Truck, Shield, TestTube } from 'lucide-react';
+import { motion } from "framer-motion";
 
 interface LaptopSpec {
   cpu: string;
@@ -69,7 +70,7 @@ export default function HomePage() {
         "latitude": "10.0452",
         "longitude": "105.7469"
       },
-      "url": "https://laplap.vercel.app",
+      "url": "https://laplapcantho.store",
       "priceRange": "$$",
       "areaServed": "Cần Thơ"
     });
@@ -109,11 +110,21 @@ export default function HomePage() {
     }
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-    }).format(price);
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
+  };
+
+  const stagger = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15 }
+    }
   };
 
   return (
@@ -137,31 +148,36 @@ export default function HomePage() {
               <div className="container mx-auto px-6 md:px-12">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                   {/* Left Column: Text */}
-                  <div className="max-w-3xl z-10">
+                  <motion.div
+                    className="max-w-3xl z-10"
+                    initial="hidden"
+                    animate="visible"
+                    variants={stagger}
+                  >
                     {/* Badge */}
-                    <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+                    <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
                       <MapPin className="w-4 h-4 text-[var(--color-accent)]" />
                       <span className="text-white font-medium text-sm">Cần Thơ</span>
-                    </div>
+                    </motion.div>
 
                     {/* Main Heading */}
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight">
+                    <motion.h1 variants={fadeInUp} className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight">
                       Laptop Cần Thơ
                       <br />
                       <span className="bg-gradient-to-r from-[var(--color-accent)] to-white bg-clip-text text-transparent">
                         Chính Hãng
                       </span>
-                    </h1>
+                    </motion.h1>
 
                     {/* Subtitle */}
-                    <p className="text-xl md:text-2xl text-blue-100 mb-8 leading-relaxed">
+                    <motion.p variants={fadeInUp} className="text-xl md:text-2xl text-blue-100 mb-8 leading-relaxed">
                       Laptop mới, laptop cũ giá tốt nhất tại Cần Thơ
                       <br />
                       <span className="text-[var(--color-accent)] font-semibold">Giao hàng tận nơi • Bảo hành uy tín</span>
-                    </p>
+                    </motion.p>
 
                     {/* CTA Buttons */}
-                    <div className="flex flex-wrap gap-4">
+                    <motion.div variants={fadeInUp} className="flex flex-wrap gap-4">
                       <Link
                         href="/laptops"
                         className="group bg-white hover:bg-[var(--color-accent)] text-[var(--color-primary)] px-8 py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2"
@@ -175,10 +191,10 @@ export default function HomePage() {
                       >
                         Test Laptop Miễn Phí
                       </Link>
-                    </div>
+                    </motion.div>
 
                     {/* Stats */}
-                    <div className="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/20">
+                    <motion.div variants={fadeInUp} className="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/20">
                       <div>
                         <div className="text-3xl font-bold text-[var(--color-accent)]">100+</div>
                         <div className="text-sm text-blue-100">Sản phẩm</div>
@@ -191,13 +207,18 @@ export default function HomePage() {
                         <div className="text-3xl font-bold text-[var(--color-accent)]">100%</div>
                         <div className="text-sm text-blue-100">Chính hãng</div>
                       </div>
-                    </div>
-                  </div>
+                    </motion.div>
+                  </motion.div>
 
                   {/* Right Column: 3D Image */}
-                  <div className="hidden lg:flex justify-center items-center relative z-0">
+                  <motion.div
+                    className="hidden lg:flex justify-center items-center relative z-0"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
+                  >
                     <div className="relative w-full h-[400px] animate-float">
-                      {/* Placeholder for 3D Laptop - Using a high quality open source image or a generated-like placeholder */}
+                      {/* Placeholder for 3D Laptop */}
                       <img
                         src="https://bizweb.dktcdn.net/thumb/grande/100/512/769/products/alienware-x16-r2-3.jpg?v=1716871837957"
                         alt="3D Laptop Illustration"
@@ -207,16 +228,21 @@ export default function HomePage() {
                       <div className="absolute -top-10 -right-10 w-24 h-24 bg-blue-400/30 rounded-full blur-xl animate-pulse"></div>
                       <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-400/30 rounded-full blur-xl animate-pulse delay-700"></div>
                     </div>
-                  </div>
+                  </motion.div>
                 </div>
               </div>
             </div>
           </section>
 
           {/* Benefits Section */}
-          {/* Benefits Section */}
-          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="group bg-gradient-to-br from-blue-50 to-white p-6 rounded-2xl shadow-lg border border-blue-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+          <motion.section
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={stagger}
+          >
+            <motion.div variants={fadeInUp} className="group bg-gradient-to-br from-blue-50 to-white p-6 rounded-2xl shadow-lg border border-blue-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
               <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <MapPin className="w-7 h-7 text-blue-600" />
               </div>
@@ -224,9 +250,9 @@ export default function HomePage() {
               <p className="text-gray-600 text-sm leading-relaxed">
                 Phục vụ khách hàng tại Cần Thơ và các tỉnh lân cận nhanh chóng.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="group bg-gradient-to-br from-green-50 to-white p-6 rounded-2xl shadow-lg border border-green-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+            <motion.div variants={fadeInUp} className="group bg-gradient-to-br from-green-50 to-white p-6 rounded-2xl shadow-lg border border-green-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
               <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Truck className="w-7 h-7 text-green-600" />
               </div>
@@ -234,9 +260,9 @@ export default function HomePage() {
               <p className="text-gray-600 text-sm leading-relaxed">
                 Miễn phí giao hàng nội thành Cần Thơ, ship COD toàn quốc.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="group bg-gradient-to-br from-purple-50 to-white p-6 rounded-2xl shadow-lg border border-purple-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+            <motion.div variants={fadeInUp} className="group bg-gradient-to-br from-purple-50 to-white p-6 rounded-2xl shadow-lg border border-purple-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
               <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Shield className="w-7 h-7 text-purple-600" />
               </div>
@@ -244,9 +270,9 @@ export default function HomePage() {
               <p className="text-gray-600 text-sm leading-relaxed">
                 Bảo hành chính hãng, hỗ trợ kỹ thuật trọn đời máy.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="group bg-gradient-to-br from-orange-50 to-white p-6 rounded-2xl shadow-lg border border-orange-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+            <motion.div variants={fadeInUp} className="group bg-gradient-to-br from-orange-50 to-white p-6 rounded-2xl shadow-lg border border-orange-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
               <div className="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <TestTube className="w-7 h-7 text-orange-600" />
               </div>
@@ -254,8 +280,8 @@ export default function HomePage() {
               <p className="text-gray-600 text-sm leading-relaxed">
                 Công cụ test laptop online miễn phí, chính xác 100%.
               </p>
-            </div>
-          </section>
+            </motion.div>
+          </motion.section>
 
           {/* Products Section */}
           {loading ? (
@@ -273,16 +299,33 @@ export default function HomePage() {
 
                 return (
                   <section key={category._id} className="space-y-6">
-                    <h2 className="text-3xl font-bold text-gray-800 border-b-4 border-blue-600 pb-2 inline-block">
+                    <motion.h2
+                      className="text-3xl font-bold text-gray-800 border-b-4 border-blue-600 pb-2 inline-block"
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5 }}
+                      viewport={{ once: true }}
+                    >
                       {category.name}
-                    </h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
+                    </motion.h2>
+                    <motion.div
+                      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6"
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, amount: 0.1 }}
+                      variants={stagger}
+                    >
                       {laptops.slice(0, 8).map((laptop) => (
-                        <a key={laptop._id} href={`/laptops/${laptop._id}`}>
+                        <motion.a
+                          key={laptop._id}
+                          href={`/laptops/${laptop._id}`}
+                          variants={fadeInUp}
+                          whileHover={{ y: -5 }}
+                        >
                           <ProductCard product={laptop} />
-                        </a>
+                        </motion.a>
                       ))}
-                    </div>
+                    </motion.div>
                   </section>
                 );
               })}

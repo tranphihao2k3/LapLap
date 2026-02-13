@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Blog } from "@/models/Blog";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = "https://laplapcantho.vercel.app";
+    const baseUrl = "https://laplapcantho.store";
 
     // Fetch all published blogs
     let blogEntries: MetadataRoute.Sitemap = [];

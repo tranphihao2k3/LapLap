@@ -70,7 +70,7 @@ export default function BlogDetailPage() {
                     "@type": "BlogPosting",
                     "headline": data.data.title,
                     "description": data.data.excerpt,
-                    "image": data.data.featuredImage || "https://laplap.vercel.app/favicon.ico",
+                    "image": data.data.featuredImage || "https://laplapcantho.store/favicon.ico",
                     "author": {
                         "@type": "Person",
                         "name": data.data.author
@@ -80,14 +80,14 @@ export default function BlogDetailPage() {
                         "name": "LapLap - Laptop Cần Thơ",
                         "logo": {
                             "@type": "ImageObject",
-                            "url": "https://laplap.vercel.app/favicon.ico"
+                            "url": "https://laplapcantho.store/favicon.ico"
                         }
                     },
                     "datePublished": data.data.publishedAt || data.data.createdAt,
                     "dateModified": data.data.updatedAt,
                     "mainEntityOfPage": {
                         "@type": "WebPage",
-                        "@id": `https://laplap.vercel.app/blog/${data.data.slug}`
+                        "@id": `https://laplapcantho.store/blog/${data.data.slug}`
                     }
                 });
                 document.head.appendChild(script);
