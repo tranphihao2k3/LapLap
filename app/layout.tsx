@@ -2,6 +2,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FacebookMessenger from "@/components/FacebookMessenger";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -43,6 +44,7 @@ export default function RootLayout({
       <body className={`${beVietnamPro.className} min-h-screen flex flex-col`}>
         {children}
         <FacebookMessenger />
+        <SpeedInsights />
       </body>
     </html>
   );
