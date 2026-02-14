@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { Plus, Edit2, Trash2, X, Image as ImageIcon, MinusCircle, PlusCircle, Search, Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Image as ImageIcon, MinusCircle, PlusCircle, Search, Filter, ChevronDown, ChevronUp, Sparkles, Loader2 } from 'lucide-react';
 import SearchableSelect from './SearchableSelect';
 import PriceInput from './PriceInput';
+import ImageUploader from '@/components/admin/ImageUploader';
+import QuickFillTextarea from '@/components/admin/QuickFillTextarea';
 import { COMMON_CPUS, COMMON_GPUS, COMMON_RAM_SIZES, COMMON_SSD_SIZES, COMMON_SCREENS, COMMON_BATTERIES } from './commonSpecs';
+import { div } from 'framer-motion/client';
 
 interface Category {
     _id: string;
@@ -69,6 +72,11 @@ export default function LaptopsPage() {
         gpu: false,
         screen: false,
     });
+
+    // AI Search states
+    const [aiSearchMode, setAiSearchMode] = useState(false);
+    const [aiSearchLoading, setAiSearchLoading] = useState(false);
+    const [aiSearchCriteria, setAiSearchCriteria] = useState<any>(null);
     const [formData, setFormData] = useState({
         name: '',
         model: '',
@@ -377,6 +385,64 @@ export default function LaptopsPage() {
         }).format(price);
     };
 
+    const handleAIParse = (parsedData: any) => {
+        // Update form data with parsed information
+        setFormData(prev => ({
+            ...prev,
+            name: parsedData.name || prev.name,
+            model: parsedData.model || prev.model,
+            brandId: parsedData.brand ? brands.find(b => b.name.toLowerCase() === parsedData.brand.toLowerCase())?._id || prev.brandId : prev.brandId,
+            price: parsedData.price || prev.price,
+            warrantyMonths: parsedData.warrantyMonths || prev.warrantyMonths,
+            gift: parsedData.gift || prev.gift,
+            specs: {
+                cpu: parsedData.cpu || prev.specs.cpu,
+                gpu: parsedData.gpu || prev.specs.gpu,
+                ram: parsedData.ram || prev.specs.ram,
+                ssd: parsedData.ssd || prev.specs.ssd,
+                screen: parsedData.screen || prev.specs.screen,
+                battery: parsedData.battery || prev.specs.battery,
+            }
+        }));
+    };
+
+    const handleAISearch = async () => {
+        if (!searchQuery.trim()) return;
+
+        setAiSearchLoading(true);
+        setAiSearchCriteria(null);
+
+        try {
+            const response = await fetch('/api/search-laptops-ai', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: searchQuery }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                setAiSearchCriteria(result.data.criteria);
+                setLaptops(result.data.laptops);
+            } else {
+                alert(result.message || 'Không thể tìm kiếm');
+            }
+        } catch (error) {
+            console.error('AI Search Error:', error);
+            alert('Có lỗi xảy ra khi tìm kiếm');
+        } finally {
+            setAiSearchLoading(false);
+        }
+    };
+
+    const handleSearchKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            if (aiSearchMode) {
+                handleAISearch();
+            }
+        }
+    };
+
     return (
         <div>
             {/* Header with Search and Add Button */}
@@ -394,40 +460,121 @@ export default function LaptopsPage() {
                 </button>
             </div>
 
-            {/* Search Bar */}
+            {/* Search Bar with AI Toggle */}
             <div className="flex gap-4 mb-4">
                 <div className="flex-1 relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                        type="text"
-                        placeholder="Tìm kiếm theo tên, model, CPU, GPU, RAM, SSD..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                    />
+                    <div className={`relative flex items-center ${aiSearchMode ? 'ring-2 ring-purple-500 rounded-lg' : ''}`}>
+                        {aiSearchMode ? (
+                            <Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-600" />
+                        ) : (
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        )}
+                        <input
+                            type="text"
+                            placeholder={aiSearchMode
+                                ? "Ví dụ: tìm máy gaming 15tr asus màn hình FHD vga RTX..."
+                                : "Tìm kiếm theo tên, model, CPU, GPU, RAM, SSD..."}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyPress={handleSearchKeyPress}
+                            className={`w-full pl-11 pr-32 py-3 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition-all ${aiSearchMode
+                                ? 'border-purple-300 bg-purple-50 focus:ring-purple-500 placeholder-purple-400'
+                                : 'border-gray-300 focus:ring-blue-500'
+                                }`}
+                        />
+                        {aiSearchMode && aiSearchLoading && (
+                            <Loader2 className="absolute right-24 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-600 animate-spin" />
+                        )}
+                        <button
+                            onClick={() => {
+                                setAiSearchMode(!aiSearchMode);
+                                setAiSearchCriteria(null);
+                                if (aiSearchMode) {
+                                    // Reset to normal search when turning off AI mode
+                                    fetchData();
+                                }
+                            }}
+                            className={`absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2 px-4 py-1.5 rounded-md transition-all ${aiSearchMode
+                                ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                }`}
+                            title={aiSearchMode ? "Tắt AI Search" : "Bật AI Search"}
+                        >
+                            <Sparkles className="w-4 h-4" />
+                            <span className="text-sm font-medium">AI</span>
+                        </button>
+                    </div>
+                    {aiSearchMode && aiSearchCriteria && (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                            <span className="text-xs text-purple-600 font-medium">Tiêu chí tìm kiếm:</span>
+                            {aiSearchCriteria.brand && (
+                                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">
+                                    Brand: {aiSearchCriteria.brand}
+                                </span>
+                            )}
+                            {aiSearchCriteria.priceMax && (
+                                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">
+                                    Giá ≤ {(aiSearchCriteria.priceMax / 1000000).toFixed(1)}tr
+                                </span>
+                            )}
+                            {aiSearchCriteria.cpu && (
+                                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">
+                                    CPU: {aiSearchCriteria.cpu}
+                                </span>
+                            )}
+                            {aiSearchCriteria.gpu && (
+                                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">
+                                    GPU: {aiSearchCriteria.gpu}
+                                </span>
+                            )}
+                        </div>
+                    )}
                 </div>
-                <button
-                    onClick={() => setShowFilters(!showFilters)}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${showFilters
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
-                >
-                    <Filter className="w-5 h-5" />
-                    Filters
-                </button>
-                {(selectedBrands.length > 0 || selectedCPUs.length > 0 || selectedRAMs.length > 0 || selectedSSDs.length > 0 || selectedGPUs.length > 0 || selectedScreens.length > 0) && (
+                {aiSearchMode && (
                     <button
-                        onClick={clearAllFilters}
-                        className="px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
+                        onClick={handleAISearch}
+                        disabled={aiSearchLoading || !searchQuery.trim()}
+                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Xóa bộ lọc
+                        {aiSearchLoading ? (
+                            <>
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                                Đang tìm...
+                            </>
+                        ) : (
+                            <>
+                                <Sparkles className="w-5 h-5" />
+                                Tìm kiếm
+                            </>
+                        )}
                     </button>
+                )}
+                {!aiSearchMode && (
+                    <>
+                        <button
+                            onClick={() => setShowFilters(!showFilters)}
+                            className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${showFilters
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                                }`}
+                        >
+                            <Filter className="w-5 h-5" />
+                            Filters
+                        </button>
+                        {(selectedBrands.length > 0 || selectedCPUs.length > 0 || selectedRAMs.length > 0 || selectedSSDs.length > 0 || selectedGPUs.length > 0 || selectedScreens.length > 0) && (
+                            <button
+                                onClick={clearAllFilters}
+                                className="px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
+                            >
+                                Xóa bộ lọc
+                            </button>
+                        )}
+                    </>
                 )}
             </div>
 
             {/* Horizontal Filters */}
-            {showFilters && (
+            {showFilters && !aiSearchMode && (
                 <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
                     <h3 className="text-sm font-semibold text-gray-700 mb-3">Danh mục phân loại</h3>
                     <div className="flex flex-wrap gap-3">
@@ -776,6 +923,11 @@ export default function LaptopsPage() {
                         </div>
 
                         <form id="laptop-form" onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto flex-1">
+                            {/* AI Quick Fill */}
+                            {!editingLaptop && (
+                                <QuickFillTextarea onParsed={handleAIParse} />
+                            )}
+
                             {/* Basic Info */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
@@ -837,41 +989,15 @@ export default function LaptopsPage() {
                                 />
                             </div>
 
-                            {/* Images Input */}
+                            {/* Images Upload */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Images (URLs)</label>
-                                <div className="space-y-3">
-                                    {formData.images.map((img, index) => (
-                                        <div key={index} className="flex gap-2">
-                                            <input
-                                                type="text"
-                                                value={img}
-                                                onChange={(e) => handleImageChange(index, e.target.value)}
-                                                placeholder="https://example.com/image.jpg"
-                                                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                            />
-                                            {index > 0 && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeImageField(index)}
-                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                >
-                                                    <MinusCircle className="w-5 h-5" />
-                                                </button>
-                                            )}
-                                            {index === formData.images.length - 1 && (
-                                                <button
-                                                    type="button"
-                                                    onClick={addImageField}
-                                                    className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                                                >
-                                                    <PlusCircle className="w-5 h-5" />
-                                                </button>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                                <p className="text-xs text-gray-500 mt-2">Add multiple image URLs. The first image will be the main thumbnail.</p>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Hình ảnh sản phẩm</label>
+                                <ImageUploader
+                                    value={formData.images.filter(img => img.trim() !== '')}
+                                    onChange={(urls) => setFormData({ ...formData, images: urls.length > 0 ? urls : [''] })}
+                                    maxImages={5}
+                                />
+                                <p className="text-xs text-gray-500 mt-2">Kéo thả hoặc click để upload ảnh. Ảnh đầu tiên sẽ là ảnh chính.</p>
                             </div>
 
                             {/* Specs */}
@@ -1004,5 +1130,6 @@ export default function LaptopsPage() {
                 </div>
             )}
         </div>
+       
     );
 }
