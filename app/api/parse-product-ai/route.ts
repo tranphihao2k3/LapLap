@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
+import { Category } from "@/models/Category";
+import { Brand } from "@/models/Brand";
+import { connectDB } from "@/lib/mongodb";
 
 export async function POST(request: Request) {
     try {
@@ -21,53 +24,65 @@ export async function POST(request: Request) {
             );
         }
 
+        // Fetch categories and brands to guide the AI
+        await connectDB();
+        const [categories, brands] = await Promise.all([
+            Category.find({}, 'name _id'),
+            Brand.find({}, 'name _id')
+        ]);
+
+        const categoryNames = categories.map(c => c.name).join(', ');
+        const brandNames = brands.map(b => b.name).join(', ');
+
         const client = new GoogleGenAI({ apiKey });
 
         // Craft prompt for parsing Vietnamese laptop descriptions
-        const prompt = `
-Bạn là một AI chuyên phân tích mô tả sản phẩm laptop tiếng Việt.
-Nhiệm vụ: Trích xuất thông tin từ đoạn mô tả dưới đây và trả về JSON.
+        // Craft prompt for parsing Vietnamese laptop descriptions - OPTIMIZED FOR SPEED
+        // Import spec lists dynamically or hardcode top common ones for context
+        // To keep it simple and fast, we'll embed the key standard lists directly in the prompt
+        // or imported from commonSpecs if we could, but this is a server route.
+        // Let's redefine short versions here to save token space but guide the AI.
 
-MÔ TẢ SẢN PHẨM:
+        const standardRAMs = ['8GB', '16GB', '32GB', '64GB'];
+        const standardSSDs = ['256GB', '512GB', '1TB', '2TB'];
+        const standardScreens = ['14" FHD', '15.6" FHD 144Hz', '16" FHD+ 165Hz', '14" 2.8K OLED'];
+        const standardBatteries = ['2-3h', '3-4h', '4-5h', '5-6h']; // Examples
+
+        const prompt = `
+EXTRACT JSON FROM TEXT.
+INPUT TEXT:
 ${text}
 
-YÊU CẦU:
-1. Trích xuất chính xác các thông tin sau (nếu có):
-   - name: Tên đầy đủ của laptop (ví dụ: "Asus TUF FA507NUR")
-   - model: Mã model (ví dụ: "FA507NUR")
-   - brand: Hãng laptop (ví dụ: "Asus", "Dell", "HP", "Lenovo", "MSI", "Acer")
-   - cpu: CPU (ví dụ: "R7-7435Hs", "I5-12450H")
-   - gpu: Card đồ họa/VGA (ví dụ: "RTX 4050 6G", "RTX 3050")
-   - ram: Dung lượng RAM (ví dụ: "16G", "8G")
-   - ssd: Dung lượng SSD (ví dụ: "512G", "1T")
-   - screen: Thông tin màn hình (ví dụ: "15.6FHD 144Hz", "14 FHD")
-   - battery: Pin (ví dụ: "2-3h", "4-5h")
-   - price: Giá tiền (chuyển về số VND, ví dụ: "17.500K" → 17500000)
-   - warrantyMonths: Thời gian bảo hành (số tháng, ví dụ: "3 tháng" → 3)
-   - gift: Quà tặng kèm theo (ví dụ: "Balo, túi chống sốc, chuột")
+CONTEXT:
+Categories: [${categoryNames}]
+Brands: [${brandNames}]
+Standard RAM: [${standardRAMs.join(', ')}]
+Standard SSD: [${standardSSDs.join(', ')}]
+Standard Battery: [${standardBatteries.join(', ')}]
 
-2. Quy tắc chuyển đổi giá:
-   - "17.500K" hoặc "17.5tr" → 17500000
-   - "20tr" → 20000000
-   - "15.9 củ" → 15900000
-
-3. Trả về ĐÚNG format JSON sau (không thêm markdown, không thêm giải thích):
+OUTPUT SCHEMA (JSON ONLY, NO MARKDOWN, NO THINKING):
 {
-  "name": "string hoặc null",
-  "model": "string hoặc null",
-  "brand": "string hoặc null",
-  "cpu": "string hoặc null",
-  "gpu": "string hoặc null",
-  "ram": "string hoặc null",
-  "ssd": "string hoặc null",
-  "screen": "string hoặc null",
-  "battery": "string hoặc null",
-  "price": number hoặc null,
-  "warrantyMonths": number hoặc null,
-  "gift": "string hoặc null"
+  "name": "Full product name",
+  "model": "Model code",
+  "brand": "Exact match from Brands list or null",
+  "categoryName": "Best match from Categories list or null",
+  "cpu": "CPU spec only (NO core count/thread count)",
+  "gpu": "GPU spec (e.g. RTX 3050 6GB)",
+  "ram": "Standardized RAM (e.g. 16GB) or raw text",
+  "ssd": "Standardized SSD (e.g. 512GB) or raw text",
+  "screen": "Screen spec (e.g. 15.6\\" FHD 144Hz)",
+  "battery": "Battery usage (e.g. 3-4h)",
+  "price": Number (VND),
+  "warrantyMonths": Number (months),
+  "gift": "Gifts string"
 }
 
-CHÚ Ý: Chỉ trả về JSON object, KHÔNG thêm bất kỳ text nào khác.
+RULES:
+1. Price: "17.5tr" -> 17500000.
+2. Specs: Prefer "Standard" values if close match (e.g. "16G" -> "16GB").
+3. If spec not in standard list, return RAW text.
+4. CPU: REMOVE core/threads info (e.g. "R7-7435Hs(16Cpus)" -> "R7-7435Hs").
+5. Return ONLY the JSON object.
 `;
 
         // Use Interactions API (correct syntax from official docs)
@@ -96,7 +111,25 @@ CHÚ Ý: Chỉ trả về JSON object, KHÔNG thêm bất kỳ text nào khác.
         }
 
         // Parse JSON from response
-        let parsedData;
+        interface AIParsedData {
+            name?: string | null;
+            model?: string | null;
+            brand?: string | null;
+            brandId?: string;
+            categoryName?: string | null;
+            categoryId?: string;
+            cpu?: string | null;
+            gpu?: string | null;
+            ram?: string | null;
+            ssd?: string | null;
+            screen?: string | null;
+            battery?: string | null;
+            price?: number | null;
+            warrantyMonths?: number | null;
+            gift?: string | null;
+        }
+
+        let parsedData: AIParsedData;
         try {
             // Remove markdown code blocks if present
             const cleanedText = responseText
@@ -105,6 +138,29 @@ CHÚ Ý: Chỉ trả về JSON object, KHÔNG thêm bất kỳ text nào khác.
                 .trim();
 
             parsedData = JSON.parse(cleanedText);
+
+            // Map Category Name to ID
+            if (parsedData.categoryName) {
+                const matchedCategory = categories.find(c =>
+                    c.name.toLowerCase() === (parsedData.categoryName?.toLowerCase() || '') ||
+                    c.name.toLowerCase().includes(parsedData.categoryName?.toLowerCase() || '')
+                );
+                if (matchedCategory) {
+                    parsedData.categoryId = matchedCategory._id.toString();
+                }
+            }
+
+            // Map Brand Name to ID
+            if (parsedData.brand) {
+                const matchedBrand = brands.find(b =>
+                    b.name.toLowerCase() === (parsedData.brand?.toLowerCase() || '') ||
+                    b.name.toLowerCase().includes(parsedData.brand?.toLowerCase() || '')
+                );
+                if (matchedBrand) {
+                    parsedData.brandId = matchedBrand._id.toString();
+                }
+            }
+
         } catch (parseError) {
             console.error('JSON Parse Error:', parseError);
             console.error('Response Text:', responseText);

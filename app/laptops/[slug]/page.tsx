@@ -15,12 +15,15 @@ export default function ProductDetailPage() {
     const [imageLoading, setImageLoading] = useState(false);
 
     useEffect(() => {
-        fetchProduct();
-    }, [params.id]);
+        if (params.slug) {
+            fetchProduct();
+        }
+    }, [params.slug]);
 
     const fetchProduct = async () => {
         try {
-            const res = await fetch(`/api/admin/laptops/${params.id}`);
+            // Fetch by slug
+            const res = await fetch(`/api/products/${params.slug}`);
             const data = await res.json();
 
             if (data.success) {

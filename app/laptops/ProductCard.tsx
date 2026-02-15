@@ -1,13 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 import { Cpu, HardDrive, MemoryStick, Monitor, Battery, CreditCard } from "lucide-react";
 
 interface ProductCardProps {
     product: {
+        _id: string;
         name: string;
         image: string;
         images?: string[];
+        slug?: string;
         price: number;
         specs: {
             cpu: string;
@@ -16,6 +19,10 @@ interface ProductCardProps {
             ssd: string;
             screen: string;
             battery: string;
+        };
+        gift?: string;
+        categoryId?: {
+            name: string;
         };
     };
 }
@@ -39,9 +46,11 @@ export default function ProductCard({ product }: ProductCardProps) {
             <div className="p-3 md:p-5 flex flex-col gap-3 md:gap-4 flex-1">
 
                 {/* NAME - Larger and bolder */}
-                <h3 className="font-bold text-sm md:text-lg text-[var(--color-text-brand)] text-center line-clamp-2 min-h-[40px] md:min-h-[56px]">
-                    {product.name}
-                </h3>
+                <Link href={`/laptops/${product.slug || product._id}`} className="group/title">
+                    <h3 className="font-bold text-sm md:text-lg text-[var(--color-text-brand)] text-center line-clamp-2 min-h-[40px] md:min-h-[56px] group-hover/title:text-blue-600 transition-colors">
+                        {product.name}
+                    </h3>
+                </Link>
 
                 {/* SPECS - Grid 2 columns like the image */}
                 {/* SPECS - Tags on mobile, Grid on desktop */}
@@ -74,11 +83,12 @@ export default function ProductCard({ product }: ProductCardProps) {
                         {product.price.toLocaleString('vi-VN')}
                     </div>
 
-                    <button
-                        className="w-full bg-gradient-to-r from-[#1e73be] to-[#155a9c] hover:from-[#155a9c] hover:to-[#0d4373] text-white text-xs md:text-sm font-semibold py-2 md:py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                    <Link
+                        href={`/laptops/${product.slug || product._id}`}
+                        className="w-full bg-gradient-to-r from-[#1e73be] to-[#155a9c] hover:from-[#155a9c] hover:to-[#0d4373] text-white text-xs md:text-sm font-semibold py-2 md:py-3 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg text-center block"
                     >
                         Xem chi tiết
-                    </button>
+                    </Link>
                 </div>
 
             </div>

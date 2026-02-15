@@ -12,6 +12,11 @@ const ProductSchema = new Schema(
             type: String,
             required: true,
         },
+        slug: {
+            type: String,
+            unique: true,
+            sparse: true,
+        },
         categoryId: {
             type: Schema.Types.ObjectId,
             ref: "Category",

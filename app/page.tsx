@@ -33,6 +33,7 @@ interface Brand {
 interface Product {
   _id: string;
   name: string;
+  slug?: string;
   model: string;
   price: number;
   image: string;
@@ -316,14 +317,13 @@ export default function HomePage() {
                       variants={stagger}
                     >
                       {laptops.slice(0, 8).map((laptop) => (
-                        <motion.a
+                        <motion.div
                           key={laptop._id}
-                          href={`/laptops/${laptop._id}`}
                           variants={fadeInUp}
                           whileHover={{ y: -5 }}
                         >
                           <ProductCard product={laptop} />
-                        </motion.a>
+                        </motion.div>
                       ))}
                     </motion.div>
                   </section>

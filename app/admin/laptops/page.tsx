@@ -22,6 +22,7 @@ interface Brand {
 interface Laptop {
     _id: string;
     name: string;
+    slug?: string;
     model: string;
     categoryId: Category;
     brandId: Brand;
@@ -72,6 +73,9 @@ export default function LaptopsPage() {
         gpu: false,
         screen: false,
     });
+
+    // Bulk Selection State
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
     // AI Search states
     const [aiSearchMode, setAiSearchMode] = useState(false);
@@ -140,19 +144,56 @@ export default function LaptopsPage() {
 
     const fetchData = async () => {
         try {
-            const [laptopsRes, categoriesRes, brandsRes] = await Promise.all([
-                fetch('/api/admin/laptops'),
-                fetch('/api/admin/categories'),
-                fetch('/api/admin/brands'),
+            setLoading(true);
+
+            // Fetch data independently so one failure doesn't block others
+            const fetchLaptops = fetch('/api/admin/laptops')
+                .then(res => res.json())
+                .catch(err => {
+                    console.error('Failed to fetch laptops:', err);
+                    return { success: false, error: err.message };
+                });
+
+            const fetchCategories = fetch('/api/admin/categories')
+                .then(res => res.json())
+                .catch(err => {
+                    console.error('Failed to fetch categories:', err);
+                    return { success: false, error: err.message };
+                });
+
+            const fetchBrands = fetch('/api/admin/brands')
+                .then(res => res.json())
+                .catch(err => {
+                    console.error('Failed to fetch brands:', err);
+                    return { success: false, error: err.message };
+                });
+
+            const [laptopsData, categoriesData, brandsData] = await Promise.all([
+                fetchLaptops,
+                fetchCategories,
+                fetchBrands
             ]);
 
-            const laptopsData = await laptopsRes.json();
-            const categoriesData = await categoriesRes.json();
-            const brandsData = await brandsRes.json();
+            if (laptopsData?.success) {
+                setLaptops(laptopsData.data);
+            } else {
+                console.error('Laptops API Error:', laptopsData?.error);
+            }
 
-            if (laptopsData.success) setLaptops(laptopsData.data);
-            if (categoriesData.success) setCategories(categoriesData.data);
-            if (brandsData.success) setBrands(brandsData.data);
+            if (categoriesData?.success) {
+                console.log('Categories loaded:', categoriesData.data.length);
+                setCategories(categoriesData.data);
+            } else {
+                console.error('Categories API Error:', categoriesData?.error);
+            }
+
+            if (brandsData?.success) {
+                console.log('Brands loaded:', brandsData.data.length);
+                setBrands(brandsData.data);
+            } else {
+                console.error('Brands API Error:', brandsData?.error);
+            }
+
         } catch (error) {
             console.error('Error fetching data:', error);
         } finally {
@@ -289,6 +330,49 @@ export default function LaptopsPage() {
         }
     };
 
+    // Bulk Delete Handlers
+    const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.checked) {
+            setSelectedIds(filteredLaptops.map(l => l._id));
+        } else {
+            setSelectedIds([]);
+        }
+    };
+
+    const handleSelectOne = (id: string) => {
+        if (selectedIds.includes(id)) {
+            setSelectedIds(selectedIds.filter(itemId => itemId !== id));
+        } else {
+            setSelectedIds([...selectedIds, id]);
+        }
+    };
+
+    const handleBulkDelete = async () => {
+        if (selectedIds.length === 0) return;
+        if (!confirm(`Bạn có chắc muốn xoá ${selectedIds.length} sản phẩm đã chọn?`)) return;
+
+        try {
+            const res = await fetch('/api/admin/laptops', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids: selectedIds }),
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                alert(`Đã xoá thành công ${data.deletedCount} sản phẩm`);
+                setSelectedIds([]);
+                fetchData();
+            } else {
+                alert('Lỗi: ' + data.error);
+            }
+        } catch (error) {
+            console.error('Error deleting laptops:', error);
+            alert('Lỗi khi xoá sản phẩm');
+        }
+    };
+
     const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this laptop?')) return;
 
@@ -391,7 +475,8 @@ export default function LaptopsPage() {
             ...prev,
             name: parsedData.name || prev.name,
             model: parsedData.model || prev.model,
-            brandId: parsedData.brand ? brands.find(b => b.name.toLowerCase() === parsedData.brand.toLowerCase())?._id || prev.brandId : prev.brandId,
+            brandId: parsedData.brandId || (parsedData.brand ? brands.find(b => b.name.toLowerCase() === parsedData.brand.toLowerCase())?._id || prev.brandId : prev.brandId),
+            categoryId: parsedData.categoryId || prev.categoryId,
             price: parsedData.price || prev.price,
             warrantyMonths: parsedData.warrantyMonths || prev.warrantyMonths,
             gift: parsedData.gift || prev.gift,
@@ -451,13 +536,24 @@ export default function LaptopsPage() {
                     <h1 className="text-3xl font-bold text-gray-800">Laptops</h1>
                     <p className="text-gray-600 mt-2">Manage laptop products - {filteredLaptops.length} of {laptops.length} products</p>
                 </div>
-                <button
-                    onClick={() => setShowModal(true)}
-                    className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-lg hover:shadow-xl"
-                >
-                    <Plus className="w-5 h-5" />
-                    Add Laptop
-                </button>
+                <div className="flex gap-2">
+                    {selectedIds.length > 0 && (
+                        <button
+                            onClick={handleBulkDelete}
+                            className="flex items-center gap-2 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+                        >
+                            <Trash2 className="w-5 h-5" />
+                            Xoá đã chọn ({selectedIds.length})
+                        </button>
+                    )}
+                    <button
+                        onClick={() => setShowModal(true)}
+                        className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-lg hover:shadow-xl"
+                    >
+                        <Plus className="w-5 h-5" />
+                        Add Laptop
+                    </button>
+                </div>
             </div>
 
             {/* Search Bar with AI Toggle */}
@@ -835,8 +931,17 @@ export default function LaptopsPage() {
                             <table className="w-full">
                                 <thead className="bg-gray-50 border-b border-gray-200">
                                     <tr>
+                                        <th className="px-6 py-4 text-left">
+                                            <input
+                                                type="checkbox"
+                                                checked={filteredLaptops.length > 0 && selectedIds.length === filteredLaptops.length}
+                                                onChange={handleSelectAll}
+                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            />
+                                        </th>
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Image</th>
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Name</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Slug</th>
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Model</th>
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Category</th>
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Brand</th>
@@ -848,6 +953,14 @@ export default function LaptopsPage() {
                                 <tbody className="divide-y divide-gray-200">
                                     {filteredLaptops.map((laptop) => (
                                         <tr key={laptop._id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-6 py-4">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedIds.includes(laptop._id)}
+                                                    onChange={() => handleSelectOne(laptop._id)}
+                                                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                />
+                                            </td>
                                             <td className="px-6 py-4">
                                                 {laptop.image || (laptop.images && laptop.images.length > 0 && laptop.images[0]) ? (
                                                     <img
@@ -862,6 +975,7 @@ export default function LaptopsPage() {
                                                 )}
                                             </td>
                                             <td className="px-6 py-4 font-medium text-gray-800">{laptop.name}</td>
+                                            <td className="px-6 py-4 text-gray-500 text-sm max-w-[150px] truncate" title={laptop.slug || 'No slug'}>{laptop.slug || '-'}</td>
                                             <td className="px-6 py-4 text-gray-600 font-mono text-sm">{laptop.model}</td>
                                             <td className="px-6 py-4 text-gray-600">{laptop.categoryId?.name || '-'}</td>
                                             <td className="px-6 py-4 text-gray-600">{laptop.brandId?.name || '-'}</td>
@@ -894,7 +1008,7 @@ export default function LaptopsPage() {
                                     ))}
                                     {laptops.length === 0 && (
                                         <tr>
-                                            <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
+                                            <td colSpan={9} className="px-6 py-12 text-center text-gray-500">
                                                 No laptops found. Click "Add Laptop" to create one.
                                             </td>
                                         </tr>
@@ -1130,6 +1244,6 @@ export default function LaptopsPage() {
                 </div>
             )}
         </div>
-       
+
     );
 }

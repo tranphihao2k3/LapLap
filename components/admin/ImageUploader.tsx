@@ -1,67 +1,128 @@
 'use client';
 
-import { useState } from 'react';
-import { X, Upload, Image as ImageIcon } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { X, Upload, Image as ImageIcon, Loader2 } from 'lucide-react';
 
 interface ImageUploaderProps {
     value?: string[];
     onChange: (urls: string[]) => void;
     maxImages?: number;
+    files?: File[];
+    onFilesChange?: (files: File[]) => void;
+}
+
+interface PendingImage {
+    id: string;
+    file: File;
+    preview: string;
+    progress: number;
+    status: 'uploading' | 'error' | 'success';
 }
 
 export default function ImageUploader({
     value = [],
     onChange,
-    maxImages = 5
+    maxImages = 5,
+    files = [],
+    onFilesChange
 }: ImageUploaderProps) {
-    const [uploading, setUploading] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(0);
+    const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
     const [dragActive, setDragActive] = useState(false);
 
-    const handleFileUpload = async (files: FileList | null) => {
-        if (!files || files.length === 0) return;
+    // Keep track of latest value for race-condition mitigation
+    const latestValueRef = useRef(value);
+    const latestFilesRef = useRef(files);
 
-        const remainingSlots = maxImages - value.length;
+    useEffect(() => {
+        latestValueRef.current = value;
+    }, [value]);
+
+    useEffect(() => {
+        latestFilesRef.current = files;
+    }, [files]);
+
+    const handleFileUpload = async (selectedFiles: FileList | null) => {
+        if (!selectedFiles || selectedFiles.length === 0) return;
+
+        const currentCount = onFilesChange ? files.length : value.length;
+        const pendingCount = pendingImages.length;
+        const totalCount = currentCount + pendingCount;
+        const remainingSlots = maxImages - totalCount;
+
         if (remainingSlots <= 0) {
             alert(`Chỉ được upload tối đa ${maxImages} ảnh`);
             return;
         }
 
-        const filesToUpload = Array.from(files).slice(0, remainingSlots);
-        setUploading(true);
-        setUploadProgress(0);
+        const filesToUpload = Array.from(selectedFiles).slice(0, remainingSlots);
 
+        // MANUAL MODE: Use onFilesChange if provided
+        if (onFilesChange) {
+            onFilesChange([...files, ...filesToUpload]);
+            return;
+        }
+
+        // LEGACY MODE: Parallel upload
+        // Create pending items
+        const newPendingItems: PendingImage[] = filesToUpload.map(file => ({
+            id: Math.random().toString(36).substr(2, 9),
+            file,
+            preview: URL.createObjectURL(file), // create local preview immediately
+            progress: 0,
+            status: 'uploading'
+        }));
+
+        setPendingImages(prev => [...prev, ...newPendingItems]);
+
+        // Process uploads in parallel
         try {
-            const uploadedUrls: string[] = [];
-
-            for (let i = 0; i < filesToUpload.length; i++) {
-                const file = filesToUpload[i];
+            const uploadPromises = newPendingItems.map(async (item) => {
                 const formData = new FormData();
-                formData.append('file', file);
+                formData.append('file', item.file);
 
-                const response = await fetch('/api/upload', {
-                    method: 'POST',
-                    body: formData,
-                });
+                try {
+                    const response = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    const result = await response.json();
 
-                const result = await response.json();
-
-                if (result.success) {
-                    uploadedUrls.push(result.data.url);
-                } else {
-                    alert(`Lỗi upload ${file.name}: ${result.message}`);
+                    if (result.success) {
+                        setPendingImages(prev => prev.map(p =>
+                            p.id === item.id ? { ...p, status: 'success', progress: 100 } : p
+                        ));
+                        return result.data.url;
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    console.error(`Error uploading ${item.file.name}:`, error);
+                    setPendingImages(prev => prev.map(p =>
+                        p.id === item.id ? { ...p, status: 'error' } : p
+                    ));
+                    alert(`Lỗi upload ${item.file.name}`);
+                    return null;
                 }
+            });
 
-                setUploadProgress(((i + 1) / filesToUpload.length) * 100);
+            const results = await Promise.all(uploadPromises);
+            const successfulUrls = results.filter((url): url is string => url !== null);
+
+            if (successfulUrls.length > 0) {
+                // Update parent with new URLs properly merged
+                onChange([...latestValueRef.current, ...successfulUrls]);
             }
 
-            onChange([...value, ...uploadedUrls]);
+            // Cleanup successful/failed pending items after a short delay
+            // (or immediately if we just want to replace them with the real URL in value)
+            // Here we remove them immediately because onChange updates 'value' which renders the real items
+            setPendingImages(prev => prev.filter(p => !newPendingItems.find(newItem => newItem.id === p.id)));
+
+            // Revoke object URLs
+            newPendingItems.forEach(item => URL.revokeObjectURL(item.preview));
+
         } catch (error) {
-            console.error('Upload error:', error);
-            alert('Có lỗi xảy ra khi upload ảnh');
-        } finally {
-            setUploading(false);
-            setUploadProgress(0);
+            console.error('Batch upload error:', error);
         }
     };
 
@@ -86,9 +147,19 @@ export default function ImageUploader({
     };
 
     const removeImage = (index: number) => {
-        const newImages = value.filter((_, i) => i !== index);
-        onChange(newImages);
+        if (onFilesChange) {
+            const newFiles = files.filter((_, i) => i !== index);
+            onFilesChange(newFiles);
+        } else {
+            const newImages = value.filter((_, i) => i !== index);
+            onChange(newImages);
+        }
     };
+
+    // Combine current value/files with pending images for display?
+    // Actually, distinct display is better so we see what is "real" and what is "uploading"
+    // Pending images shown at the end? Or start? 
+    // Usually end makes sense for new uploads.
 
     return (
         <div className="space-y-4">
@@ -105,7 +176,6 @@ export default function ImageUploader({
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-300 hover:border-gray-400'
                     }
-                    ${uploading ? 'pointer-events-none opacity-50' : ''}
                 `}
             >
                 <input
@@ -114,75 +184,82 @@ export default function ImageUploader({
                     accept="image/jpeg,image/jpg,image/png,image/webp"
                     onChange={(e) => handleFileUpload(e.target.files)}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    disabled={uploading || value.length >= maxImages}
+                    disabled={(onFilesChange ? files.length : value.length) + pendingImages.length >= maxImages}
                 />
 
                 <div className="flex flex-col items-center gap-2">
-                    <Upload className="w-12 h-12 text-gray-400" />
+                    {pendingImages.length > 0 ? (
+                        <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
+                    ) : (
+                        <Upload className="w-12 h-12 text-gray-400" />
+                    )}
+
                     <div>
                         <p className="text-sm font-medium text-gray-700">
                             Kéo thả ảnh vào đây hoặc click để chọn
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
-                            PNG, JPG, WebP (tối đa 5MB) - {value.length}/{maxImages} ảnh
+                            PNG, JPG, WebP (tối đa 5MB) - {(onFilesChange ? files.length : value.length) + pendingImages.length}/{maxImages} ảnh
                         </p>
                     </div>
                 </div>
-
-                {/* Upload Progress */}
-                {uploading && (
-                    <div className="mt-4">
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div
-                                className="bg-blue-500 h-2 rounded-full transition-all"
-                                style={{ width: `${uploadProgress}%` }}
-                            />
-                        </div>
-                        <p className="text-sm text-gray-600 mt-2">
-                            Đang upload... {Math.round(uploadProgress)}%
-                        </p>
-                    </div>
-                )}
             </div>
 
             {/* Image Preview Grid */}
-            {value.length > 0 && (
+            {(value.length > 0 || (files && files.length > 0) || pendingImages.length > 0) && (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    {value.map((url, index) => (
-                        <div key={index} className="relative group aspect-square">
+                    {/* Render Real/Existing Images */}
+                    {(onFilesChange ? files : value).map((item, index) => {
+                        const url = typeof item === 'string' ? item : URL.createObjectURL(item);
+                        return (
+                            <div key={`existing-${index}`} className="relative group aspect-square">
+                                <img
+                                    src={url}
+                                    alt={`Product ${index + 1}`}
+                                    className="w-full h-full object-cover rounded-lg border border-gray-200"
+                                    onLoad={() => {
+                                        if (typeof item !== 'string') URL.revokeObjectURL(url);
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => removeImage(index)}
+                                    className="
+                                        absolute top-2 right-2 
+                                        bg-red-500 text-white rounded-full p-1
+                                        opacity-0 group-hover:opacity-100
+                                        transition-opacity
+                                        hover:bg-red-600
+                                    "
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                                {index === 0 && (
+                                    <div className="absolute bottom-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
+                                        Ảnh chính
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+
+                    {/* Render Pending/Uploading Images */}
+                    {pendingImages.map((item) => (
+                        <div key={item.id} className="relative aspect-square">
                             <img
-                                src={url}
-                                alt={`Product ${index + 1}`}
-                                className="w-full h-full object-cover rounded-lg border border-gray-200"
+                                src={item.preview}
+                                alt="Uploading..."
+                                className="w-full h-full object-cover rounded-lg border border-blue-200 opacity-70"
                             />
-
-                            {/* Remove Button */}
-                            <button
-                                type="button"
-                                onClick={() => removeImage(index)}
-                                className="
-                                    absolute top-2 right-2 
-                                    bg-red-500 text-white rounded-full p-1
-                                    opacity-0 group-hover:opacity-100
-                                    transition-opacity
-                                    hover:bg-red-600
-                                "
-                            >
-                                <X className="w-4 h-4" />
-                            </button>
-
-                            {/* Main Image Badge */}
-                            {index === 0 && (
-                                <div className="absolute bottom-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
-                                    Ảnh chính
-                                </div>
-                            )}
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg">
+                                <Loader2 className="w-8 h-8 text-white animate-spin" />
+                            </div>
                         </div>
                     ))}
                 </div>
             )}
 
-            {value.length === 0 && (
+            {value.length === 0 && (!files || files.length === 0) && pendingImages.length === 0 && (
                 <div className="text-center py-8 text-gray-400">
                     <ImageIcon className="w-16 h-16 mx-auto mb-2 opacity-50" />
                     <p className="text-sm">Chưa có ảnh nào</p>
