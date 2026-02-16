@@ -178,7 +178,7 @@ export default function SoftwarePage() {
                         <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent"></div>
                     </div>
                 ) : filteredList.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
                         {filteredList.map((sw, index) => (
                             <motion.div
                                 key={sw._id}
