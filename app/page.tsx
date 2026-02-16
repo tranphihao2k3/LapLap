@@ -33,6 +33,7 @@ interface Brand {
 interface Product {
   _id: string;
   name: string;
+  slug?: string;
   model: string;
   price: number;
   image: string;
@@ -133,7 +134,7 @@ export default function HomePage() {
       <main className="flex-1 container mx-auto p-4">
         <div className="space-y-12">
           {/* Hero Section - CSS Gradient Banner */}
-          <section className="relative w-full h-[500px] md:h-[600px] lg:h-[700px] rounded-2xl overflow-hidden shadow-2xl">
+          <section className="relative w-full h-[450px] md:h-[550px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl">
             {/* Animated Gradient Background */}
             <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-primary-dark)] animate-gradient">
               {/* Overlay Pattern */}
@@ -309,21 +310,20 @@ export default function HomePage() {
                       {category.name}
                     </motion.h2>
                     <motion.div
-                      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6"
+                      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-5"
                       initial="hidden"
                       whileInView="visible"
                       viewport={{ once: true, amount: 0.1 }}
                       variants={stagger}
                     >
                       {laptops.slice(0, 8).map((laptop) => (
-                        <motion.a
+                        <motion.div
                           key={laptop._id}
-                          href={`/laptops/${laptop._id}`}
                           variants={fadeInUp}
                           whileHover={{ y: -5 }}
                         >
                           <ProductCard product={laptop} />
-                        </motion.a>
+                        </motion.div>
                       ))}
                     </motion.div>
                   </section>

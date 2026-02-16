@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, Eye } from 'lucide-react';
+import Toast from '@/components/admin/Toast';
 
 export default function EditBlogPage() {
     const params = useParams();
@@ -24,6 +25,16 @@ export default function EditBlogPage() {
         metaDescription: '',
         status: 'draft',
     });
+
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info'; isVisible: boolean }>({
+        message: '',
+        type: 'info',
+        isVisible: false
+    });
+
+    const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+        setToast({ message, type, isVisible: true });
+    };
 
     useEffect(() => {
         if (id) {
@@ -53,7 +64,7 @@ export default function EditBlogPage() {
             }
         } catch (error) {
             console.error('Error fetching blog:', error);
-            alert('Có lỗi khi tải bài viết');
+            showToast('Có lỗi khi tải bài viết', 'error');
         } finally {
             setLoading(false);
         }
@@ -63,7 +74,7 @@ export default function EditBlogPage() {
         e.preventDefault();
 
         if (!formData.title || !formData.content) {
-            alert('Vui lòng nhập tiêu đề và nội dung');
+            showToast('Vui lòng nhập tiêu đề và nội dung', 'error');
             return;
         }
 
@@ -90,14 +101,16 @@ export default function EditBlogPage() {
             const data = await res.json();
 
             if (data.success) {
-                alert('Đã cập nhật bài viết!');
-                router.push('/admin/blog');
+                showToast('Đã cập nhật bài viết!', 'success');
+                setTimeout(() => {
+                    router.push('/admin/blog');
+                }, 1000);
             } else {
-                alert('Lỗi: ' + data.error);
+                showToast('Lỗi: ' + data.error, 'error');
             }
         } catch (error) {
             console.error('Error updating blog:', error);
-            alert('Có lỗi xảy ra khi cập nhật bài viết');
+            showToast('Có lỗi xảy ra khi cập nhật bài viết', 'error');
         } finally {
             setSaving(false);
         }
@@ -116,6 +129,12 @@ export default function EditBlogPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                isVisible={toast.isVisible}
+                onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+            />
             <div className="container mx-auto p-6 max-w-4xl">
                 {/* Header */}
                 <div className="mb-6">

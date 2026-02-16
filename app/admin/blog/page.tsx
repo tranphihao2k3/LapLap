@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Plus, Edit, Trash2, Eye, FileText } from 'lucide-react';
+import Toast from '@/components/admin/Toast';
 
 interface Blog {
     _id: string;
@@ -22,6 +23,16 @@ export default function AdminBlogPage() {
     const [blogs, setBlogs] = useState<Blog[]>([]);
     const [loading, setLoading] = useState(true);
     const [filterStatus, setFilterStatus] = useState<string>('');
+
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info'; isVisible: boolean }>({
+        message: '',
+        type: 'info',
+        isVisible: false
+    });
+
+    const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+        setToast({ message, type, isVisible: true });
+    };
 
     useEffect(() => {
         fetchBlogs();
@@ -56,14 +67,14 @@ export default function AdminBlogPage() {
             const data = await res.json();
 
             if (data.success) {
-                alert('Đã xóa bài viết thành công!');
+                showToast('Đã xóa bài viết thành công!', 'success');
                 fetchBlogs();
             } else {
-                alert('Lỗi: ' + data.error);
+                showToast('Lỗi: ' + data.error, 'error');
             }
         } catch (error) {
             console.error('Error deleting blog:', error);
-            alert('Có lỗi xảy ra khi xóa bài viết');
+            showToast('Có lỗi xảy ra khi xóa bài viết', 'error');
         }
     };
 
@@ -77,6 +88,12 @@ export default function AdminBlogPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                isVisible={toast.isVisible}
+                onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+            />
             <div className="container mx-auto p-6">
                 {/* Header */}
                 <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -99,8 +116,8 @@ export default function AdminBlogPage() {
                         <button
                             onClick={() => setFilterStatus('')}
                             className={`px-4 py-2 rounded-lg transition-colors ${filterStatus === ''
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                 }`}
                         >
                             Tất cả ({blogs.length})
@@ -108,8 +125,8 @@ export default function AdminBlogPage() {
                         <button
                             onClick={() => setFilterStatus('published')}
                             className={`px-4 py-2 rounded-lg transition-colors ${filterStatus === 'published'
-                                    ? 'bg-green-600 text-white'
-                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                ? 'bg-green-600 text-white'
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                 }`}
                         >
                             Đã xuất bản
@@ -117,8 +134,8 @@ export default function AdminBlogPage() {
                         <button
                             onClick={() => setFilterStatus('draft')}
                             className={`px-4 py-2 rounded-lg transition-colors ${filterStatus === 'draft'
-                                    ? 'bg-yellow-600 text-white'
-                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                ? 'bg-yellow-600 text-white'
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                 }`}
                         >
                             Bản nháp
@@ -173,8 +190,8 @@ export default function AdminBlogPage() {
                                         <td className="p-4">
                                             <span
                                                 className={`px-3 py-1 rounded-full text-sm font-medium ${blog.status === 'published'
-                                                        ? 'bg-green-100 text-green-700'
-                                                        : 'bg-yellow-100 text-yellow-700'
+                                                    ? 'bg-green-100 text-green-700'
+                                                    : 'bg-yellow-100 text-yellow-700'
                                                     }`}
                                             >
                                                 {blog.status === 'published' ? 'Đã xuất bản' : 'Bản nháp'}

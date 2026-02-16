@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FacebookMessenger from "@/components/FacebookMessenger";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -45,6 +46,7 @@ export default function RootLayout({
         {children}
         <FacebookMessenger />
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );

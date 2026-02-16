@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, Eye } from 'lucide-react';
+import Toast from '@/components/admin/Toast';
 
 export default function NewBlogPage() {
     const router = useRouter();
@@ -20,6 +21,16 @@ export default function NewBlogPage() {
         metaDescription: '',
         status: 'draft',
     });
+
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info'; isVisible: boolean }>({
+        message: '',
+        type: 'info',
+        isVisible: false
+    });
+
+    const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+        setToast({ message, type, isVisible: true });
+    };
 
     // Auto-generate slug from title
     const generateSlug = (title: string) => {
@@ -47,7 +58,7 @@ export default function NewBlogPage() {
         e.preventDefault();
 
         if (!formData.title || !formData.content) {
-            alert('Vui lòng nhập tiêu đề và nội dung');
+            showToast('Vui lòng nhập tiêu đề và nội dung', 'error');
             return;
         }
 
@@ -74,14 +85,16 @@ export default function NewBlogPage() {
             const data = await res.json();
 
             if (data.success) {
-                alert(status === 'published' ? 'Đã xuất bản bài viết!' : 'Đã lưu bản nháp!');
-                router.push('/admin/blog');
+                showToast(status === 'published' ? 'Đã xuất bản bài viết!' : 'Đã lưu bản nháp!', 'success');
+                setTimeout(() => {
+                    router.push('/admin/blog');
+                }, 1000);
             } else {
-                alert('Lỗi: ' + data.error);
+                showToast('Lỗi: ' + data.error, 'error');
             }
         } catch (error) {
             console.error('Error creating blog:', error);
-            alert('Có lỗi xảy ra khi tạo bài viết');
+            showToast('Có lỗi xảy ra khi tạo bài viết', 'error');
         } finally {
             setLoading(false);
         }
@@ -89,6 +102,12 @@ export default function NewBlogPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                isVisible={toast.isVisible}
+                onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+            />
             <div className="container mx-auto p-6 max-w-4xl">
                 {/* Header */}
                 <div className="mb-6">

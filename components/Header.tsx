@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Itim } from "next/font/google";
 import { MapPin, Menu, X, Facebook, Search } from "lucide-react";
+import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 
 const itim = Itim({
@@ -11,12 +12,53 @@ const itim = Itim({
     display: "swap",
 });
 
+const SEARCH_PLACEHOLDERS = [
+    "Tìm kiếm laptop...",
+    "Dell XPS 13...",
+    "Macbook Air M1...",
+    "Asus TUF Gaming...",
+    "Lenovo ThinkPad...",
+    "Acer Nitro 5..."
+];
+
 export default function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    // Typing animation state
+    const [placeholderText, setPlaceholderText] = useState("");
+    const [placeholderIndex, setPlaceholderIndex] = useState(0);
+    const [charIndex, setCharIndex] = useState(0);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    // Typing effect logic
+    useEffect(() => {
+        const currentText = SEARCH_PLACEHOLDERS[placeholderIndex];
+
+        const timeout = setTimeout(() => {
+            if (!isDeleting && charIndex < currentText.length) {
+                // Typing
+                setPlaceholderText(currentText.substring(0, charIndex + 1));
+                setCharIndex(prev => prev + 1);
+            } else if (isDeleting && charIndex > 0) {
+                // Deleting
+                setPlaceholderText(currentText.substring(0, charIndex - 1));
+                setCharIndex(prev => prev - 1);
+            } else if (!isDeleting && charIndex === currentText.length) {
+                // Finished typing, wait before deleting
+                setTimeout(() => setIsDeleting(true), 2000);
+            } else if (isDeleting && charIndex === 0) {
+                // Finished deleting, move to next word
+                setIsDeleting(false);
+                setPlaceholderIndex((prev) => (prev + 1) % SEARCH_PLACEHOLDERS.length);
+            }
+        }, isDeleting ? 50 : 100);
+
+        return () => clearTimeout(timeout);
+    }, [charIndex, isDeleting, placeholderIndex]);
 
     // Debounce search
     useEffect(() => {
@@ -44,9 +86,12 @@ export default function Header() {
 
     const menuItems = [
         { href: "/laptops", label: "Laptop" },
+        { href: "/thu-cu-doi-moi", label: "Thu cũ đổi mới" },
+        { href: "/linh-kien-phu-kien", label: "Linh kiện & Phụ kiện" },
+        { href: "/cai-dat-phan-mem", label: "Driver & Soft" },
         { href: "/blog", label: "Blog" },
         { href: "/ve-sinh-laptop", label: "Vệ sinh máy" },
-        { href: "/sua-chua-laptop", label: "Sửa chữa thay thế" },
+        { href: "/sua-chua-laptop", label: "Sửa chữa" },
         { href: "/test", label: "Kiểm tra máy" },
     ];
 
@@ -55,24 +100,68 @@ export default function Header() {
             {/* Logo */}
             <div className="bg-white py-6">
                 <div className="container mx-auto flex justify-between items-center px-4">
-                    <Link href="/" className={itim.className + " text-2xl font-bold"}>
-                        Lap Lap Store
+                    <Link href="/" className="group relative z-10">
+                        <motion.div
+                            className="flex items-center"
+                            animate={{ scale: [0, 1.2, 1, 1, 1.2, 0] }}
+                            transition={{
+                                duration: 4,
+                                repeat: Infinity,
+                                times: [0, 0.1, 0.2, 0.8, 0.9, 1],
+                                ease: "easeInOut"
+                            }}
+                        >
+                            {"Lap Lap Store".split("").map((char, index) => (
+                                <motion.span
+                                    key={index}
+                                    className={itim.className + " text-3xl font-black text-gray-800 cursor-pointer"}
+                                    animate={{
+                                        color: ["#1f2937", "#1f2937", "#2563eb", "#1f2937", "#1f2937"],
+                                    }}
+                                    transition={{
+                                        duration: 4, // Match parent duration
+                                        repeat: Infinity,
+                                        times: [0, 0.3, 0.4 + (index * 0.03), 0.5 + (index * 0.03), 1], // Wave happens during the "Stay" phase (0.2-0.8)
+                                        ease: "easeInOut",
+                                    }}
+                                >
+                                    {char === " " ? "\u00A0" : char}
+                                </motion.span>
+                            ))}
+                        </motion.div>
                     </Link>
 
                     {/* Search Bar */}
                     <div className="flex-1 max-w-xl mx-4 relative hidden md:block">
-                        <div className="relative">
+                        <motion.div
+                            className="relative"
+                            initial={{ scale: 1 }}
+                            animate={{ scale: isSearchFocused ? 1.05 : 1 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        >
                             <input
                                 type="text"
-                                placeholder="Tìm kiếm laptop..."
-                                className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                                placeholder={placeholderText}
+                                className={`w-full pl-10 pr-4 py-2 rounded-full border transition-all duration-300 ${isSearchFocused
+                                    ? "border-blue-500 ring-2 ring-blue-200 shadow-lg"
+                                    : "border-gray-300 hover:border-blue-400"
+                                    } focus:outline-none`}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 onFocus={() => setIsSearchFocused(true)}
                                 onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
                             />
-                            <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-                        </div>
+                            <motion.div
+                                className="absolute left-3 top-1/2 transform -translate-y-1/2"
+                                animate={{
+                                    rotate: isSearchFocused ? [0, -10, 10, -10, 10, 0] : 0,
+                                    scale: isSearchFocused ? 1.1 : 1
+                                }}
+                                transition={{ duration: 0.5 }}
+                            >
+                                <Search className={`w-5 h-5 ${isSearchFocused ? "text-blue-500" : "text-gray-400"}`} />
+                            </motion.div>
+                        </motion.div>
 
                         {/* Search Results Dropdown */}
                         {isSearchFocused && (searchTerm.length > 0 || searchResults.length > 0) && (
@@ -84,7 +173,7 @@ export default function Header() {
                                         {searchResults.map((product) => (
                                             <li key={product._id}>
                                                 <Link
-                                                    href={`/laptops/${product._id}`}
+                                                    href={`/laptops/${product.slug || product._id}`}
                                                     className="flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
                                                     onClick={() => setIsSearchFocused(false)}
                                                 >
@@ -113,22 +202,50 @@ export default function Header() {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600">
-                            <MapPin className="w-4 h-4 text-blue-600" />
-                            <span className="font-medium">Cần Thơ</span>
+                        <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 shadow-sm">
+                            <motion.div
+                                animate={{ y: [0, -4, 0] }}
+                                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                            >
+                                <MapPin className="w-4 h-4 text-red-500" />
+                            </motion.div>
+                            <span className="font-bold text-gray-700">Cần Thơ</span>
                         </div>
 
                         {/* Fanpage Button - Highlights */}
-                        <a
+                        <motion.a
                             href="https://facebook.com/profile.php?id=61582947329036"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-full hover:shadow-lg transition-all transform hover:-translate-y-0.5 group relative overflow-hidden"
+                            className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#1877F2] to-[#0052cc] text-white rounded-full shadow-lg relative overflow-hidden group border border-blue-400"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            animate={{
+                                boxShadow: ["0 4px 6px -1px rgba(0, 0, 0, 0.1)", "0 10px 15px -3px rgba(37, 99, 235, 0.3)", "0 4px 6px -1px rgba(0, 0, 0, 0.1)"]
+                            }}
+                            transition={{ duration: 2, repeat: Infinity }}
                         >
-                            <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                            <Facebook className="w-4 h-4 animate-bounce" />
-                            <span className="font-bold text-sm">Ghé thăm Fanpage</span>
-                        </a>
+                            {/* Continuous Shimmer Effect */}
+                            <motion.div
+                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-[-20deg]"
+                                initial={{ x: "-150%" }}
+                                animate={{ x: "150%" }}
+                                transition={{
+                                    duration: 1.5,
+                                    repeat: Infinity,
+                                    repeatDelay: 1.5,
+                                    ease: "easeInOut",
+                                }}
+                            />
+
+                            <motion.div
+                                animate={{ rotate: [0, -10, 10, -10, 10, 0] }}
+                                transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                            >
+                                <Facebook className="w-5 h-5 fill-current" />
+                            </motion.div>
+                            <span className="font-bold text-sm tracking-wide">Ghé thăm Fanpage</span>
+                        </motion.a>
 
                         {/* Mobile Menu Button */}
                         <button
