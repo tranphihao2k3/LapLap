@@ -5,7 +5,7 @@ export default function VeSinhLayout({
 }) {
   return (
     <div className="bg-gray-50">
-      <div className=" mx-auto px-4 ">
+      <div className="">
         {children}
       </div>
     </div>

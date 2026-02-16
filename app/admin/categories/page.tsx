@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Plus, Edit2, Trash2, X } from 'lucide-react';
+import Toast from '@/components/admin/Toast';
 
 interface Category {
     _id: string;
@@ -23,6 +24,16 @@ export default function CategoriesPage() {
         description: '',
         icon: 'Laptop',
     });
+
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info'; isVisible: boolean }>({
+        message: '',
+        type: 'info',
+        isVisible: false
+    });
+
+    const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+        setToast({ message, type, isVisible: true });
+    };
 
     useEffect(() => {
         fetchCategories();
@@ -63,12 +74,13 @@ export default function CategoriesPage() {
             if (data.success) {
                 fetchCategories();
                 handleCloseModal();
+                showToast(editingCategory ? 'Update successful!' : 'Create successful!', 'success');
             } else {
-                alert('Error: ' + data.error);
+                showToast('Error: ' + data.error, 'error');
             }
         } catch (error) {
             console.error('Error saving category:', error);
-            alert('Error saving category');
+            showToast('Error saving category', 'error');
         }
     };
 
@@ -84,12 +96,13 @@ export default function CategoriesPage() {
 
             if (data.success) {
                 fetchCategories();
+                showToast('Delete successful!', 'success');
             } else {
-                alert('Error: ' + data.error);
+                showToast('Error: ' + data.error, 'error');
             }
         } catch (error) {
             console.error('Error deleting category:', error);
-            alert('Error deleting category');
+            showToast('Error deleting category', 'error');
         }
     };
 
@@ -112,6 +125,12 @@ export default function CategoriesPage() {
 
     return (
         <div>
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                isVisible={toast.isVisible}
+                onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+            />
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-800">Categories</h1>

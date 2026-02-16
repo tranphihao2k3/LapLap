@@ -34,6 +34,7 @@ interface Product {
     price: number;
     image: string;
     images: string[];
+    slug?: string;
     specs: LaptopSpec;
     categoryId: Category;
     brandId: Brand;
@@ -506,11 +507,9 @@ export default function LaptopsPage() {
                     ) : (
                         <>
                             {/* Products Grid */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-5 mb-8">
                                 {paginatedProducts.map(product => (
-                                    <a key={product._id} href={`/laptops/${product._id}`}>
-                                        <ProductCard product={product} />
-                                    </a>
+                                    <ProductCard key={product._id} product={product} />
                                 ))}
                             </div>
 

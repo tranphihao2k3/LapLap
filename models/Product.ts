@@ -1,4 +1,6 @@
 import mongoose, { Schema, models } from "mongoose";
+import "./Brand"; // Ensure Brand model is registered
+import "./Category"; // Ensure Category model is registered
 
 const ProductSchema = new Schema(
     {
@@ -9,6 +11,11 @@ const ProductSchema = new Schema(
         model: {
             type: String,
             required: true,
+        },
+        slug: {
+            type: String,
+            unique: true,
+            sparse: true,
         },
         categoryId: {
             type: Schema.Types.ObjectId,

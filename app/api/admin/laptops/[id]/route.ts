@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Product } from "@/models/Product";
 import mongoose from "mongoose";
+import cloudinary from "@/lib/cloudinary";
 
 async function connectDB() {
     if (mongoose.connection.readyState === 0) {
@@ -83,14 +84,40 @@ export async function DELETE(
     try {
         await connectDB();
         const { id } = await params;
-        const laptop = await Product.findByIdAndDelete(id);
 
-        if (!laptop) {
+        // Find product first to get images
+        const product = await Product.findById(id);
+
+        if (!product) {
             return NextResponse.json(
                 { success: false, error: "Laptop not found" },
                 { status: 404 }
             );
         }
+
+        // Delete images from Cloudinary
+        if (product.images && product.images.length > 0) {
+            const deletePromises = product.images.map((url: string) => {
+                // Extract publicId from URL
+                // Example: https://res.cloudinary.com/cloud_name/image/upload/v1234567890/folder/image.jpg
+                // Public ID: folder/image
+                try {
+                    const regex = /\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z]+$/;
+                    const match = url.match(regex);
+                    if (match && match[1]) {
+                        const publicId = match[1];
+                        return cloudinary.uploader.destroy(publicId);
+                    }
+                } catch (e) {
+                    console.error("Error extracting publicId from URL:", url, e);
+                }
+                return Promise.resolve();
+            });
+
+            await Promise.allSettled(deletePromises);
+        }
+
+        await Product.findByIdAndDelete(id);
 
         return NextResponse.json({
             success: true,

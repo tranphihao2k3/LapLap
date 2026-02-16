@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { Users, UserPlus, Shield, Lock, Trash2, CheckCircle, XCircle } from 'lucide-react';
+import Toast from '@/components/admin/Toast';
 
 interface User {
     _id: string;
@@ -22,6 +23,16 @@ export default function UsersPage() {
     const [formData, setFormData] = useState({ email: '', password: '', name: '', role: 'admin' });
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info'; isVisible: boolean }>({
+        message: '',
+        type: 'info',
+        isVisible: false
+    });
+
+    const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+        setToast({ message, type, isVisible: true });
+    };
 
     useEffect(() => {
         fetchUsers();
@@ -56,15 +67,17 @@ export default function UsersPage() {
             const data = await res.json();
 
             if (data.success) {
-                setSuccess('User created successfully!');
+                showToast('User created successfully!', 'success');
                 setFormData({ email: '', password: '', name: '', role: 'admin' });
                 setShowModal(false);
                 fetchUsers();
             } else {
                 setError(data.message || 'Failed to create user');
+                showToast(data.message || 'Failed to create user', 'error');
             }
         } catch (err) {
             setError('An error occurred');
+            showToast('An error occurred', 'error');
         }
     };
 
@@ -80,6 +93,12 @@ export default function UsersPage() {
 
     return (
         <div className="space-y-6">
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                isVisible={toast.isVisible}
+                onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+            />
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>

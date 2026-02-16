@@ -7,12 +7,11 @@ export default function ClientPagesLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="">
             <Header />
-            <main className="flex-1 container mx-auto p-4">
+            <div className="">
                 {children}
-            </main>
-            <Footer />
+            </div>
         </div>
     );
 }

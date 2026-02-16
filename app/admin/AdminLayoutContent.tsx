@@ -15,11 +15,17 @@ import {
     ChevronRight,
     LogOut,
     Bell,
-    Search
+    Search,
+    FileText,
+    ChevronLeft,
+    PanelLeftClose,
+    PanelLeftOpen,
+    Cpu
 } from 'lucide-react';
 
 export default function AdminLayoutContent({ children }: { children: ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const pathname = usePathname();
     const { data: session } = useSession();
 
@@ -28,6 +34,9 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
         { icon: FolderTree, label: 'Danh mục', href: '/admin/categories' },
         { icon: Building2, label: 'Thương hiệu', href: '/admin/brands' },
         { icon: Laptop, label: 'Sản phẩm', href: '/admin/laptops' },
+        { icon: Cpu, label: 'Linh kiện', href: '/admin/linh-kien' },
+        { icon: FileText, label: 'Blog', href: '/admin/blog' },
+        { icon: Laptop, label: 'Driver & Soft', href: '/admin/software' }, // Reusing Laptop icon or finding a better one but Laptop is fine for now
         { icon: Users, label: 'Users', href: '/admin/users' },
     ];
 
@@ -64,20 +73,31 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
 
             {/* Sidebar */}
             <aside className={`
-                fixed top-0 left-0 h-full w-72 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white z-50
-                transform transition-transform duration-300 ease-in-out
+                fixed top-0 left-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white z-50
+                transform transition-all duration-300 ease-in-out
                 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+                ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-72'}
+                w-72
                 shadow-2xl
             `}>
                 {/* Logo */}
                 <div className="p-6 border-b border-white/10">
                     <div className="flex items-center justify-between">
-                        <div>
+                        <div className={`transition-all duration-300 ${sidebarCollapsed ? 'lg:hidden' : ''}`}>
                             <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
                                 LapLap Admin
                             </h1>
                             <p className="text-sm text-gray-400 mt-1">Management System</p>
                         </div>
+
+                        {/* Collapsed Logo */}
+                        <div className={`hidden lg:block transition-all duration-300 ${sidebarCollapsed ? '' : 'lg:hidden'}`}>
+                            <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 flex items-center justify-center font-bold text-slate-900">
+                                L
+                            </div>
+                        </div>
+
+                        {/* Mobile Close Button */}
                         <button
                             onClick={() => setSidebarOpen(false)}
                             className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
@@ -87,8 +107,29 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
                     </div>
                 </div>
 
+                {/* Desktop Collapse Toggle */}
+                <button
+                    onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                    className={`
+                        hidden lg:flex items-center justify-center
+                        absolute top-20 -right-3 w-6 h-6 
+                        bg-slate-700 hover:bg-slate-600 
+                        rounded-full shadow-lg
+                        transition-all duration-300
+                        border-2 border-slate-900
+                        z-10
+                    `}
+                    title={sidebarCollapsed ? 'Mở rộng' : 'Thu gọn'}
+                >
+                    {sidebarCollapsed ? (
+                        <PanelLeftOpen className="w-3 h-3" />
+                    ) : (
+                        <PanelLeftClose className="w-3 h-3" />
+                    )}
+                </button>
+
                 {/* Navigation */}
-                <nav className="mt-6 px-3 space-y-1">
+                <nav className="mt-6 px-3 space-y-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
                     {menuItems.map((item) => {
                         const active = isActive(item.href);
                         return (
@@ -102,10 +143,12 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
                                         ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
                                         : 'text-gray-300 hover:bg-white/10 hover:text-white'
                                     }
+                                    ${sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''}
                                 `}
+                                title={sidebarCollapsed ? item.label : ''}
                             >
                                 <div className={`
-                                    w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200
+                                    w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 flex-shrink-0
                                     ${active
                                         ? 'bg-white/20'
                                         : 'bg-white/5 group-hover:bg-white/10'
@@ -113,8 +156,10 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
                                 `}>
                                     <item.icon className="w-5 h-5" />
                                 </div>
-                                <span className="font-medium flex-1">{item.label}</span>
-                                {active && <ChevronRight className="w-4 h-4" />}
+                                <span className={`font-medium flex-1 transition-all duration-300 ${sidebarCollapsed ? 'lg:hidden' : ''}`}>
+                                    {item.label}
+                                </span>
+                                {active && !sidebarCollapsed && <ChevronRight className="w-4 h-4 lg:block hidden" />}
                             </Link>
                         );
                     })}
@@ -124,22 +169,26 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
                 <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 bg-gradient-to-t from-black/20">
                     <div
                         onClick={() => signOut({ callbackUrl: '/admin/login' })}
-                        className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group"
+                        className={`
+                            flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group
+                            ${sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''}
+                        `}
+                        title={sidebarCollapsed ? 'Đăng xuất' : ''}
                     >
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center font-bold shadow-lg text-sm">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center font-bold shadow-lg text-sm flex-shrink-0">
                             {session?.user?.name?.charAt(0).toUpperCase() || 'A'}
                         </div>
-                        <div className="flex-1 min-w-0">
+                        <div className={`flex-1 min-w-0 transition-all duration-300 ${sidebarCollapsed ? 'lg:hidden' : ''}`}>
                             <div className="font-medium text-sm truncate">{session?.user?.name || 'Admin User'}</div>
                             <div className="text-xs text-gray-400 truncate">{session?.user?.email || 'admin@laplap.com'}</div>
                         </div>
-                        <LogOut className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
+                        <LogOut className={`w-4 h-4 text-gray-400 group-hover:text-white transition-colors ${sidebarCollapsed ? 'lg:hidden' : ''}`} />
                     </div>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <div className="lg:ml-72">
+            <div className={`transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-72'}`}>
                 {/* Top Header */}
                 <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-sm">
                     <div className="px-4 lg:px-8 py-4">

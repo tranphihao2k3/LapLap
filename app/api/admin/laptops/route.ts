@@ -1,56 +1,75 @@
-import { NextRequest, NextResponse } from "next/server";
-import { Product } from "@/models/Product";
-import mongoose from "mongoose";
+import { NextResponse } from 'next/server';
+import { connectDB } from '@/lib/mongodb';
+import { Product } from '@/models/Product';
+import { Category } from '@/models/Category';
+import { Brand } from '@/models/Brand';
 
-async function connectDB() {
-    if (mongoose.connection.readyState === 0) {
-        await mongoose.connect(process.env.MONGODB_URI!);
-    }
-}
+// Force dynamic route
+export const dynamic = 'force-dynamic';
 
-// GET all laptops with category and brand info
 export async function GET() {
     try {
         await connectDB();
-        const laptops = await Product.find()
-            .populate("categoryId", "name slug")
-            .populate("brandId", "name slug logo")
+
+        // Populate category and brand for better data
+        const laptops = await Product.find({})
+            .populate('categoryId', 'name')
+            .populate('brandId', 'name')
             .sort({ createdAt: -1 });
 
-        return NextResponse.json({ success: true, data: laptops });
+        return NextResponse.json({
+            success: true,
+            data: laptops
+        });
     } catch (error: any) {
+        console.error('Error fetching laptops:', error);
         return NextResponse.json(
-            { success: false, error: error.message },
+            { success: false, message: 'Lỗi khi lấy danh sách laptop: ' + error.message },
             { status: 500 }
         );
     }
 }
 
-// POST create new laptop
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
     try {
         await connectDB();
         const body = await request.json();
 
-        // Ensure image is set for backward compatibility
-        if (!body.image && body.images && body.images.length > 0) {
-            body.image = body.images[0];
+        // Validation (basic)
+        if (!body.name || !body.price) {
+            return NextResponse.json(
+                { success: false, message: 'Name and Price are required' },
+                { status: 400 }
+            );
         }
 
-        const laptop = await Product.create(body);
+        // Generate slug if not provided
+        let slug = body.slug;
+        if (!slug && body.name) {
+            slug = body.name.toLowerCase()
+                .replace(/tiếng việt/g, 'tieng viet') // simple placeholder
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9\s-]/g, '')
+                .trim()
+                .replace(/\s+/g, '-');
+        }
 
-        // Populate before returning
-        await laptop.populate("categoryId", "name slug");
-        await laptop.populate("brandId", "name slug logo");
+        const newLaptop = await Product.create({
+            ...body,
+            slug
+        });
 
-        return NextResponse.json(
-            { success: true, data: laptop },
-            { status: 201 }
-        );
+        return NextResponse.json({
+            success: true,
+            message: 'Laptop created successfully',
+            data: newLaptop
+        }, { status: 201 });
+
     } catch (error: any) {
+        console.error('Error creating laptop:', error);
         return NextResponse.json(
-            { success: false, error: error.message },
-            { status: 400 }
+            { success: false, message: 'Error creating laptop: ' + error.message },
+            { status: 500 }
         );
     }
 }
