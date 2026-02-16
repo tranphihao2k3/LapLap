@@ -163,7 +163,7 @@ export default function ComponentsAndAccessoriesPage() {
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
                     </div>
                 ) : filteredComponents.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
                         <AnimatePresence>
                             {filteredComponents.map((item, index) => (
                                 <motion.div
