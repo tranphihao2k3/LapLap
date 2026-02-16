@@ -79,7 +79,7 @@ export default function SoftwarePage() {
             <Header />
 
             {/* Hero Section */}
-            <div className="relative bg-gradient-to-br from-indigo-900 via-blue-900 to-purple-900 text-white overflow-hidden pb-20 pt-10">
+            <div className="relative bg-gradient-to-br from-indigo-900 via-blue-900 to-purple-900 text-white overflow-hidden py-12 md:pb-20 md:pt-10">
                 {/* Animated Background */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-blob"></div>
