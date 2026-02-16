@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { Itim } from "next/font/google";
 import { MapPin, Menu, X, Facebook, Search } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Button from "./ui/Button";
 
 const itim = Itim({
@@ -28,6 +29,8 @@ export default function Header() {
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+    const pathname = usePathname();
 
     // Typing animation state
     const [placeholderText, setPlaceholderText] = useState("");
@@ -244,16 +247,57 @@ export default function Header() {
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:block bg-[var(--color-accent)] border-t border-b border-gray-300">
-                <ul className="container mx-auto flex justify-center gap-8 py-3 font-medium">
-                    {menuItems.map((item) => (
-                        <li key={item.href} className={itim.className + " text-xl"}>
-                            <Link href={item.href} className="hover:text-white transition-colors">
-                                {item.label}
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+            <nav className="hidden lg:block bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm transition-all duration-300">
+                <div className="container mx-auto px-4">
+                    <ul
+                        className="flex justify-center items-center gap-1 py-1"
+                        onMouseLeave={() => setHoveredIndex(null)}
+                    >
+                        {menuItems.map((item, index) => {
+                            const isActive = pathname === item.href;
+
+                            return (
+                                <li
+                                    key={item.href}
+                                    className="relative"
+                                    onMouseEnter={() => setHoveredIndex(index)}
+                                >
+                                    <Link
+                                        href={item.href}
+                                        className={`${itim.className} relative z-10 block px-4 py-2.5 text-[15px] font-bold transition-colors duration-300 ${isActive ? 'text-blue-600' : 'text-slate-600 hover:text-slate-900 focus:text-blue-600'
+                                            }`}
+                                    >
+                                        {item.label}
+
+                                        {/* Active State Dot */}
+                                        {isActive && (
+                                            <motion.div
+                                                layoutId="activeDot"
+                                                className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full"
+                                            />
+                                        )}
+                                    </Link>
+
+                                    {/* Hover Pill Effect */}
+                                    {hoveredIndex === index && (
+                                        <motion.div
+                                            layoutId="hoverPill"
+                                            className="absolute inset-0 bg-blue-50/80 rounded-xl z-0"
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.95 }}
+                                            transition={{
+                                                type: "spring",
+                                                bounce: 0.25,
+                                                duration: 0.5
+                                            }}
+                                        />
+                                    )}
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
             </nav>
 
             {/* Mobile Sidebar */}

@@ -157,8 +157,8 @@ export default function ProductDetailPage() {
                             </div>
                         )}
 
-                        {/* DESCRIPTIVE HIGHLIGHTS (Mobile Visible) */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {/* DESCRIPTIVE HIGHLIGHTS (Trust Tray) */}
+                        <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-2 border border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-2 shadow-inner">
                             <HighlightCard icon={BadgeCheck} title="Chính hãng" desc="Cam kết 100%" />
                             <HighlightCard icon={Truck} title="Giao hàng" desc="Toàn quốc" />
                             <HighlightCard icon={Shield} title="Bảo hành" desc={`${product.warrantyMonths || 12} Tháng`} />
@@ -311,12 +311,12 @@ export default function ProductDetailPage() {
 
 function HighlightCard({ icon: Icon, title, desc }: { icon: any, title: string, desc: string }) {
     return (
-        <div className="bg-white p-3 rounded-2xl border border-slate-100 text-center space-y-0.5 shadow-sm hover:shadow-md transition-shadow">
-            <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-1">
-                <Icon size={16} />
+        <div className="bg-white p-3 rounded-2xl border border-slate-100 flex flex-col items-center text-center group hover:bg-blue-50 transition-all duration-300">
+            <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-2 group-hover:scale-110 group-hover:bg-white transition-all shadow-sm">
+                <Icon size={20} />
             </div>
-            <div className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">{title}</div>
-            <div className="text-xs font-bold text-slate-800">{desc}</div>
+            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">{title}</div>
+            <div className="text-[13px] font-black text-slate-800 leading-tight">{desc}</div>
         </div>
     );
 }
