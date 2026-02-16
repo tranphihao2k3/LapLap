@@ -10,7 +10,8 @@ import SpeakerTest from "./components/SpeakerTest";
 import ScreenTest from "./components/ScreenTest";
 import SoftwareDownload from "./components/SoftwareDownload";
 import { motion, Variants } from "framer-motion";
-import { Activity, PlayCircle, Monitor, CheckCircle, Smartphone, Zap } from "lucide-react";
+import { Activity, PlayCircle, Monitor, CheckCircle, Smartphone, Zap, ArrowRight } from "lucide-react";
+import Button from "@/components/ui/Button";
 
 type TestType = "camera" | "mic" | "speaker" | "screen" | "keyboard" | "software";
 
@@ -160,15 +161,14 @@ export default function UnifiedTestPage() {
                                 <CheckCircle className="w-5 h-5 text-green-400" />
                                 <span className="font-bold">Chính xác 100%</span>
                             </div>
-                            <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
+                            <Button
                                 onClick={() => setActiveTest("screen")}
-                                className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-5 py-2.5 rounded-lg shadow-lg shadow-pink-500/30 font-bold border border-pink-400/50"
+                                variant="primary"
+                                className="bg-gradient-to-r from-pink-500 to-rose-500 border-none shadow-pink-500/30"
+                                leftIcon={<PlayCircle size={20} />}
                             >
-                                <PlayCircle className="w-5 h-5" />
-                                <span>Test Ngay</span>
-                            </motion.button>
+                                Test Ngay
+                            </Button>
                         </motion.div>
                     </div>
 
@@ -236,8 +236,14 @@ export default function UnifiedTestPage() {
                                         {test.title.split(" ").slice(1).join(" ")}
                                     </h2>
                                     <p className="text-gray-600 flex-grow">{test.desc}</p>
-                                    <div className="mt-4 text-blue-600 font-semibold group-hover:translate-x-2 transition-transform inline-block">
-                                        Bắt đầu test →
+                                    <div className="mt-4">
+                                        <Button
+                                            variant="ghost"
+                                            className="text-blue-600 group-hover:translate-x-2 transition-transform"
+                                            rightIcon={<ArrowRight size={18} />}
+                                        >
+                                            Bắt đầu test
+                                        </Button>
                                     </div>
                                 </motion.a>
                             ) : (
@@ -256,8 +262,14 @@ export default function UnifiedTestPage() {
                                         {test.title.split(" ").slice(1).join(" ")}
                                     </h2>
                                     <p className="text-gray-600 flex-grow">{test.desc}</p>
-                                    <div className="mt-4 text-blue-600 font-semibold group-hover:translate-x-2 transition-transform inline-block">
-                                        Bắt đầu test →
+                                    <div className="mt-4">
+                                        <Button
+                                            variant="ghost"
+                                            className="text-blue-600 group-hover:translate-x-2 transition-transform"
+                                            rightIcon={<ArrowRight size={18} />}
+                                        >
+                                            Bắt đầu test
+                                        </Button>
                                     </div>
                                 </motion.button>
                             )

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Cpu, HardDrive, MemoryStick, Monitor, Battery, CreditCard } from "lucide-react";
+import Button from "@/components/ui/Button";
 
 interface ProductCardProps {
     product: {
@@ -83,12 +84,14 @@ export default function ProductCard({ product }: ProductCardProps) {
                         {product.price.toLocaleString('vi-VN')}
                     </div>
 
-                    <Link
+                    <Button
                         href={`/laptops/${product.slug || product._id}`}
-                        className="w-full bg-gradient-to-r from-[#1e73be] to-[#155a9c] hover:from-[#155a9c] hover:to-[#0d4373] text-white text-xs md:text-sm font-semibold py-2 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg text-center block"
+                        variant="primary"
+                        size="sm"
+                        fullWidth
                     >
                         Xem chi tiết
-                    </Link>
+                    </Button>
                 </div>
 
             </div>

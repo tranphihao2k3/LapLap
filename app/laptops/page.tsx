@@ -4,7 +4,8 @@ import { useEffect, useState, useMemo } from 'react';
 import ProductCard from './ProductCard';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import Button from '@/components/ui/Button';
 
 interface LaptopSpec {
     cpu: string;
@@ -461,17 +462,15 @@ export default function LaptopsPage() {
 
                             {/* Status Filter */}
                             <div className="relative">
-                                <button
+                                <Button
                                     onClick={() => toggleDropdown('statuses')}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${filters.statuses.length > 0
-                                        ? 'bg-[#004e9a] text-white'
-                                        : 'bg-[#004e9a] text-white hover:bg-[#003b78]'
-                                        }`}
+                                    variant={filters.statuses.length > 0 ? 'primary' : 'outline'}
+                                    size="sm"
+                                    rightIcon={<ChevronDown size={16} />}
+                                    className={filters.statuses.length > 0 ? 'shadow-md shadow-blue-500/20' : 'bg-white border-gray-300 text-gray-700'}
                                 >
-                                    Tình trạng
-                                    {filters.statuses.length > 0 && ` (${filters.statuses.length})`}
-                                    <ChevronDown size={16} />
-                                </button>
+                                    Tình trạng {filters.statuses.length > 0 && ` (${filters.statuses.length})`}
+                                </Button>
                                 {openDropdown === 'statuses' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px]">
                                         <label className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
@@ -517,12 +516,14 @@ export default function LaptopsPage() {
                             {filteredProducts.length === 0 && (
                                 <div className="text-center py-20">
                                     <p className="text-gray-600 text-lg">Không tìm thấy sản phẩm nào phù hợp với bộ lọc.</p>
-                                    <button
+                                    <Button
                                         onClick={clearAllFilters}
-                                        className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                                        variant="primary"
+                                        size="lg"
+                                        leftIcon={<X size={18} />}
                                     >
                                         Xóa bộ lọc
-                                    </button>
+                                    </Button>
                                 </div>
                             )}
 
@@ -534,14 +535,15 @@ export default function LaptopsPage() {
                                         {Math.min(currentPage * itemsPerPage, filteredProducts.length)} của {filteredProducts.length} sản phẩm
                                     </p>
                                     <div className="flex items-center gap-2">
-                                        <button
+                                        <Button
                                             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                             disabled={currentPage === 1}
-                                            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                            variant="outline"
+                                            size="sm"
+                                            leftIcon={<ChevronLeft size={16} />}
                                         >
-                                            <ChevronLeft size={16} />
                                             Trước
-                                        </button>
+                                        </Button>
 
                                         {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                                             let pageNum;
@@ -556,27 +558,27 @@ export default function LaptopsPage() {
                                             }
 
                                             return (
-                                                <button
+                                                <Button
                                                     key={pageNum}
                                                     onClick={() => setCurrentPage(pageNum)}
-                                                    className={`px-4 py-2 rounded-lg ${currentPage === pageNum
-                                                        ? 'bg-[#004e9a] text-white'
-                                                        : 'border border-gray-300 hover:bg-gray-50'
-                                                        }`}
+                                                    variant={currentPage === pageNum ? 'primary' : 'outline'}
+                                                    size="sm"
+                                                    className={currentPage === pageNum ? 'bg-[#004e9a]' : ''}
                                                 >
                                                     {pageNum}
-                                                </button>
+                                                </Button>
                                             );
                                         })}
 
-                                        <button
+                                        <Button
                                             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                                             disabled={currentPage === totalPages}
-                                            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                            variant="outline"
+                                            size="sm"
+                                            rightIcon={<ChevronRight size={16} />}
                                         >
                                             Sau
-                                            <ChevronRight size={16} />
-                                        </button>
+                                        </Button>
                                     </div>
                                 </div>
                             )}

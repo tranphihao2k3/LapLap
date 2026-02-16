@@ -11,6 +11,7 @@ import {
     Zap, Tag, Box
 } from 'lucide-react';
 import Link from 'next/link';
+import Button from '@/components/ui/Button';
 
 interface ComponentSpec {
     ramType?: string;
@@ -175,17 +176,17 @@ export default function ComponentsAndAccessoriesPage() {
                 {/* Categories Filter */}
                 <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
                     {CATEGORIES.map(cat => (
-                        <button
+                        <Button
                             key={cat.id}
                             onClick={() => setSelectedCategory(cat.id)}
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold transition-all ${selectedCategory === cat.id
-                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105'
-                                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                                }`}
+                            variant={selectedCategory === cat.id ? 'primary' : 'outline'}
+                            rounded="full"
+                            size="sm"
+                            leftIcon={<cat.icon className="w-4 h-4" />}
+                            className={selectedCategory === cat.id ? 'scale-105' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}
                         >
-                            <cat.icon className="w-4 h-4" />
                             {cat.name}
-                        </button>
+                        </Button>
                     ))}
                 </div>
 
@@ -269,13 +270,16 @@ export default function ComponentsAndAccessoriesPage() {
                                                     {formatPrice(item.price)}
                                                 </span>
                                             </div>
-                                            <button
+                                            <Button
                                                 onClick={() => handleBuyNow(item)}
-                                                className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors shadow-sm"
+                                                variant="zalo"
+                                                size="sm"
+                                                rounded="full"
+                                                className="w-10 h-10 p-0"
                                                 title="Liên hệ đặt mua"
                                             >
                                                 <ShoppingCart className="w-5 h-5" />
-                                            </button>
+                                            </Button>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -291,12 +295,13 @@ export default function ComponentsAndAccessoriesPage() {
                         <p className="text-gray-500">
                             Thử thay đổi từ khóa hoặc danh mục tìm kiếm nhé.
                         </p>
-                        <button
+                        <Button
                             onClick={() => { setSelectedCategory('ALL'); setSearchTerm(''); }}
-                            className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition"
+                            variant="primary"
+                            size="md"
                         >
                             Xem tất cả
-                        </button>
+                        </Button>
                     </div>
                 )}
             </main>

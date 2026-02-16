@@ -5,6 +5,7 @@ import { Itim } from "next/font/google";
 import { MapPin, Menu, X, Facebook, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import Button from "./ui/Button";
 
 const itim = Itim({
     subsets: ["latin", "vietnamese"],
@@ -213,40 +214,18 @@ export default function Header() {
                             <span className="font-bold text-gray-700">Cần Thơ</span>
                         </div>
 
-                        {/* Fanpage Button - Highlights */}
-                        <motion.a
-                            href="https://facebook.com/profile.php?id=61582947329036"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#1877F2] to-[#0052cc] text-white rounded-full shadow-lg relative overflow-hidden group border border-blue-400"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            animate={{
-                                boxShadow: ["0 4px 6px -1px rgba(0, 0, 0, 0.1)", "0 10px 15px -3px rgba(37, 99, 235, 0.3)", "0 4px 6px -1px rgba(0, 0, 0, 0.1)"]
-                            }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                        >
-                            {/* Continuous Shimmer Effect */}
-                            <motion.div
-                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-[-20deg]"
-                                initial={{ x: "-150%" }}
-                                animate={{ x: "150%" }}
-                                transition={{
-                                    duration: 1.5,
-                                    repeat: Infinity,
-                                    repeatDelay: 1.5,
-                                    ease: "easeInOut",
-                                }}
-                            />
-
-                            <motion.div
-                                animate={{ rotate: [0, -10, 10, -10, 10, 0] }}
-                                transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                        {/* Fanpage Button - Unified Component */}
+                        <div className="hidden sm:block">
+                            <Button
+                                href="https://facebook.com/profile.php?id=61582947329036"
+                                variant="facebook"
+                                size="sm"
+                                rounded="full"
+                                leftIcon={<Facebook className="w-5 h-5 fill-current" />}
                             >
-                                <Facebook className="w-5 h-5 fill-current" />
-                            </motion.div>
-                            <span className="font-bold text-sm tracking-wide">Ghé thăm Fanpage</span>
-                        </motion.a>
+                                Ghé thăm Fanpage
+                            </Button>
+                        </div>
 
                         {/* Mobile Menu Button */}
                         <button

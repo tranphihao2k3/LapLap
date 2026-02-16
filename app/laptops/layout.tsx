@@ -8,7 +8,6 @@ export default function ClientPagesLayout({
 }) {
     return (
         <div className="">
-            <Header />
             <div className="">
                 {children}
             </div>

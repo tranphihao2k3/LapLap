@@ -7,8 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     Search, Cpu, HardDrive, Zap,
     CheckCircle2, AlertCircle, ArrowRight,
-    Settings, ShieldCheck, Wrench, Smartphone
+    Settings, ShieldCheck, Wrench, Smartphone, X
 } from 'lucide-react';
+import Button from '@/components/ui/Button';
 
 /* ================= TYPES ================= */
 
@@ -237,20 +238,17 @@ Mong shop tư vấn thêm ạ!
                                     placeholder="Nhập tên máy (VD: Dell XPS 9560...)"
                                     className="w-full bg-transparent px-3 md:px-4 py-3 text-gray-800 placeholder-gray-500 text-base md:text-lg outline-none min-w-0"
                                 />
-                                <button
+                                <Button
                                     type="submit"
                                     disabled={loading}
-                                    className="shrink-0 bg-gradient-to-r from-[#2563EB] to-[#7C3AED] text-white px-4 md:px-6 py-3 rounded-lg font-bold hover:shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
+                                    variant="primary"
+                                    size="md"
+                                    isLoading={loading}
+                                    rightIcon={<Zap size={18} fill="currentColor" />}
+                                    className="shrink-0 bg-gradient-to-r from-[#2563EB] to-[#7C3AED] border-none"
                                 >
-                                    {loading ? (
-                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    ) : (
-                                        <>
-                                            <span className="hidden md:inline">Kiểm Tra</span>
-                                            <Zap size={18} fill="currentColor" />
-                                        </>
-                                    )}
-                                </button>
+                                    <span className="hidden md:inline">Kiểm Tra</span>
+                                </Button>
                             </div>
                         </form>
                         {error && (
@@ -266,7 +264,7 @@ Mong shop tư vấn thêm ạ!
                             animate={{ opacity: 1 }}
                             className="mt-4 flex justify-center"
                         >
-                            <button
+                            <Button
                                 onClick={() => {
                                     setSpecs({
                                         modelName: modelInput || "Máy của bạn",
@@ -277,10 +275,12 @@ Mong shop tư vấn thêm ạ!
                                     setShowManualInput(false);
                                     setError('');
                                 }}
-                                className="text-sm font-bold text-yellow-300 hover:text-white underline underline-offset-4"
+                                variant="ghost"
+                                size="sm"
+                                className="text-yellow-300 hover:text-white hover:bg-white/10 decoration-yellow-300/50"
                             >
                                 ⚠️ Không tìm thấy? Chuyển sang chọn thủ công &rarr;
-                            </button>
+                            </Button>
                         </motion.div>
                     )}
                 </div>
@@ -386,16 +386,15 @@ Mong shop tư vấn thêm ạ!
                                                 <label className="text-xs font-semibold text-gray-500 uppercase mb-2 block">Dung lượng</label>
                                                 <div className="grid grid-cols-4 gap-2">
                                                     {['4GB', '8GB', '16GB', '32GB'].map(cap => (
-                                                        <button
+                                                        <Button
                                                             key={cap}
                                                             onClick={() => setSelectedRamCapacity(cap === selectedRamCapacity ? '' : cap)}
-                                                            className={`py-2 px-1 rounded-lg border text-sm font-bold transition-all ${selectedRamCapacity === cap
-                                                                ? 'border-blue-500 bg-blue-500 text-white shadow-md'
-                                                                : 'border-gray-200 bg-white text-gray-600 hover:border-blue-300'
-                                                                }`}
+                                                            variant={selectedRamCapacity === cap ? 'primary' : 'outline'}
+                                                            size="sm"
+                                                            className={selectedRamCapacity === cap ? '' : 'border-gray-200 bg-white text-gray-600 hover:border-blue-300'}
                                                         >
                                                             {cap}
-                                                        </button>
+                                                        </Button>
                                                     ))}
                                                 </div>
                                             </div>
@@ -448,16 +447,15 @@ Mong shop tư vấn thêm ạ!
                                                 <label className="text-xs font-semibold text-gray-500 uppercase mb-2 block">Dung lượng</label>
                                                 <div className="grid grid-cols-4 gap-2">
                                                     {['128GB', '256GB', '512GB', '1TB'].map(cap => (
-                                                        <button
+                                                        <Button
                                                             key={cap}
                                                             onClick={() => setSelectedSSDCapacity(cap === selectedSSDCapacity ? '' : cap)}
-                                                            className={`py-2 px-1 rounded-lg border text-sm font-bold transition-all ${selectedSSDCapacity === cap
-                                                                ? 'border-purple-500 bg-purple-500 text-white shadow-md'
-                                                                : 'border-gray-200 bg-white text-gray-600 hover:border-purple-300'
-                                                                }`}
+                                                            variant={selectedSSDCapacity === cap ? 'secondary' : 'outline'}
+                                                            size="sm"
+                                                            className={selectedSSDCapacity === cap ? 'bg-purple-600 shadow-purple-500/30' : 'border-gray-200 bg-white text-gray-600 hover:border-purple-300'}
                                                         >
                                                             {cap}
-                                                        </button>
+                                                        </Button>
                                                     ))}
                                                 </div>
                                             </div>
@@ -467,16 +465,15 @@ Mong shop tư vấn thêm ạ!
                                                 <label className="text-xs font-semibold text-gray-500 uppercase mb-2 block">Chuẩn kết nối</label>
                                                 <div className="flex gap-2">
                                                     {['2.5" SATA', 'M.2 SATA', 'NVMe'].map(type => (
-                                                        <button
+                                                        <Button
                                                             key={type}
                                                             onClick={() => setSelectedSSDType(type === selectedSSDType ? '' : type)}
-                                                            className={`flex-1 py-2 px-1 rounded-lg border text-xs font-bold transition-all ${selectedSSDType === type
-                                                                ? 'border-purple-500 bg-purple-100 text-purple-700'
-                                                                : 'border-gray-200 bg-white text-gray-600 hover:border-purple-200'
-                                                                }`}
+                                                            variant={selectedSSDType === type ? 'secondary' : 'outline'}
+                                                            size="xs"
+                                                            className={`flex-1 ${selectedSSDType === type ? 'bg-purple-100 text-purple-700 shadow-none border-purple-500' : 'border-gray-200 bg-white text-gray-600 hover:border-purple-200'}`}
                                                         >
                                                             {type}
-                                                        </button>
+                                                        </Button>
                                                     ))}
                                                 </div>
                                             </div>
@@ -532,17 +529,17 @@ Mong shop tư vấn thêm ạ!
                                         </div>
                                     </div>
 
-                                    <button
-                                        className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg transition-all ${totalPrice > 0
-                                            ? 'bg-[#1877F2] hover:bg-[#156ad8] text-white hover:-translate-y-1 shadow-blue-500/30'
-                                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                            }`}
+                                    <Button
                                         onClick={handleBooking}
                                         disabled={totalPrice === 0}
+                                        variant="facebook"
+                                        size="lg"
+                                        fullWidth
+                                        leftIcon={<Smartphone size={20} />}
+                                        className={totalPrice > 0 ? 'bg-[#1877F2]' : ''}
                                     >
-                                        <Smartphone size={20} />
                                         Đặt Lịch Qua Zalo
-                                    </button>
+                                    </Button>
 
                                     <div className="mt-4 flex items-center gap-2 text-xs text-gray-500 justify-center">
                                         <ShieldCheck className="text-green-500" size={14} />
@@ -568,7 +565,7 @@ Mong shop tư vấn thêm ạ!
                             Hãy nhập mã máy vào ô tìm kiếm ở trên, hoặc tự chọn linh kiện bên dưới để xem báo giá.
                         </p>
 
-                        <button
+                        <Button
                             onClick={() => {
                                 setSpecs({
                                     modelName: "Máy của bạn (Tự chọn)",
@@ -577,11 +574,13 @@ Mong shop tư vấn thêm ạ!
                                     message: "Chế độ chọn thủ công. Vui lòng chọn linh kiện để xem giá."
                                 });
                             }}
-                            className="bg-white border-2 border-dashed border-gray-300 text-gray-600 px-6 py-3 rounded-xl font-bold hover:border-blue-500 hover:text-blue-600 transition-all flex items-center gap-2 mx-auto"
+                            variant="outline"
+                            size="lg"
+                            leftIcon={<Settings size={20} />}
+                            className="border-2 border-dashed border-gray-300 text-gray-600 hover:border-blue-500 hover:text-blue-600 bg-white"
                         >
-                            <Settings size={20} />
                             Tự chọn cấu hình thủ công
-                        </button>
+                        </Button>
                     </motion.div>
                 )}
             </main>

@@ -6,6 +6,7 @@ import { Battery, HardDrive, Monitor, CheckCircle, Upload, ArrowRight, Smartphon
 import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import Button from '@/components/ui/Button';
 
 export default function TradeInPage() {
     const [formData, setFormData] = useState({
@@ -173,9 +174,14 @@ Mong LapLap báo giá sớm ạ!
                                         Test Màn hình, Loa, Phím
                                     </h3>
                                 </div>
-                                <Link href="/test" target="_blank" className="text-sm inline-flex items-center gap-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-bold transition-all shadow-sm hover:translate-y-px">
-                                    Test Ngay <ArrowRight size={14} />
-                                </Link>
+                                <Button
+                                    href="/test"
+                                    variant="primary"
+                                    size="sm"
+                                    rightIcon={<ArrowRight size={14} />}
+                                >
+                                    Test Ngay
+                                </Button>
                             </div>
                         </div>
 
@@ -295,10 +301,15 @@ Mong LapLap báo giá sớm ạ!
                                 <textarea name="notes" value={formData.notes} onChange={handleChange} rows={2} className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 focus:ring-1 focus:ring-blue-500 outline-none"></textarea>
                             </div>
 
-                            <button type="submit" className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wide">
-                                <Smartphone size={18} />
+                            <Button
+                                type="submit"
+                                variant="primary"
+                                fullWidth
+                                size="lg"
+                                leftIcon={<Smartphone size={18} />}
+                            >
                                 Gửi Báo Giá Qua Zalo
-                            </button>
+                            </Button>
                         </form>
                     </div>
                 </motion.section>

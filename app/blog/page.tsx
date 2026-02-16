@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Calendar, User, Eye, Tag } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Button from '@/components/ui/Button';
 
 interface Blog {
     _id: string;
@@ -292,26 +293,24 @@ export default function BlogPage() {
                                     <h2 className="text-lg font-extrabold text-gray-800 uppercase tracking-tight">Chủ đề bài viết</h2>
                                 </div>
                                 <div className="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
-                                    <button
+                                    <Button
                                         onClick={() => setSelectedTag('')}
-                                        className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 border-2 ${selectedTag === ''
-                                            ? 'bg-blue-600 border-blue-600 text-white shadow-md'
-                                            : 'bg-white border-gray-100 text-gray-600 hover:border-blue-200 hover:bg-gray-50'
-                                            }`}
+                                        variant={selectedTag === '' ? 'primary' : 'outline'}
+                                        size="sm"
+                                        className={selectedTag === '' ? 'border-none' : 'bg-white border-gray-100 text-gray-600 hover:border-blue-200 hover:bg-gray-50'}
                                     >
                                         Tất cả
-                                    </button>
+                                    </Button>
                                     {allTags.map(tag => (
-                                        <button
+                                        <Button
                                             key={tag}
                                             onClick={() => setSelectedTag(tag)}
-                                            className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 border-2 ${selectedTag === tag
-                                                ? 'bg-blue-600 border-blue-600 text-white shadow-md'
-                                                : 'bg-white border-gray-100 text-gray-600 hover:border-blue-200 hover:bg-gray-50'
-                                                }`}
+                                            variant={selectedTag === tag ? 'primary' : 'outline'}
+                                            size="sm"
+                                            className={selectedTag === tag ? 'border-none' : 'bg-white border-gray-100 text-gray-600 hover:border-blue-200 hover:bg-gray-50'}
                                         >
                                             {tag}
-                                        </button>
+                                        </Button>
                                     ))}
                                 </div>
                             </motion.div>

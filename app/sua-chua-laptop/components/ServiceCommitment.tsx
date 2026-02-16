@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ShieldCheck, Facebook, MessageCircle } from "lucide-react";
+import Button from "@/components/ui/Button";
 
 export default function ServiceCommitment() {
     return (
@@ -73,25 +74,23 @@ export default function ServiceCommitment() {
                     </div>
 
                     <div className="space-y-3">
-                        <a
+                        <Button
+                            variant="facebook"
+                            fullWidth
                             href="https://facebook.com/profile.php?id=61582947329036"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-3 w-full py-4 bg-[#1877F2] hover:bg-[#166fe5] text-white rounded-2xl shadow-lg shadow-blue-500/20 transition-all font-bold group"
+                            leftIcon={<Facebook size={20} />}
                         >
-                            <Facebook size={20} className="group-hover:scale-110 transition-transform" />
-                            <span>Nhắn Facebook</span>
-                        </a>
+                            Nhắn Facebook
+                        </Button>
 
-                        <a
+                        <Button
+                            variant="zalo"
+                            fullWidth
                             href="https://zalo.me/0978648720"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-3 w-full py-4 bg-white hover:bg-gray-100 text-blue-600 rounded-2xl shadow-lg transition-all font-bold"
+                            leftIcon={<MessageCircle size={20} />}
                         >
-                            <MessageCircle size={20} />
-                            <span>Zalo: 0978.648.720</span>
-                        </a>
+                            Zalo: 0978.648.720
+                        </Button>
                     </div>
                 </motion.div>
             </div>

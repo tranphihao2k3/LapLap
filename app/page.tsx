@@ -8,6 +8,7 @@ import ProductCard from "./laptops/ProductCard";
 import { useEffect, useState } from 'react';
 import { MapPin, Truck, Shield, TestTube } from 'lucide-react';
 import { motion, Variants } from "framer-motion";
+import Button from "@/components/ui/Button";
 
 interface LaptopSpec {
   cpu: string;
@@ -172,19 +173,25 @@ export default function HomePage() {
                     </motion.p>
 
                     <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-12">
-                      <Link
+                      <Button
                         href="/laptops"
-                        className="w-full sm:w-auto group bg-white hover:bg-cyan-400 hover:text-white text-blue-900 px-10 py-5 rounded-2xl font-bold transition-all shadow-xl shadow-blue-900/20 flex items-center justify-center gap-3 active:scale-95"
+                        variant="white"
+                        size="xl"
+                        rightIcon="→"
+                        fullWidth
+                        className="sm:w-auto"
                       >
                         MUA NGAY
-                        <span className="group-hover:translate-x-1 transition-transform">→</span>
-                      </Link>
-                      <Link
+                      </Button>
+                      <Button
                         href="/test"
-                        className="w-full sm:w-auto bg-white/5 backdrop-blur-md hover:bg-white/10 text-white border-2 border-white/20 px-10 py-5 rounded-2xl font-bold transition-all flex items-center justify-center active:scale-95"
+                        variant="glass"
+                        size="xl"
+                        fullWidth
+                        className="sm:w-auto"
                       >
                         TEST MÁY MIỄN PHÍ
-                      </Link>
+                      </Button>
                     </motion.div>
 
                     {/* Stats Section - Responsive Grid */}

@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Download, Search, Box, Grid, Laptop, Shield, Zap, Sparkles, Monitor } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Button from '@/components/ui/Button';
 
 interface Software {
     _id: string;
@@ -177,27 +178,27 @@ export default function SoftwarePage() {
 
                     {/* Category Pills */}
                     <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-8">
-                        <button
+                        <Button
                             onClick={() => setSelectedCategory('')}
-                            className={`px-5 py-2.5 rounded-full font-medium transition-all ${!selectedCategory
-                                ? 'bg-white text-blue-900 shadow-lg scale-105'
-                                : 'bg-white/10 text-white hover:bg-white/20 hover:scale-105'
-                                }`}
+                            variant={!selectedCategory ? 'white' : 'glass'}
+                            rounded="full"
+                            size="sm"
+                            className={!selectedCategory ? 'text-blue-900 shadow-xl' : 'border-white/20 text-white hover:bg-white/20'}
                         >
                             Tất cả
-                        </button>
+                        </Button>
                         {CATEGORIES.map((cat) => (
-                            <button
+                            <Button
                                 key={cat.id}
                                 onClick={() => setSelectedCategory(cat.id)}
-                                className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-medium transition-all ${selectedCategory === cat.id
-                                    ? 'bg-white text-blue-900 shadow-lg scale-105'
-                                    : 'bg-white/10 text-white hover:bg-white/20 hover:scale-105'
-                                    }`}
+                                variant={selectedCategory === cat.id ? 'white' : 'glass'}
+                                rounded="full"
+                                size="sm"
+                                leftIcon={<cat.icon className="w-4 h-4" />}
+                                className={selectedCategory === cat.id ? 'text-blue-900 shadow-xl' : 'border-white/20 text-white hover:bg-white/20'}
                             >
-                                <cat.icon className="w-4 h-4" />
                                 {cat.name}
-                            </button>
+                            </Button>
                         ))}
                     </div>
                 </div>
