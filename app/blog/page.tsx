@@ -158,54 +158,120 @@ export default function BlogPage() {
     return (
         <>
             <Header />
-            <main className="flex-1 container mx-auto p-4">
-                {/* Hero Section */}
-                <motion.section
-                    className="relative bg-[#1e3a5f] rounded-3xl p-8 md:p-16 mb-12 overflow-hidden"
-                    initial="hidden"
-                    animate="visible"
-                    variants={stagger}
-                >
-                    {/* Decorative Elements */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl"></div>
 
-                    {/* Content */}
-                    <div className="relative z-10">
-                        <motion.div variants={fadeInUp} className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-4">
-                            ✨ Tin tức & Hướng dẫn
+            {/* Hero Section - Full Width & Modern */}
+            <section className="relative w-full h-[300px] md:h-[350px] bg-gradient-to-r from-indigo-900 via-blue-800 to-blue-900 text-white overflow-hidden shadow-md mb-8">
+                {/* Background Patterns */}
+                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+                <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+                <div className="absolute -bottom-8 -left-8 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+
+                <div className="container mx-auto px-4 h-full relative z-10 flex items-center justify-between">
+                    {/* Left: Text Content */}
+                    <div className="w-full md:w-1/2 text-center md:text-left pt-10 md:pt-0">
+                        <motion.div
+                            initial={{ opacity: 0, x: -30 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="inline-block px-4 py-1.5 bg-blue-500/20 backdrop-blur-sm rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-blue-400/30 text-blue-100"
+                        >
+                            ✨ Tin tức & Công nghệ
                         </motion.div>
-                        <motion.h1 variants={fadeInUp} className="text-4xl md:text-6xl font-black mb-4 text-white leading-tight">
-                            Blog LapLap
+                        <motion.h1
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-4xl md:text-6xl font-black mb-4 leading-tight"
+                        >
+                            Blog LapLap <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-purple-200">
+                                Kiến Thức & Đam Mê
+                            </span>
                         </motion.h1>
-                        <motion.p variants={fadeInUp} className="text-lg md:text-xl text-white/90 max-w-2xl leading-relaxed">
-                            Tin tức, hướng dẫn và đánh giá laptop mới nhất tại Cần Thơ
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="text-lg text-blue-100 max-w-lg mx-auto md:mx-0 leading-relaxed"
+                        >
+                            Cập nhật xu hướng công nghệ, thủ thuật hay và đánh giá laptop chi tiết nhất tại Cần Thơ.
                         </motion.p>
 
-                        {/* Stats */}
-                        <motion.div variants={fadeInUp} className="flex flex-wrap gap-6 mt-8">
-                            <div className="flex items-center gap-2 text-white/90">
-                                <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                                    <Tag className="w-5 h-5" />
-                                </div>
-                                <div>
-                                    <div className="text-2xl font-bold">{blogs.length}</div>
-                                    <div className="text-sm text-white/70">Bài viết</div>
-                                </div>
+                        {/* Stats - Horizontal */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className="flex items-center justify-center md:justify-start gap-8 mt-6 text-blue-100/80"
+                        >
+                            <div className="flex items-center gap-2">
+                                <Tag className="w-5 h-5 text-yellow-400" />
+                                <span className="font-semibold">{blogs.length} Bài viết</span>
                             </div>
-                            <div className="flex items-center gap-2 text-white/90">
-                                <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                                    <Eye className="w-5 h-5" />
-                                </div>
-                                <div>
-                                    <div className="text-2xl font-bold">{blogs.reduce((sum, blog) => sum + blog.viewCount, 0)}</div>
-                                    <div className="text-sm text-white/70">Lượt xem</div>
-                                </div>
+                            <div className="flex items-center gap-2">
+                                <Eye className="w-5 h-5 text-green-400" />
+                                <span className="font-semibold">{blogs.reduce((sum, blog) => sum + blog.viewCount, 0).toLocaleString()} Lượt xem</span>
                             </div>
                         </motion.div>
                     </div>
-                </motion.section>
 
+                    {/* Right: Abstract 3D Illustration */}
+                    <div className="hidden md:flex w-1/2 items-center justify-center relative translate-y-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.8 }}
+                            className="relative z-10"
+                        >
+                            {/* Floating Cards Effect */}
+                            <motion.div
+                                animate={{ y: [0, -15, 0] }}
+                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                className="absolute -top-16 -left-12 bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl shadow-xl w-48 rotate-[-6deg]"
+                            >
+                                <div className="h-3 w-2/3 bg-white/30 rounded-full mb-2"></div>
+                                <div className="h-2 w-full bg-white/20 rounded-full mb-1"></div>
+                                <div className="h-2 w-4/5 bg-white/20 rounded-full"></div>
+                            </motion.div>
+
+                            <motion.div
+                                animate={{ y: [0, -20, 0] }}
+                                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                                className="bg-gradient-to-br from-blue-600 to-indigo-600 p-6 rounded-2xl shadow-2xl border border-white/10 w-64 relative z-20 rotate-3"
+                            >
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                                        <Calendar className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="h-2 w-20 bg-white/40 rounded-full mb-1"></div>
+                                        <div className="h-2 w-12 bg-white/20 rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="h-3 w-full bg-white/30 rounded-full"></div>
+                                    <div className="h-3 w-5/6 bg-white/30 rounded-full"></div>
+                                    <div className="h-3 w-4/6 bg-white/30 rounded-full"></div>
+                                </div>
+                            </motion.div>
+
+                            <motion.div
+                                animate={{ y: [0, -10, 0] }}
+                                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                                className="absolute -bottom-10 -right-8 bg-white p-4 rounded-xl shadow-lg w-52 rotate-6 text-gray-800"
+                            >
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <User className="w-4 h-4 text-blue-600" />
+                                    </div>
+                                    <div className="text-xs font-bold text-gray-700">Admin LapLap</div>
+                                </div>
+                                <div className="text-xs text-gray-500 italic">"Chia sẻ kiến thức là niềm vui!"</div>
+                            </motion.div>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            <main className="flex-1 container mx-auto p-4">
                 {loading ? (
                     <div className="text-center py-20">
                         <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
@@ -254,7 +320,7 @@ export default function BlogPage() {
                         {/* Blog Grid */}
                         {filteredBlogs.length > 0 ? (
                             <motion.div
-                                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
                                 variants={stagger}
                                 initial="hidden"
                                 animate="visible"

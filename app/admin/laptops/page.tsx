@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Plus, Edit2, Trash2, X, Image as ImageIcon, MinusCircle, PlusCircle, Search, Filter, ChevronDown, ChevronUp, Sparkles, Loader2 } from 'lucide-react';
 import SearchableSelect from './SearchableSelect';
 import PriceInput from './PriceInput';
+import Toast from '@/components/admin/Toast';
 import ImageUploader from '@/components/admin/ImageUploader';
 import QuickFillTextarea from '@/components/admin/QuickFillTextarea';
 import { COMMON_CPUS, COMMON_GPUS, COMMON_RAM_SIZES, COMMON_SSD_SIZES, COMMON_SCREENS, COMMON_BATTERIES } from './commonSpecs';
@@ -105,6 +106,16 @@ export default function LaptopsPage() {
         },
         status: 'active',
     });
+
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info'; isVisible: boolean }>({
+        message: '',
+        type: 'info',
+        isVisible: false
+    });
+
+    const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+        setToast({ message, type, isVisible: true });
+    };
 
     useEffect(() => {
         fetchData();
@@ -321,12 +332,13 @@ export default function LaptopsPage() {
             if (data.success) {
                 fetchData();
                 handleCloseModal();
+                showToast(editingLaptop ? 'Cập nhật thành công!' : 'Thêm mới thành công!', 'success');
             } else {
-                alert('Error: ' + data.error);
+                showToast('Lỗi: ' + data.error, 'error');
             }
         } catch (error) {
             console.error('Error saving laptop:', error);
-            alert('Error saving laptop');
+            showToast('Lỗi khi lưu sản phẩm', 'error');
         }
     };
 
@@ -361,15 +373,15 @@ export default function LaptopsPage() {
             const data = await res.json();
 
             if (data.success) {
-                alert(`Đã xoá thành công ${data.deletedCount} sản phẩm`);
+                showToast(`Đã xoá thành công ${data.deletedCount} sản phẩm`, 'success');
                 setSelectedIds([]);
                 fetchData();
             } else {
-                alert('Lỗi: ' + data.error);
+                showToast('Lỗi: ' + data.error, 'error');
             }
         } catch (error) {
             console.error('Error deleting laptops:', error);
-            alert('Lỗi khi xoá sản phẩm');
+            showToast('Lỗi khi xoá sản phẩm', 'error');
         }
     };
 
@@ -385,12 +397,13 @@ export default function LaptopsPage() {
 
             if (data.success) {
                 fetchData();
+                showToast('Đã xóa thành công!', 'success');
             } else {
-                alert('Error: ' + data.error);
+                showToast('Lỗi: ' + data.error, 'error');
             }
         } catch (error) {
             console.error('Error deleting laptop:', error);
-            alert('Error deleting laptop');
+            showToast('Lỗi khi xóa sản phẩm', 'error');
         }
     };
 
@@ -510,11 +523,11 @@ export default function LaptopsPage() {
                 setAiSearchCriteria(result.data.criteria);
                 setLaptops(result.data.laptops);
             } else {
-                alert(result.message || 'Không thể tìm kiếm');
+                showToast(result.message || 'Không thể tìm kiếm', 'error');
             }
         } catch (error) {
             console.error('AI Search Error:', error);
-            alert('Có lỗi xảy ra khi tìm kiếm');
+            showToast('Có lỗi xảy ra khi tìm kiếm', 'error');
         } finally {
             setAiSearchLoading(false);
         }
@@ -530,6 +543,12 @@ export default function LaptopsPage() {
 
     return (
         <div>
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                isVisible={toast.isVisible}
+                onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+            />
             {/* Header with Search and Add Button */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex-1">
