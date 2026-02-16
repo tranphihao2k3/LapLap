@@ -160,7 +160,7 @@ export default function BlogPage() {
             <Header />
 
             {/* Hero Section - Full Width & Modern */}
-            <section className="relative w-full h-[300px] md:h-[350px] bg-gradient-to-r from-indigo-900 via-blue-800 to-blue-900 text-white overflow-hidden shadow-md mb-8">
+            <section className="relative w-full min-h-[320px] md:h-[450px] bg-gradient-to-r from-indigo-900 via-blue-800 to-blue-900 text-white overflow-hidden shadow-md mb-8 py-12 md:py-0">
                 {/* Background Patterns */}
                 <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
                 <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
@@ -168,7 +168,7 @@ export default function BlogPage() {
 
                 <div className="container mx-auto px-4 h-full relative z-10 flex items-center justify-between">
                     {/* Left: Text Content */}
-                    <div className="w-full md:w-1/2 text-center md:text-left pt-10 md:pt-0">
+                    <div className="w-full md:w-1/2 text-center md:text-left">
                         <motion.div
                             initial={{ opacity: 0, x: -30 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -279,24 +279,24 @@ export default function BlogPage() {
                     </div>
                 ) : (
                     <>
-                        {/* Tags Filter */}
+                        {/* Tags Filter - Condensed and Scrollable */}
                         {allTags.length > 0 && (
                             <motion.div
-                                className="mb-10"
-                                initial={{ opacity: 0, y: 20 }}
+                                className="mb-8"
+                                initial={{ opacity: 0, y: 15 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3 }}
+                                transition={{ delay: 0.2 }}
                             >
                                 <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-1 h-6 bg-blue-600 rounded-full"></div>
-                                    <h2 className="text-xl font-bold text-gray-800">Lọc theo chủ đề</h2>
+                                    <div className="w-1 h-5 bg-blue-600 rounded-full"></div>
+                                    <h2 className="text-lg font-extrabold text-gray-800 uppercase tracking-tight">Chủ đề bài viết</h2>
                                 </div>
-                                <div className="flex flex-wrap gap-3">
+                                <div className="flex flex-wrap gap-2 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
                                     <button
                                         onClick={() => setSelectedTag('')}
-                                        className={`px-5 py-2.5 rounded-xl font-medium transition-all duration-200 ${selectedTag === ''
-                                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105'
-                                            : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-blue-300'
+                                        className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 border-2 ${selectedTag === ''
+                                            ? 'bg-blue-600 border-blue-600 text-white shadow-md'
+                                            : 'bg-white border-gray-100 text-gray-600 hover:border-blue-200 hover:bg-gray-50'
                                             }`}
                                     >
                                         Tất cả
@@ -305,9 +305,9 @@ export default function BlogPage() {
                                         <button
                                             key={tag}
                                             onClick={() => setSelectedTag(tag)}
-                                            className={`px-5 py-2.5 rounded-xl font-medium transition-all duration-200 ${selectedTag === tag
-                                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-105'
-                                                : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-blue-300'
+                                            className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all duration-200 border-2 ${selectedTag === tag
+                                                ? 'bg-blue-600 border-blue-600 text-white shadow-md'
+                                                : 'bg-white border-gray-100 text-gray-600 hover:border-blue-200 hover:bg-gray-50'
                                                 }`}
                                         >
                                             {tag}
@@ -320,7 +320,7 @@ export default function BlogPage() {
                         {/* Blog Grid */}
                         {filteredBlogs.length > 0 ? (
                             <motion.div
-                                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
+                                className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"
                                 variants={stagger}
                                 initial="hidden"
                                 animate="visible"
@@ -337,7 +337,7 @@ export default function BlogPage() {
                                         >
                                             {/* Featured Image */}
                                             {blog.featuredImage && (
-                                                <div className="relative h-48 bg-gradient-to-br from-blue-100 to-purple-100 overflow-hidden">
+                                                <div className="relative h-32 md:h-48 bg-gradient-to-br from-blue-100 to-purple-100 overflow-hidden">
                                                     <img
                                                         src={blog.featuredImage}
                                                         alt={blog.title}
@@ -346,7 +346,7 @@ export default function BlogPage() {
                                                 </div>
                                             )}
                                             {!blog.featuredImage && (
-                                                <div className="h-48 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                                                <div className="h-32 md:h-48 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
                                                     <Tag className="w-16 h-16 text-blue-300" />
                                                 </div>
                                             )}
