@@ -87,6 +87,7 @@ export default function Header() {
     const menuItems = [
         { href: "/laptops", label: "Laptop" },
         { href: "/thu-cu-doi-moi", label: "Thu cũ đổi mới" },
+        { href: "/nang-cap", label: "Nâng cấp" },
         { href: "/linh-kien-phu-kien", label: "Linh kiện & Phụ kiện" },
         { href: "/cai-dat-phan-mem", label: "Driver & Soft" },
         { href: "/blog", label: "Blog" },
