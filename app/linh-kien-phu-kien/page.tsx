@@ -103,29 +103,36 @@ export default function ComponentsAndAccessoriesPage() {
                 </div>
 
                 <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center">
-                    {/* Floating Component Images - Desktop only */}
+                    {/* Floating Component Icons - Desktop only */}
                     <div className="hidden lg:block">
-                        <motion.img
-                            src="https://pngimg.com/uploads/ram/ram_PNG45.png"
-                            alt="RAM"
-                            className="absolute -left-10 top-0 w-32 h-32 object-contain opacity-30 blur-[1px]"
-                            animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
+                        <motion.div
+                            className="absolute -left-10 top-0 opacity-20"
+                            animate={{ y: [0, -20, 0], rotate: [0, 15, 0] }}
                             transition={{ duration: 5, repeat: Infinity }}
-                        />
-                        <motion.img
-                            src="https://pngimg.com/uploads/ssd/ssd_PNG18.png"
-                            alt="SSD"
-                            className="absolute -right-10 top-10 w-40 h-40 object-contain opacity-20 blur-[1px]"
-                            animate={{ y: [0, 20, 0], rotate: [0, -5, 0] }}
-                            transition={{ duration: 7, repeat: Infinity }}
-                        />
-                        <motion.img
-                            src="https://www.freeiconspng.com/uploads/computer-mouse-png-7.png"
-                            alt="Mouse"
-                            className="absolute left-1/4 -bottom-10 w-24 h-24 object-contain opacity-20"
-                            animate={{ x: [0, 10, 0], y: [0, -10, 0] }}
+                        >
+                            <Cpu size={120} className="text-blue-300" />
+                        </motion.div>
+                        <motion.div
+                            className="absolute -right-20 top-20 opacity-15"
+                            animate={{ y: [0, 30, 0], rotate: [0, -20, 0] }}
+                            transition={{ duration: 8, repeat: Infinity }}
+                        >
+                            <HardDrive size={160} className="text-indigo-300" />
+                        </motion.div>
+                        <motion.div
+                            className="absolute left-[15%] -bottom-10 opacity-15"
+                            animate={{ x: [0, 15, 0], y: [0, -15, 0] }}
                             transition={{ duration: 6, repeat: Infinity }}
-                        />
+                        >
+                            <Mouse size={80} className="text-purple-300" />
+                        </motion.div>
+                        <motion.div
+                            className="absolute right-[15%] bottom-0 opacity-10"
+                            animate={{ y: [0, -10, 0], scale: [1, 1.1, 1] }}
+                            transition={{ duration: 4, repeat: Infinity }}
+                        >
+                            <Keyboard size={100} className="text-blue-200" />
+                        </motion.div>
                     </div>
 
                     <motion.h1
@@ -188,7 +195,7 @@ export default function ComponentsAndAccessoriesPage() {
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
                     </div>
                 ) : filteredComponents.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 max-w-7xl mx-auto">
                         <AnimatePresence>
                             {filteredComponents.map((item, index) => (
                                 <motion.div

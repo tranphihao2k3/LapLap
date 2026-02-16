@@ -80,11 +80,43 @@ export default function SoftwarePage() {
 
             {/* Hero Section */}
             <div className="relative bg-gradient-to-br from-indigo-900 via-blue-900 to-purple-900 text-white overflow-hidden py-12 md:pb-20 md:pt-10">
-                {/* Animated Background */}
+                {/* Animated Background & Icons */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-blob"></div>
                     <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
+
+                    {/* Floating Icons - Desktop Only */}
+                    <div className="hidden lg:block">
+                        <motion.div
+                            className="absolute left-[10%] top-20 opacity-20"
+                            animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }}
+                            transition={{ duration: 5, repeat: Infinity }}
+                        >
+                            <Laptop size={120} className="text-blue-300" />
+                        </motion.div>
+                        <motion.div
+                            className="absolute right-[10%] top-40 opacity-15"
+                            animate={{ y: [0, 30, 0], rotate: [0, -10, 0] }}
+                            transition={{ duration: 7, repeat: Infinity }}
+                        >
+                            <Download size={100} className="text-indigo-300" />
+                        </motion.div>
+                        <motion.div
+                            className="absolute left-[20%] bottom-10 opacity-15"
+                            animate={{ y: [0, -25, 0] }}
+                            transition={{ duration: 6, repeat: Infinity }}
+                        >
+                            <Shield size={60} className="text-purple-300" />
+                        </motion.div>
+                        <motion.div
+                            className="absolute right-[20%] bottom-20 opacity-15"
+                            animate={{ scale: [1, 1.2, 1], rotate: [0, 15, 0] }}
+                            transition={{ duration: 4, repeat: Infinity }}
+                        >
+                            <Zap size={80} className="text-yellow-300" />
+                        </motion.div>
+                    </div>
                 </div>
 
                 <div className="container mx-auto px-4 relative z-10">
@@ -178,7 +210,7 @@ export default function SoftwarePage() {
                         <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent"></div>
                     </div>
                 ) : filteredList.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 max-w-7xl mx-auto">
                         {filteredList.map((sw, index) => (
                             <motion.div
                                 key={sw._id}
