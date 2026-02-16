@@ -19,7 +19,8 @@ import {
     FileText,
     ChevronLeft,
     PanelLeftClose,
-    PanelLeftOpen
+    PanelLeftOpen,
+    Cpu
 } from 'lucide-react';
 
 export default function AdminLayoutContent({ children }: { children: ReactNode }) {
@@ -33,7 +34,9 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
         { icon: FolderTree, label: 'Danh mục', href: '/admin/categories' },
         { icon: Building2, label: 'Thương hiệu', href: '/admin/brands' },
         { icon: Laptop, label: 'Sản phẩm', href: '/admin/laptops' },
+        { icon: Cpu, label: 'Linh kiện', href: '/admin/linh-kien' },
         { icon: FileText, label: 'Blog', href: '/admin/blog' },
+        { icon: Laptop, label: 'Driver & Soft', href: '/admin/software' }, // Reusing Laptop icon or finding a better one but Laptop is fine for now
         { icon: Users, label: 'Users', href: '/admin/users' },
     ];
 

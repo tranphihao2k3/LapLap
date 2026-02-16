@@ -20,24 +20,16 @@ interface Stats {
     brands: number;
     laptops: number;
     activeLaptops: number;
+    software: number;
 }
-
-interface RecentLaptop {
-    _id: string;
-    name: string;
-    price: number;
-    brandId: { name: string };
-    categoryId: { name: string };
-    status: string;
-    createdAt: string;
-}
-
+// ...
 export default function AdminDashboard() {
     const [stats, setStats] = useState<Stats>({
         categories: 0,
         brands: 0,
         laptops: 0,
         activeLaptops: 0,
+        software: 0,
     });
     const [recentLaptops, setRecentLaptops] = useState<RecentLaptop[]>([]);
     const [loading, setLoading] = useState(true);
@@ -48,21 +40,24 @@ export default function AdminDashboard() {
 
     const fetchData = async () => {
         try {
-            const [categoriesRes, brandsRes, laptopsRes] = await Promise.all([
+            const [categoriesRes, brandsRes, laptopsRes, softwareRes] = await Promise.all([
                 fetch('/api/admin/categories'),
                 fetch('/api/admin/brands'),
                 fetch('/api/admin/laptops'),
+                fetch('/api/admin/software'),
             ]);
 
             const categoriesData = await categoriesRes.json();
             const brandsData = await brandsRes.json();
             const laptopsData = await laptopsRes.json();
+            const softwareData = await softwareRes.json();
 
             setStats({
                 categories: categoriesData.data?.length || 0,
                 brands: brandsData.data?.length || 0,
                 laptops: laptopsData.data?.length || 0,
                 activeLaptops: laptopsData.data?.filter((l: any) => l.status === 'active').length || 0,
+                software: softwareData.data?.length || 0,
             });
 
             // Get 5 most recent laptops
@@ -130,6 +125,16 @@ export default function AdminDashboard() {
             bgGradient: 'from-orange-50 to-orange-100',
             iconBg: 'bg-gradient-to-br from-orange-500 to-orange-600',
         },
+        {
+            icon: Package,
+            label: 'Driver & Tools',
+            value: stats.software,
+            change: '+5',
+            isPositive: true,
+            color: 'from-teal-500 via-teal-600 to-teal-700',
+            bgGradient: 'from-teal-50 to-teal-100',
+            iconBg: 'bg-gradient-to-br from-teal-500 to-teal-600',
+        },
     ];
 
     return (
@@ -150,8 +155,8 @@ export default function AdminDashboard() {
 
             {/* Stats Cards */}
             {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {[1, 2, 3, 4].map((i) => (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                    {[1, 2, 3, 4, 5].map((i) => (
                         <div key={i} className="bg-white rounded-2xl p-6 shadow-lg animate-pulse">
                             <div className="h-12 w-12 bg-gray-200 rounded-xl mb-4"></div>
                             <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
@@ -160,7 +165,7 @@ export default function AdminDashboard() {
                     ))}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                     {statCards.map((card, index) => (
                         <div
                             key={index}
@@ -235,8 +240,8 @@ export default function AdminDashboard() {
                                     <div className="text-right">
                                         <div className="font-bold text-blue-600">{formatPrice(laptop.price)}</div>
                                         <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold mt-1 ${laptop.status === 'active'
-                                                ? 'bg-green-100 text-green-700'
-                                                : 'bg-gray-100 text-gray-700'
+                                            ? 'bg-green-100 text-green-700'
+                                            : 'bg-gray-100 text-gray-700'
                                             }`}>
                                             {laptop.status}
                                         </span>
@@ -273,6 +278,19 @@ export default function AdminDashboard() {
                         </a>
 
                         <a
+                            href="/admin/software"
+                            className="flex items-center gap-3 p-4 bg-gradient-to-r from-teal-50 to-teal-100 border-2 border-teal-200 rounded-xl hover:from-teal-100 hover:to-teal-200 hover:border-teal-300 transition-all duration-200 group"
+                        >
+                            <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                                <Package className="w-6 h-6 text-white" />
+                            </div>
+                            <div className="flex-1">
+                                <div className="font-semibold text-gray-800">Quản lý Driver</div>
+                                <div className="text-sm text-gray-600">Driver & Tools</div>
+                            </div>
+                        </a>
+
+                        <a
                             href="/admin/brands"
                             className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-purple-100 border-2 border-purple-200 rounded-xl hover:from-purple-100 hover:to-purple-200 hover:border-purple-300 transition-all duration-200 group"
                         >
@@ -282,19 +300,6 @@ export default function AdminDashboard() {
                             <div className="flex-1">
                                 <div className="font-semibold text-gray-800">Quản lý Thương hiệu</div>
                                 <div className="text-sm text-gray-600">Thêm, sửa thương hiệu</div>
-                            </div>
-                        </a>
-
-                        <a
-                            href="/admin/categories"
-                            className="flex items-center gap-3 p-4 bg-gradient-to-r from-orange-50 to-orange-100 border-2 border-orange-200 rounded-xl hover:from-orange-100 hover:to-orange-200 hover:border-orange-300 transition-all duration-200 group"
-                        >
-                            <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                                <FolderTree className="w-6 h-6 text-white" />
-                            </div>
-                            <div className="flex-1">
-                                <div className="font-semibold text-gray-800">Quản lý Danh mục</div>
-                                <div className="text-sm text-gray-600">Thêm, sửa danh mục</div>
                             </div>
                         </a>
                     </div>

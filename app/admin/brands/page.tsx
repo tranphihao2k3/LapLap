@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Plus, Edit2, Trash2, X } from 'lucide-react';
+import Toast from '@/components/admin/Toast';
 
 interface Brand {
     _id: string;
@@ -23,6 +24,16 @@ export default function BrandsPage() {
         logo: '',
         description: '',
     });
+
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info'; isVisible: boolean }>({
+        message: '',
+        type: 'info',
+        isVisible: false
+    });
+
+    const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+        setToast({ message, type, isVisible: true });
+    };
 
     useEffect(() => {
         fetchBrands();
@@ -63,12 +74,13 @@ export default function BrandsPage() {
             if (data.success) {
                 fetchBrands();
                 handleCloseModal();
+                showToast(editingBrand ? 'Update successful!' : 'Create successful!', 'success');
             } else {
-                alert('Error: ' + data.error);
+                showToast('Error: ' + data.error, 'error');
             }
         } catch (error) {
             console.error('Error saving brand:', error);
-            alert('Error saving brand');
+            showToast('Error saving brand', 'error');
         }
     };
 
@@ -84,12 +96,13 @@ export default function BrandsPage() {
 
             if (data.success) {
                 fetchBrands();
+                showToast('Delete successful!', 'success');
             } else {
-                alert('Error: ' + data.error);
+                showToast('Error: ' + data.error, 'error');
             }
         } catch (error) {
             console.error('Error deleting brand:', error);
-            alert('Error deleting brand');
+            showToast('Error deleting brand', 'error');
         }
     };
 
@@ -112,6 +125,12 @@ export default function BrandsPage() {
 
     return (
         <div>
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                isVisible={toast.isVisible}
+                onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+            />
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-800">Brands</h1>
