@@ -7,10 +7,12 @@ export default function ClientPagesLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="">
-            <div className="">
+        <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-grow">
                 {children}
-            </div>
+            </main>
+            <Footer />
         </div>
     );
 }
