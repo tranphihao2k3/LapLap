@@ -102,7 +102,32 @@ export default function ComponentsAndAccessoriesPage() {
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500 rounded-full blur-3xl animate-pulse delay-700"></div>
                 </div>
 
-                <div className="container mx-auto px-4 relative z-10 text-center">
+                <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center">
+                    {/* Floating Component Images - Desktop only */}
+                    <div className="hidden lg:block">
+                        <motion.img
+                            src="https://pngimg.com/uploads/ram/ram_PNG45.png"
+                            alt="RAM"
+                            className="absolute -left-10 top-0 w-32 h-32 object-contain opacity-30 blur-[1px]"
+                            animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
+                            transition={{ duration: 5, repeat: Infinity }}
+                        />
+                        <motion.img
+                            src="https://pngimg.com/uploads/ssd/ssd_PNG18.png"
+                            alt="SSD"
+                            className="absolute -right-10 top-10 w-40 h-40 object-contain opacity-20 blur-[1px]"
+                            animate={{ y: [0, 20, 0], rotate: [0, -5, 0] }}
+                            transition={{ duration: 7, repeat: Infinity }}
+                        />
+                        <motion.img
+                            src="https://www.freeiconspng.com/uploads/computer-mouse-png-7.png"
+                            alt="Mouse"
+                            className="absolute left-1/4 -bottom-10 w-24 h-24 object-contain opacity-20"
+                            animate={{ x: [0, 10, 0], y: [0, -10, 0] }}
+                            transition={{ duration: 6, repeat: Infinity }}
+                        />
+                    </div>
+
                     <motion.h1
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -125,7 +150,7 @@ export default function ComponentsAndAccessoriesPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
-                        className="max-w-xl mx-auto relative"
+                        className="max-w-xl w-full mx-auto relative"
                     >
                         <input
                             type="text"
