@@ -51,7 +51,7 @@ Mong LapLap báo giá sớm ạ!
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 font-sans text-gray-800">
+        <div className="min-h-screen bg-gray-50 font-sans text-gray-800 ">
             <Header />
 
             {/* Hero Section - Compact & Illustrated */}
@@ -61,7 +61,7 @@ Mong LapLap báo giá sớm ạ!
                 <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
                 <div className="absolute -bottom-8 -left-8 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
 
-                <div className="container mx-auto px-4 h-full relative z-10 flex items-center justify-between">
+                <div className="container mx-auto max-w-5xl px-4 h-full relative z-10 flex items-center justify-between">
                     {/* Left: Text Content */}
                     <div className="w-full md:w-1/2 text-center md:text-left">
                         <motion.div
@@ -146,7 +146,7 @@ Mong LapLap báo giá sớm ạ!
                 </div>
             </section>
 
-            <main className="container mx-auto px-4 py-8 space-y-8">
+            <main className="container mx-auto max-w-5xl px-4 py-12 space-y-8">
 
                 {/* Step 1: Hardware Check - Compact */}
                 <motion.section

@@ -25,7 +25,7 @@ export default function CleaningServicePage() {
                 <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob"></div>
                 <div className="absolute -bottom-8 -left-8 w-72 h-72 bg-purple-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
 
-                <div className="container mx-auto px-4 h-full relative z-10 flex items-center justify-between">
+                <div className="container mx-auto max-w-5xl px-4 h-full relative z-10 flex items-center justify-between">
                     {/* Left: Text Content */}
                     <div className="w-full md:w-3/5 text-center md:text-left">
                         <motion.div
@@ -119,7 +119,7 @@ export default function CleaningServicePage() {
             <main className="min-h-screen bg-slate-50 text-slate-800 pb-24 pt-8">
                 {/* Removed original banner section */}
 
-                <div className="container mx-auto max-w-4xl px-4 space-y-20">
+                <div className="container mx-auto max-w-5xl px-4 space-y-20">
 
                     {/* ================= QUY TRÌNH ================= */}
                     <CleaningProcess />

@@ -117,7 +117,7 @@ export default function UnifiedTestPage() {
                 <div className="absolute top-0 right-0 w-96 h-96 bg-pink-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob"></div>
                 <div className="absolute -bottom-8 -left-8 w-72 h-72 bg-blue-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
 
-                <div className="container mx-auto px-4 h-full relative z-10 flex items-center justify-between">
+                <div className="container mx-auto max-w-5xl px-4 h-full relative z-10 flex items-center justify-between">
                     {/* Left: Text Content */}
                     <div className="w-full md:w-3/5 text-center md:text-left">
                         <motion.div
@@ -227,7 +227,7 @@ export default function UnifiedTestPage() {
                                     variants={itemVariants}
                                     whileHover={{ scale: 1.05, y: -5 }}
                                     whileTap={{ scale: 0.95 }}
-                                    className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-blue-500 h-full flex flex-col items-center text-center cursor-pointer"
+                                    className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-blue-500 h-full flex flex-col items-center text-center cursor-pointer block"
                                 >
                                     <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
                                         {test.title.split(" ")[0]}
@@ -237,23 +237,21 @@ export default function UnifiedTestPage() {
                                     </h2>
                                     <p className="text-gray-600 flex-grow">{test.desc}</p>
                                     <div className="mt-4">
-                                        <Button
-                                            variant="ghost"
-                                            className="text-blue-600 group-hover:translate-x-2 transition-transform"
-                                            rightIcon={<ArrowRight size={18} />}
-                                        >
-                                            Bắt đầu test
-                                        </Button>
+                                        <div className="flex items-center gap-2 text-blue-600 font-bold group-hover:translate-x-2 transition-transform">
+                                            Bắt đầu test <ArrowRight size={18} />
+                                        </div>
                                     </div>
                                 </motion.a>
                             ) : (
-                                <motion.button
+                                <motion.div
                                     key={test.id}
                                     onClick={() => setActiveTest(test.id as TestType)}
                                     variants={itemVariants}
                                     whileHover={{ scale: 1.05, y: -5 }}
                                     whileTap={{ scale: 0.95 }}
-                                    className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-blue-500 h-full flex flex-col items-center text-center w-full"
+                                    role="button"
+                                    include-tab-index="0"
+                                    className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-blue-500 h-full flex flex-col items-center text-center w-full cursor-pointer"
                                 >
                                     <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
                                         {test.title.split(" ")[0]}
@@ -263,15 +261,11 @@ export default function UnifiedTestPage() {
                                     </h2>
                                     <p className="text-gray-600 flex-grow">{test.desc}</p>
                                     <div className="mt-4">
-                                        <Button
-                                            variant="ghost"
-                                            className="text-blue-600 group-hover:translate-x-2 transition-transform"
-                                            rightIcon={<ArrowRight size={18} />}
-                                        >
-                                            Bắt đầu test
-                                        </Button>
+                                        <div className="flex items-center gap-2 text-blue-600 font-bold group-hover:translate-x-2 transition-transform">
+                                            Bắt đầu test <ArrowRight size={18} />
+                                        </div>
                                     </div>
-                                </motion.button>
+                                </motion.div>
                             )
                         ))}
                     </motion.div>

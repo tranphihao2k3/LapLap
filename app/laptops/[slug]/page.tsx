@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
+import TechLoader from '@/components/ui/TechLoader';
 
 import { Product } from '../types';
 
@@ -62,10 +63,7 @@ export default function ProductDetailPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-50 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#004e9a] mx-auto"></div>
-                    <p className="text-gray-600 mt-4 text-lg">Đang tải sản phẩm...</p>
-                </div>
+                <TechLoader />
             </div>
         );
     }

@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import { Download, Search, Box, Grid, Laptop, Shield, Zap, Sparkles, Monitor } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Button from '@/components/ui/Button';
+import TechLoader from '@/components/ui/TechLoader';
 
 interface Software {
     _id: string;
@@ -120,7 +121,7 @@ export default function SoftwarePage() {
                     </div>
                 </div>
 
-                <div className="container mx-auto px-4 relative z-10">
+                <div className="container mx-auto max-w-5xl px-4 relative z-10">
                     <div className="text-center max-w-3xl mx-auto mb-12">
                         <motion.div
                             initial={{ opacity: 0, y: -20 }}
@@ -205,13 +206,11 @@ export default function SoftwarePage() {
             </div>
 
             {/* List Section */}
-            <main className="container mx-auto px-4 -mt-10 relative z-20 pb-20">
+            <main className="container mx-auto max-w-5xl px-4 py-12">
                 {loading ? (
-                    <div className="flex justify-center py-20">
-                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent"></div>
-                    </div>
+                    <TechLoader />
                 ) : filteredList.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 max-w-7xl mx-auto">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 max-w-7xl mx-auto">
                         {filteredList.map((sw, index) => (
                             <motion.div
                                 key={sw._id}

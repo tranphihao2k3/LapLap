@@ -189,7 +189,7 @@ Mong shop tư vấn thêm ạ!
                     <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500 rounded-full blur-[100px] animate-pulse delay-1000"></div>
                 </div>
 
-                <div className="container mx-auto px-4 relative z-10 text-center">
+                <div className="container mx-auto max-w-5xl px-4 relative z-10 text-center">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -287,7 +287,7 @@ Mong shop tư vấn thêm ạ!
             </div>
 
             {/* CONTENT AREA */}
-            <main className="container mx-auto px-4 py-12 -mt-10 relative z-20">
+            <main className="container mx-auto max-w-5xl px-4 py-12 -mt-10 relative z-20">
                 <AnimatePresence>
                     {specs && (
                         <motion.div

@@ -55,7 +55,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             secondary: 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30 hover:bg-indigo-700',
             outline: 'bg-transparent border-2 border-blue-600 text-blue-600 hover:bg-blue-50',
             ghost: 'bg-transparent hover:bg-gray-100 text-gray-700',
-            white: 'bg-white text-blue-600 shadow-xl hover:bg-gray-50',
+            white: 'bg-white text-blue-600 shadow-xl shadow-blue-900/20 hover:shadow-2xl hover:shadow-blue-500/30 hover:bg-blue-50 border-2 border-transparent hover:border-blue-200',
             glass: 'bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20',
             facebook: 'bg-[#1877F2] text-white shadow-lg shadow-blue-600/20 hover:bg-[#166fe5]',
             zalo: 'bg-white text-[#0068FF] shadow-lg border border-gray-100 hover:bg-gray-50',
@@ -118,8 +118,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         if (href) {
             return (
                 <motion.div
-                    whileHover={{ y: -2 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={variant === 'white' ? { scale: 1.05, y: -5 } : { y: -2 }}
+                    whileTap={variant === 'white' ? { scale: 0.95 } : { scale: 0.98 }}
                     className={fullWidth ? 'w-full' : 'inline-block'}
                 >
                     <Link href={href} className={combinedClassName}>
@@ -132,8 +132,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         return (
             <motion.button
                 ref={ref}
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={variant === 'white' ? { scale: 1.05, y: -5 } : { y: -2 }}
+                whileTap={variant === 'white' ? { scale: 0.95 } : { scale: 0.98 }}
                 className={combinedClassName}
                 disabled={disabled || isLoading}
                 {...(props as any)}

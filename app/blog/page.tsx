@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { Calendar, User, Eye, Tag } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Button from '@/components/ui/Button';
+import TechLoader from '@/components/ui/TechLoader';
 
 interface Blog {
     _id: string;
@@ -167,7 +168,7 @@ export default function BlogPage() {
                 <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
                 <div className="absolute -bottom-8 -left-8 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
 
-                <div className="container mx-auto px-4 h-full relative z-10 flex items-center justify-between">
+                <div className="container mx-auto max-w-5xl px-4 h-full relative z-10 flex items-center justify-between">
                     {/* Left: Text Content */}
                     <div className="w-full md:w-1/2 text-center md:text-left">
                         <motion.div
@@ -272,12 +273,9 @@ export default function BlogPage() {
                 </div>
             </section>
 
-            <main className="flex-1 container mx-auto p-4">
+            <main className="flex-1 container mx-auto max-w-5xl p-4">
                 {loading ? (
-                    <div className="text-center py-20">
-                        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
-                        <p className="text-gray-600 mt-4 text-lg">Đang tải bài viết...</p>
-                    </div>
+                    <TechLoader />
                 ) : (
                     <>
                         {/* Tags Filter - Condensed and Scrollable */}

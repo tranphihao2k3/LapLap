@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import Button from '@/components/ui/Button';
+import TechLoader from '@/components/ui/TechLoader';
 
 interface LaptopSpec {
     cpu: string;
@@ -224,13 +225,59 @@ export default function LaptopsPage() {
     return (
         <>
 
+            {/* Hero Section - Full Width */}
+            <section className="relative w-full min-h-[350px] md:h-[400px] bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white overflow-hidden shadow-lg border-b border-blue-400/30 py-12 md:py-0">
+                {/* Background Patterns */}
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob"></div>
+                <div className="absolute -bottom-8 -left-8 w-72 h-72 bg-indigo-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+
+                <div className="container mx-auto max-w-5xl px-4 h-full relative z-10 flex items-center justify-between">
+                    {/* Left: Text Content */}
+                    <div className="w-full md:w-3/5 text-center md:text-left">
+                        <div className="inline-block px-4 py-1.5 bg-blue-500/20 backdrop-blur-sm rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-blue-400/50 text-blue-200">
+                            💻 Kho Laptop Chất Lượng
+                        </div>
+                        <h1 className="text-3xl md:text-5xl font-black mb-4 leading-tight">
+                            Danh Sách Laptop <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">
+                                Giá Tốt Nhất Cần Thơ
+                            </span>
+                        </h1>
+                        <p className="text-lg text-blue-100 max-w-lg mx-auto md:mx-0 leading-relaxed font-medium">
+                            Đa dạng mẫu mã từ Dell, HP, ThinkPad đến MacBook. <br />
+                            Bảo hành uy tín, hỗ trợ trả góp 0%.
+                        </p>
+                    </div>
+
+                    {/* Right: Illustration */}
+                    <div className="hidden md:flex w-2/5 items-center justify-center relative">
+                        {/* Abstract Shape or Image placeholder since we don't have motion imported yet, wait, we do not have motion imported in this file? Let's check imports. */}
+                        {/* Actually defaults might be better without complex motion if not imported. checking file... */}
+                        {/* File has: import { useEffect, useState, useMemo } from 'react'; - NO framer-motion! */}
+                        {/* I should stick to simple CSS animations or add framer-motion import. */}
+                        {/* User asked for consistent look. I will add framer-motion import in a separate step or just use CSS for now to avoid errors if I miss the import. */}
+                        {/* Actually, I can use simple CSS classes like 'animate-pulse' or just static for now to be safe, or add the import. */}
+                        {/* Let's add the import in a separate tool call to be safe, or just use standard div with CSS animations. */}
+                        <div className="relative z-10 p-8">
+                            <div className="relative w-64 h-40 bg-gray-800 rounded-lg shadow-2xl transform rotate-[-5deg] border-4 border-gray-700 items-center justify-center flex">
+                                <div className="text-blue-400 font-bold">LapLap Store</div>
+                            </div>
+                            <div className="absolute -bottom-4 -right-4 bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 shadow-lg">
+                                <div className="text-xs font-bold text-white">100+ Model</div>
+                                <div className="text-xs text-blue-200">Có sẵn hàng</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <main className="bg-gray-50 min-h-screen py-10">
-                <div className="max-w-7xl mx-auto px-4">
-                    {/* Header */}
-                    <div className="mb-6">
-                        <h1 className="text-3xl font-bold text-gray-800 mb-2">Danh sách Laptop</h1>
+                <div className="container mx-auto max-w-5xl px-4">
+                    {/* Header - Simplified since we have Hero */}
+                    <div className="flex items-center justify-between mb-6 border-b border-gray-200 pb-4">
                         <p className="text-gray-600">
-                            {filteredProducts.length} sản phẩm
+                            Hiển thị <span className="font-bold text-gray-900">{filteredProducts.length}</span> sản phẩm
                             {activeFiltersCount > 0 && ` (${activeFiltersCount} bộ lọc đang áp dụng)`}
                         </p>
                     </div>
@@ -498,15 +545,13 @@ export default function LaptopsPage() {
                     </div>
 
                     {/* Loading State */}
+                    {/* Loading State */}
                     {loading ? (
-                        <div className="text-center py-20">
-                            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
-                            <p className="text-gray-600 mt-4 text-lg">Đang tải sản phẩm...</p>
-                        </div>
+                        <TechLoader />
                     ) : (
                         <>
                             {/* Products Grid */}
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-5 mb-8">
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5 mb-8">
                                 {paginatedProducts.map(product => (
                                     <ProductCard key={product._id} product={product} />
                                 ))}
@@ -586,7 +631,7 @@ export default function LaptopsPage() {
                     )}
                 </div>
             </main>
-            <Footer />
+
         </>
     );
 }

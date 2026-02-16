@@ -103,8 +103,8 @@ export default function Header() {
     return (
         <header className="w-full sticky top-0 z-50 shadow-md bg-white">
             {/* Logo */}
-            <div className="bg-white py-6">
-                <div className="container mx-auto flex justify-between items-center px-4">
+            <div className="bg-white">
+                <div className="container mx-auto max-w-5xl px-4 py-8 flex justify-between items-center">
                     <Link href="/" className="group relative z-10">
                         <motion.div
                             className="flex items-center"
@@ -137,7 +137,7 @@ export default function Header() {
                     </Link>
 
                     {/* Search Bar */}
-                    <div className="flex-1 max-w-xl mx-4 relative hidden md:block">
+                    <div className="flex-1 max-w-md mx-4 relative hidden md:block">
                         <motion.div
                             className="relative"
                             initial={{ scale: 1 }}
@@ -248,7 +248,7 @@ export default function Header() {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:block bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm transition-all duration-300">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto max-w-5xl px-4">
                     <ul
                         className="flex justify-center items-center gap-1 py-1"
                         onMouseLeave={() => setHoveredIndex(null)}

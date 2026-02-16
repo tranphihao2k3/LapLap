@@ -103,7 +103,7 @@ export default function ComponentsAndAccessoriesPage() {
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500 rounded-full blur-3xl animate-pulse delay-700"></div>
                 </div>
 
-                <div className="container mx-auto px-4 relative z-10 flex flex-col items-center text-center">
+                <div className="container mx-auto max-w-5xl px-4 relative z-10 flex flex-col items-center text-center">
                     {/* Floating Component Icons - Desktop only */}
                     <div className="hidden lg:block">
                         <motion.div
@@ -172,7 +172,7 @@ export default function ComponentsAndAccessoriesPage() {
                 </div>
             </div>
 
-            <main className="container mx-auto px-4 py-10">
+            <main className="container mx-auto max-w-5xl px-4 py-12">
                 {/* Categories Filter */}
                 <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
                     {CATEGORIES.map(cat => (
@@ -196,7 +196,7 @@ export default function ComponentsAndAccessoriesPage() {
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
                     </div>
                 ) : filteredComponents.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 max-w-7xl mx-auto">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 max-w-7xl mx-auto">
                         <AnimatePresence>
                             {filteredComponents.map((item, index) => (
                                 <motion.div
