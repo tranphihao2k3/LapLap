@@ -133,101 +133,102 @@ export default function HomePage() {
       <Header />
       <main className="flex-1 container mx-auto p-4">
         <div className="space-y-12">
-          {/* Hero Section - CSS Gradient Banner */}
-          <section className="relative w-full h-[450px] md:h-[550px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl">
-            {/* Animated Gradient Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-primary-dark)] animate-gradient">
-              {/* Overlay Pattern */}
-              <div className="absolute inset-0 opacity-10">
-                <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-              </div>
+          {/* Hero Section - Redesigned for better mobile support */}
+          <section className="relative w-full min-h-[500px] md:h-[550px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl bg-[#0f172a]">
+            {/* Premium Animated Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#1e40af] via-[#1e3a8a] to-[#1e40af] animate-gradient">
+              {/* Decorative Blur Orbs */}
+              <div className="absolute -top-24 -left-24 w-64 h-64 bg-blue-400 rounded-full blur-[100px] opacity-20"></div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-500 rounded-full blur-[120px] opacity-10"></div>
+              <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-cyan-400 rounded-full blur-[100px] opacity-20"></div>
             </div>
 
-            {/* Content */}
-            <div className="relative h-full flex items-center">
+            <div className="relative z-10 h-full flex items-center py-12 md:py-0">
               <div className="container mx-auto px-6 md:px-12">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                  {/* Left Column: Text */}
+                <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+                  {/* Text Content */}
                   <motion.div
-                    className="max-w-3xl z-10"
+                    className="flex-1 text-center lg:text-left z-10"
                     initial="hidden"
                     animate="visible"
                     variants={stagger}
                   >
-                    {/* Badge */}
-                    <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-                      <MapPin className="w-4 h-4 text-[var(--color-accent)]" />
-                      <span className="text-white font-medium text-sm">Cần Thơ</span>
+                    <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full mb-6 border border-white/20">
+                      <MapPin className="w-4 h-4 text-cyan-400" />
+                      <span className="text-white font-semibold text-xs uppercase tracking-widest">Cần Thơ</span>
                     </motion.div>
 
-                    {/* Main Heading */}
-                    <motion.h1 variants={fadeInUp} className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight">
+                    <motion.h1 variants={fadeInUp} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
                       Laptop Cần Thơ
                       <br />
-                      <span className="bg-gradient-to-r from-[var(--color-accent)] to-white bg-clip-text text-transparent">
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-200">
                         Chính Hãng
                       </span>
                     </motion.h1>
 
-                    {/* Subtitle */}
-                    <motion.p variants={fadeInUp} className="text-xl md:text-2xl text-blue-100 mb-8 leading-relaxed">
-                      Laptop mới, laptop cũ giá tốt nhất tại Cần Thơ
-                      <br />
-                      <span className="text-[var(--color-accent)] font-semibold">Giao hàng tận nơi • Bảo hành uy tín</span>
+                    <motion.p variants={fadeInUp} className="text-lg md:text-xl text-blue-100/90 mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
+                      Sở hữu ngay laptop đỉnh cao với giá tốt nhất tại Cần Thơ.
+                      <span className="block mt-2 text-cyan-300 font-bold drop-shadow-sm">Giao hàng tức thì • Bảo hành 24/7 chuyên nghiệp</span>
                     </motion.p>
 
-                    {/* CTA Buttons */}
-                    <motion.div variants={fadeInUp} className="flex flex-wrap gap-4">
+                    <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-12">
                       <Link
                         href="/laptops"
-                        className="group bg-white hover:bg-[var(--color-accent)] text-[var(--color-primary)] px-8 py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2"
+                        className="w-full sm:w-auto group bg-white hover:bg-cyan-400 hover:text-white text-blue-900 px-10 py-5 rounded-2xl font-bold transition-all shadow-xl shadow-blue-900/20 flex items-center justify-center gap-3 active:scale-95"
                       >
-                        Xem Laptop
+                        MUA NGAY
                         <span className="group-hover:translate-x-1 transition-transform">→</span>
                       </Link>
                       <Link
                         href="/test"
-                        className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border-2 border-white/30 px-8 py-4 rounded-xl font-bold transition-all hover:scale-105"
+                        className="w-full sm:w-auto bg-white/5 backdrop-blur-md hover:bg-white/10 text-white border-2 border-white/20 px-10 py-5 rounded-2xl font-bold transition-all flex items-center justify-center active:scale-95"
                       >
-                        Test Laptop Miễn Phí
+                        TEST MÁY MIỄN PHÍ
                       </Link>
                     </motion.div>
 
-                    {/* Stats */}
-                    <motion.div variants={fadeInUp} className="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/20">
-                      <div>
-                        <div className="text-3xl font-bold text-[var(--color-accent)]">100+</div>
-                        <div className="text-sm text-blue-100">Sản phẩm</div>
+                    {/* Stats Section - Responsive Grid */}
+                    <motion.div variants={fadeInUp} className="grid grid-cols-3 gap-4 md:gap-8 pt-8 border-t border-white/10">
+                      <div className="text-center lg:text-left">
+                        <div className="text-2xl md:text-3xl font-bold text-cyan-400">100+</div>
+                        <div className="text-[10px] md:text-xs uppercase tracking-wider text-blue-200/60 font-bold">Sản phẩm</div>
                       </div>
-                      <div>
-                        <div className="text-3xl font-bold text-[var(--color-accent)]">24/7</div>
-                        <div className="text-sm text-blue-100">Hỗ trợ</div>
+                      <div className="text-center lg:text-left">
+                        <div className="text-2xl md:text-3xl font-bold text-cyan-400">24/7</div>
+                        <div className="text-[10px] md:text-xs uppercase tracking-wider text-blue-200/60 font-bold">Hỗ trợ</div>
                       </div>
-                      <div>
-                        <div className="text-3xl font-bold text-[var(--color-accent)]">100%</div>
-                        <div className="text-sm text-blue-100">Chính hãng</div>
+                      <div className="text-center lg:text-left">
+                        <div className="text-2xl md:text-3xl font-bold text-cyan-400">100%</div>
+                        <div className="text-[10px] md:text-xs uppercase tracking-wider text-blue-200/60 font-bold">Uy tín</div>
                       </div>
                     </motion.div>
                   </motion.div>
 
-                  {/* Right Column: 3D Image */}
+                  {/* Right Image Content - Responsive sizing */}
                   <motion.div
-                    className="hidden lg:flex justify-center items-center relative z-0"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
+                    className="flex-1 flex justify-center items-center relative"
+                    initial={{ opacity: 0, scale: 0.9, y: 30 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 0.2 }}
                   >
-                    <div className="relative w-full h-[400px] animate-float">
-                      {/* Placeholder for 3D Laptop */}
+                    <div className="relative w-full max-w-[500px] h-[250px] md:h-[450px]">
+                      {/* Premium Glow around image */}
+                      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-blue-400/20 blur-[80px] rounded-[100%] animate-pulse"></div>
+
                       <img
                         src="https://bizweb.dktcdn.net/thumb/grande/100/512/769/products/alienware-x16-r2-3.jpg?v=1716871837957"
-                        alt="3D Laptop Illustration"
-                        className="w-full h-full object-contain drop-shadow-2xl"
+                        alt="High-end Gaming Laptop"
+                        className="w-full h-full object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.5)] animate-float relative z-10"
                       />
-                      {/* Decorative Elements around image */}
-                      <div className="absolute -top-10 -right-10 w-24 h-24 bg-blue-400/30 rounded-full blur-xl animate-pulse"></div>
-                      <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-400/30 rounded-full blur-xl animate-pulse delay-700"></div>
+
+                      {/* Floating Tech Elements */}
+                      <motion.div
+                        animate={{ y: [0, -15, 0] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                        className="absolute -top-5 -right-5 p-3 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 z-20"
+                      >
+                        <Shield className="w-6 h-6 text-cyan-400" />
+                      </motion.div>
                     </div>
                   </motion.div>
                 </div>
