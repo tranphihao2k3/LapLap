@@ -22,6 +22,15 @@ interface Stats {
     activeLaptops: number;
     software: number;
 }
+
+interface RecentLaptop {
+    _id: string;
+    name: string;
+    brandId?: { name: string };
+    categoryId?: { name: string };
+    price: number;
+    status: string;
+}
 // ...
 export default function AdminDashboard() {
     const [stats, setStats] = useState<Stats>({

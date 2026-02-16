@@ -4,14 +4,15 @@ import { Software } from "@/models/Software";
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { slug: string } }
+    { params }: { params: Promise<{ slug: string }> }
 ) {
     try {
         await connectDB();
+        const { slug } = await params;
 
         // Find by slug and must be published
         const software = await Software.findOne({
-            slug: params.slug,
+            slug: slug,
             status: "published"
         });
 
