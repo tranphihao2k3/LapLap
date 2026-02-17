@@ -184,7 +184,7 @@ export default function NewSoftwarePage() {
                     {/* Right Column - Settings & Meta */}
                     <div className="space-y-6">
                         {/* Publish Action */}
-                        <div className="bg-white rounded-xl shadow-sm p-6 sticky top-24 z-10 border-t-4 border-blue-500">
+                        <div className="bg-white rounded-xl shadow-sm p-6 border-t-4 border-blue-500">
                             <h2 className="text-lg font-semibold mb-4 text-gray-800">Đăng tải</h2>
 
                             <div className="flex flex-col gap-4">

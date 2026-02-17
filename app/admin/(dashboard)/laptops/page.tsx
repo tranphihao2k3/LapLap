@@ -1062,7 +1062,7 @@ export default function LaptopsPage() {
                             )}
 
                             {/* Basic Info */}
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
                                     <input
@@ -1085,7 +1085,7 @@ export default function LaptopsPage() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
                                     <select
@@ -1136,7 +1136,7 @@ export default function LaptopsPage() {
                             {/* Specs */}
                             <div>
                                 <h3 className="font-semibold text-gray-800 mb-3">Specifications</h3>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <SearchableSelect
                                             label="CPU"

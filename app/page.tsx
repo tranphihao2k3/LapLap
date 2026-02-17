@@ -159,7 +159,7 @@ export default function HomePage() {
       {
         breakpoint: 640,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 2,
           slidesToScroll: 1,
         }
       }
@@ -344,18 +344,17 @@ export default function HomePage() {
                       </Button>
                     </div>
                     <motion.div
+                      className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6"
                       initial="hidden"
                       whileInView="visible"
                       viewport={{ once: true, amount: 0.1 }}
                       variants={stagger}
                     >
-                      <Slider {...sliderSettings} infinite={laptops.length > 4} autoplay={laptops.length > 4} className="-mx-2 text-left">
-                        {laptops.slice(0, 5).map((laptop) => (
-                          <div key={laptop._id} className="px-2 pb-8">
-                            <ProductCard product={laptop} />
-                          </div>
-                        ))}
-                      </Slider>
+                      {laptops.slice(0, 4).map((laptop) => (
+                        <motion.div key={laptop._id} variants={fadeInUp}>
+                          <ProductCard product={laptop} />
+                        </motion.div>
+                      ))}
                     </motion.div>
 
                   </section>

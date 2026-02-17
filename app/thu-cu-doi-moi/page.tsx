@@ -25,7 +25,7 @@ export default function TradeInPage() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const message = `
 🔔 **YÊU CẦU ĐỊNH GIÁ THU CŨ**
@@ -41,8 +41,20 @@ Mong LapLap báo giá sớm ạ!
         `.trim();
 
         navigator.clipboard.writeText(message);
-        alert('Đã sao chép thông tin! Vui lòng gửi cho Shop qua Zalo hoặc Messenger để được báo giá nhanh nhất.');
+
+        // Open Zalo immediately
         window.open('https://zalo.me/0978648720', '_blank');
+
+        // Send email notification in background
+        try {
+            await fetch('/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+        } catch (error) {
+            console.error('Failed to send email notification', error);
+        }
     };
 
     const fadeIn = {
@@ -99,7 +111,7 @@ Mong LapLap báo giá sớm ạ!
                             className="relative z-10"
                         >
                             <div className="w-24 h-16 bg-gray-700 rounded-md transform rotate-[-10deg] border-2 border-gray-600 shadow-xl flex items-center justify-center">
-                                <span className="text-gray-400 text-xs font-mono">OLD</span>
+                                <span className="text-gray-400 text-xs font-mono">CŨ</span>
                             </div>
                             <div className="w-32 h-2 bg-gray-800 rounded-b-md transform rotate-[-10deg] -mt-1 ml-1 opacity-80"></div>
                         </motion.div>
@@ -128,7 +140,7 @@ Mong LapLap báo giá sớm ạ!
                         >
                             <div className="w-32 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg transform rotate-[5deg] shadow-2xl flex items-center justify-center border border-white/20 relative overflow-hidden group">
                                 <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-700 transform -skew-x-12 -translate-x-full"></div>
-                                <span className="text-white font-bold text-sm tracking-widest">NEW</span>
+                                <span className="text-white font-bold text-sm tracking-widest">MỚI</span>
                             </div>
                             <div className="w-40 h-2 bg-gray-800 rounded-b-lg transform rotate-[5deg] -mt-1 -ml-2 opacity-90"></div>
 
@@ -268,11 +280,31 @@ Mong LapLap báo giá sớm ạ!
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs font-bold text-gray-700 mb-1">Tên máy</label>
-                                    <input required name="model" value={formData.model} onChange={handleChange} type="text" placeholder="VD: Dell XPS..." className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 focus:ring-1 focus:ring-blue-500 outline-none" />
+                                    <input
+                                        required
+                                        name="model"
+                                        value={formData.model}
+                                        onChange={handleChange}
+                                        onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Vui lòng nhập tên máy')}
+                                        onInput={(e) => (e.target as HTMLInputElement).setCustomValidity('')}
+                                        type="text"
+                                        placeholder="VD: Dell XPS..."
+                                        className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 focus:ring-1 focus:ring-blue-500 outline-none"
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-xs font-bold text-gray-700 mb-1">SĐT / Zalo</label>
-                                    <input required name="contact" value={formData.contact} onChange={handleChange} type="text" placeholder="VD: 09..." className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 focus:ring-1 focus:ring-blue-500 outline-none" />
+                                    <input
+                                        required
+                                        name="contact"
+                                        value={formData.contact}
+                                        onChange={handleChange}
+                                        onInvalid={(e) => (e.target as HTMLInputElement).setCustomValidity('Vui lòng nhập số điện thoại hoặc Zalo liên hệ')}
+                                        onInput={(e) => (e.target as HTMLInputElement).setCustomValidity('')}
+                                        type="text"
+                                        placeholder="VD: 09..."
+                                        className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 focus:ring-1 focus:ring-blue-500 outline-none"
+                                    />
                                 </div>
                             </div>
 
@@ -281,8 +313,8 @@ Mong LapLap báo giá sớm ạ!
                                     <div key={field}>
                                         <label className="block text-xs font-bold text-gray-700 mb-1 uppercase">{field}</label>
                                         <input
-                                            name={field.toLowerCase()}
-                                            value={(formData as any)[field.toLowerCase() === 'vga' ? 'gpu' : field.toLowerCase()]}
+                                            name={field === 'VGA' ? 'gpu' : field.toLowerCase()}
+                                            value={(formData as any)[field === 'VGA' ? 'gpu' : field.toLowerCase()]}
                                             onChange={handleChange}
                                             type="text"
                                             className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 focus:ring-1 focus:ring-blue-500 outline-none"

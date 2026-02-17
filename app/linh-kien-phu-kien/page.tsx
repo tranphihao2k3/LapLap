@@ -209,19 +209,51 @@ export default function ComponentsAndAccessoriesPage() {
                                     className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100 flex flex-col h-full"
                                 >
                                     {/* Image */}
+
                                     <div className="relative aspect-square bg-gray-50 p-6 flex items-center justify-center overflow-hidden">
                                         {item.image ? (
                                             <img src={item.image} alt={item.name} className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-500" />
-                                        ) : (
-                                            <div className="text-gray-300">
-                                                {item.type === 'RAM' ? <Cpu className="w-16 h-16" /> :
-                                                    item.type === 'SSD' ? <HardDrive className="w-16 h-16" /> :
-                                                        item.type === 'MOUSE' ? <Mouse className="w-16 h-16" /> :
-                                                            item.type === 'KEYBOARD' ? <Keyboard className="w-16 h-16" /> :
-                                                                <Box className="w-16 h-16" />
+                                        ) : (() => {
+                                            // Helper to determine fallback image
+                                            let fallbackImg = null;
+                                            if (item.type === 'RAM' || item.name.includes('RAM')) {
+                                                fallbackImg = '/img/ram.jpg';
+                                            } else if (item.type === 'SSD' || item.name.includes('SSD')) {
+                                                if (item.name.toLowerCase().includes('nvme') || item.specs?.ssdType?.toLowerCase().includes('nvme')) {
+                                                    fallbackImg = '/img/ssd_nvme.avif';
+                                                } else {
+                                                    fallbackImg = '/img/ssd_m2.png';
                                                 }
-                                            </div>
-                                        )}
+                                            }
+
+                                            if (fallbackImg) {
+                                                return (
+                                                    <div className="relative w-full h-full flex items-center justify-center">
+                                                        <img
+                                                            src={fallbackImg}
+                                                            alt={item.name}
+                                                            className="object-contain w-full h-full opacity-90 group-hover:scale-110 transition-transform duration-500 grayscale-[20%]"
+                                                        />
+                                                        <div className="absolute inset-x-0 bottom-4 flex justify-center pointer-events-none">
+                                                            <span className="text-[10px] font-medium text-gray-600 bg-white/90 px-3 py-1 rounded-full shadow-sm backdrop-blur-sm border border-gray-100">
+                                                                Hình ảnh minh hoạ
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            } else {
+                                                return (
+                                                    <div className="text-gray-300">
+                                                        {item.type === 'KEYBOARD' ? <Keyboard className="w-16 h-16" /> :
+                                                            item.type === 'MOUSE' ? <Mouse className="w-16 h-16" /> :
+                                                                item.type === 'BATTERY' ? <Battery className="w-16 h-16" /> :
+                                                                    item.type === 'CHARGER' ? <Zap className="w-16 h-16" /> :
+                                                                        <Box className="w-16 h-16" />
+                                                        }
+                                                    </div>
+                                                );
+                                            }
+                                        })()}
 
                                         {/* Stock Badge */}
                                         <div className="absolute top-3 right-3">

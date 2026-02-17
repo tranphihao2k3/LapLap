@@ -82,6 +82,8 @@ const Footer = () => {
                         <ul className="space-y-3">
                             {[
                                 { label: "Trang chủ", href: "/" },
+                                { label: "Giới thiệu", href: "/gioi-thieu" },
+                                { label: "Tuyển dụng", href: "/tuyen-dung" },
                                 { label: "Sản phẩm Laptop", href: "/laptops" },
                                 { label: "Kiểm tra máy", href: "/test" },
                                 { label: "Sửa chữa", href: "/sua-chua-laptop" },
@@ -127,7 +129,18 @@ const Footer = () => {
                         </h3>
 
                         <div className="space-y-4">
-
+                            <motion.div
+                                className="flex items-start gap-4"
+                                whileHover={{ x: 5 }}
+                            >
+                                <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400 mt-1">
+                                    <MapPin size={20} />
+                                </div>
+                                <div>
+                                    <p className="font-semibold text-white">Địa chỉ</p>
+                                    <p className="text-gray-400">....</p>
+                                </div>
+                            </motion.div>
 
                             <motion.div
                                 className="flex items-start gap-4"

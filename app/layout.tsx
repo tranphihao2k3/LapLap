@@ -37,6 +37,9 @@ const beVietnamPro = Be_Vietnam_Pro({
   display: "swap",
 });
 
+import { ComparisonProvider } from "@/context/ComparisonContext";
+import ComparisonBar from "@/components/ComparisonBar";
+
 export default function RootLayout({
   children,
 }: {
@@ -45,7 +48,10 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className={`${beVietnamPro.className} min-h-screen flex flex-col`}>
-        {children}
+        <ComparisonProvider>
+          {children}
+          <ComparisonBar />
+        </ComparisonProvider>
         <FacebookMessenger />
         <SpeedInsights />
         <Analytics />

@@ -219,7 +219,7 @@ export default function EditSoftwarePage({ params }: { params: Promise<{ id: str
                     </div>
 
                     {/* Right Column - Settings & Meta */}
-                    <div className="space-y-6 sticky top-24 h-fit">
+                    <div className="space-y-6">
                         {/* Publish Action */}
                         <div className="bg-white rounded-xl shadow-sm p-6 border-t-4 border-blue-500">
                             <h2 className="text-lg font-semibold mb-4 text-gray-800">Đăng tải</h2>

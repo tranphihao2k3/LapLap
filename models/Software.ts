@@ -1,4 +1,4 @@
-   import mongoose, { Schema, models } from "mongoose";
+import mongoose, { Schema, models } from "mongoose";
 
 const SoftwareSchema = new Schema(
     {
@@ -49,7 +49,7 @@ const SoftwareSchema = new Schema(
         },
         type: {
             type: String,
-            enum: ["Free", "Trial", "Crack", "License"],
+            enum: ["Free", "Trial", "Crack", "License", "Repack", "Portable"],
             default: "Free",
         },
         tags: {
@@ -70,7 +70,12 @@ const SoftwareSchema = new Schema(
 );
 
 // Create index for slug for faster queries
-SoftwareSchema.index({ slug: 1 });
+// slug: 1 is already indexed by unique: true in the schema definition
 SoftwareSchema.index({ status: 1, createdAt: -1 });
+
+// Force model rebuild to ensure schema updates (like enums) are applied in dev mode
+if (models.Software) {
+    delete models.Software;
+}
 
 export const Software = models.Software || mongoose.model("Software", SoftwareSchema);

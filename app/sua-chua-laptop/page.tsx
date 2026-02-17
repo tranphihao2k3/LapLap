@@ -4,10 +4,12 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RepairProcess from "./components/RepairProcess";
 // import RepairBanner from "./components/RepairBanner"; // Deprecated
+import BookingForm from "@/components/BookingForm";
 import CommonErrors from "./components/CommonErrors";
 import ServiceCommitment from "./components/ServiceCommitment";
 import { motion } from "framer-motion";
 import { Wrench, Settings, Search, CheckCircle, Zap } from "lucide-react";
+
 
 export default function RepairServicePage() {
     return (
@@ -16,6 +18,7 @@ export default function RepairServicePage() {
 
             {/* Hero Section - Full Width */}
             <section className="relative w-full min-h-[350px] md:h-[400px] bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white overflow-hidden shadow-lg border-b border-blue-400/30 py-12 md:py-0">
+                {/* ... (keep existing hero content) ... */}
                 {/* Background Patterns */}
                 <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
                 <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob"></div>

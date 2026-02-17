@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { ChevronRight, Cpu, Monitor, CheckCircle, Zap, Shield, TrendingUp, Gift, CreditCard, Facebook, MessageCircle, Star, ShoppingBag, Truck, Headphones, BadgeCheck, Search } from 'lucide-react';
+import { ChevronRight, Cpu, Monitor, CheckCircle, Zap, Shield, TrendingUp, Gift, CreditCard, Facebook, MessageCircle, Star, ShoppingBag, Truck, Headphones, BadgeCheck, Search, Info } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -11,16 +11,20 @@ import Link from 'next/link';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 import TechLoader from '@/components/ui/TechLoader';
+import InstallmentModal from '@/components/InstallmentModal';
+import ProductCard from '../ProductCard';
 
 import { Product } from '../types';
 
 export default function ProductDetailPage() {
     const params = useParams();
     const [product, setProduct] = useState<Product | null>(null);
+    const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedImage, setSelectedImage] = useState(0);
     const [imageLoading, setImageLoading] = useState(false);
+    const [isInstallmentOpen, setInstallmentOpen] = useState(false);
 
     useEffect(() => {
         if (params.slug) {
@@ -36,6 +40,10 @@ export default function ProductDetailPage() {
 
             if (data.success) {
                 setProduct(data.data);
+                // Fetch related products
+                if (data.data.categoryId) {
+                    fetchRelated(data.data.categoryId._id, data.data._id);
+                }
             } else {
                 setError('Không tìm thấy sản phẩm');
             }
@@ -46,6 +54,25 @@ export default function ProductDetailPage() {
             setLoading(false);
         }
     };
+
+    const fetchRelated = async (categoryId: string, currentId: string) => {
+        try {
+            // Ideally this should be a specific API endpoint, but we'll fetch list and filter for now
+            const res = await fetch('/api/admin/laptops');
+            const data = await res.json();
+
+            if (data.success) {
+                const related = data.data
+                    .filter((p: Product) => p.categoryId && p.categoryId._id === categoryId && p._id !== currentId)
+                    .slice(0, 4);
+                setRelatedProducts(related);
+            }
+        } catch (err) {
+            console.error('Error fetching related:', err);
+        }
+    };
+
+    // ... existing helpers ...
 
     const handleImageChange = (index: number) => {
         setImageLoading(true);
@@ -92,7 +119,7 @@ export default function ProductDetailPage() {
 
     return (
         <div className="min-h-screen bg-[#F8FAFC]">
-            <Header />
+
 
             {/* Breadcrumb - Clean & Simple */}
             <div className="bg-white border-b border-gray-100">
@@ -198,16 +225,37 @@ export default function ProductDetailPage() {
                             </div>
 
                             <div className="space-y-4">
-                                <Button
-                                    href="https://zalo.me/0978648720"
-                                    variant="primary"
-                                    size="lg"
-                                    fullWidth
-                                    leftIcon={<ShoppingBag size={24} />}
-                                    className="h-14 text-lg"
-                                >
-                                    Đặt mua ngay
-                                </Button>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <Button
+                                        href="https://zalo.me/0978648720"
+                                        variant="primary"
+                                        size="lg"
+                                        fullWidth
+                                        leftIcon={<ShoppingBag size={20} />}
+                                        className="h-auto py-2 text-sm md:text-base bg-red-600 hover:bg-red-700 shadow-red-200"
+                                    >
+                                        <div className="flex flex-col items-start md:items-center">
+                                            <span className="font-bold uppercase">Mua ngay</span>
+                                            <span className="text-[10px] font-normal opacity-90">Giao hàng tận nơi</span>
+                                        </div>
+                                    </Button>
+                                    <Button
+                                        onClick={() => setInstallmentOpen(true)}
+                                        variant="primary"
+                                        size="lg"
+                                        fullWidth
+                                        leftIcon={<CreditCard size={20} />}
+                                        className="h-auto py-2 text-sm md:text-base bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200"
+                                    >
+                                        <div className="flex flex-col items-start md:items-center">
+                                            <span className="font-bold uppercase">Mua trả góp</span>
+                                            <span className="text-[10px] font-normal opacity-90">Duyệt hồ sơ 5 phút</span>
+                                        </div>
+                                    </Button>
+                                </div>
+                                <p className="text-[11px] text-gray-500 text-center italic -mt-1">
+                                    * Tính chất tham khảo, vui lòng liên hệ để được báo chính xác hơn
+                                </p>
 
                                 <div className="flex flex-col sm:flex-row gap-2">
                                     <Button
@@ -298,10 +346,32 @@ export default function ProductDetailPage() {
                         )}
                     </div>
                 </div>
+
+               
+               
+
+                {/* RELATED PRODUCTS */}
+                {relatedProducts.length > 0 && (
+                    <div className="mt-12 md:mt-16 border-t border-slate-200 pt-10">
+                        <h2 className="text-2xl font-black text-slate-800 mb-8 flex items-center gap-2">
+                            <TrendingUp className="text-blue-600" />
+                            Có thể bạn sẽ thích
+                        </h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {relatedProducts.map(p => (
+                                <ProductCard key={p._id} product={p} />
+                            ))}
+                        </div>
+                    </div>
+                )}
             </main>
 
-            <Footer />
-
+            <InstallmentModal
+                isOpen={isInstallmentOpen}
+                onClose={() => setInstallmentOpen(false)}
+                productPrice={product.price}
+                productName={product.name}
+            />
 
         </div>
     );

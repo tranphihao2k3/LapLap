@@ -12,6 +12,7 @@ import Footer from "@/components/Footer";
 import CleaningProcess from "./components/CleaningProcess";
 import CleaningBenefits from "./components/CleaningBenefits";
 import { motion } from "framer-motion";
+import BookingForm from "@/components/BookingForm";
 
 export default function CleaningServicePage() {
     return (
@@ -20,6 +21,7 @@ export default function CleaningServicePage() {
 
             {/* Hero Section - Full Width */}
             <section className="relative w-full min-h-[350px] md:h-[400px] bg-gradient-to-r from-indigo-900 via-blue-800 to-blue-900 text-white overflow-hidden shadow-lg border-b border-blue-400/30 py-12 md:py-0">
+                {/* ... (Hero content stays same) ... */}
                 {/* Background Patterns */}
                 <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
                 <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob"></div>
@@ -117,8 +119,6 @@ export default function CleaningServicePage() {
             </section>
 
             <main className="min-h-screen bg-slate-50 text-slate-800 pb-24 pt-8">
-                {/* Removed original banner section */}
-
                 <div className="container mx-auto max-w-5xl px-4 space-y-20">
 
                     {/* ================= QUY TRÌNH ================= */}
@@ -159,6 +159,12 @@ export default function CleaningServicePage() {
                             highlight
                         />
                     </section>
+
+                    <BookingForm
+                        title="Đặt Lịch Vệ Sinh Laptop"
+                        description="Điền thông tin để được phục vụ nhanh nhất. Vệ sinh lấy liền chỉ từ 30 phút."
+                        requestType="cleaning"
+                    />
                 </div>
             </main>
             <Footer />

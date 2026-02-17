@@ -89,14 +89,15 @@ export default function Header() {
     }, [searchTerm]);
 
     const menuItems = [
+        { href: "/gioi-thieu", label: "Giới thiệu" },
         { href: "/laptops", label: "Laptop" },
+        { href: "/linh-kien-phu-kien", label: "Linh kiện & Phụ kiện" },
         { href: "/thu-cu-doi-moi", label: "Thu cũ đổi mới" },
         { href: "/nang-cap", label: "Nâng cấp" },
-        { href: "/linh-kien-phu-kien", label: "Linh kiện & Phụ kiện" },
-        { href: "/cai-dat-phan-mem", label: "Driver & Soft" },
-        { href: "/blog", label: "Blog" },
         { href: "/ve-sinh-laptop", label: "Vệ sinh máy" },
         { href: "/sua-chua-laptop", label: "Sửa chữa" },
+        { href: "/cai-dat-phan-mem", label: "Driver & Soft" },
+        { href: "/blog", label: "Blog" },
         { href: "/test", label: "Kiểm tra máy" },
     ];
 
@@ -248,7 +249,7 @@ export default function Header() {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:block bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm transition-all duration-300">
-                <div className="container mx-auto max-w-5xl px-4">
+                <div className="container mx-auto max-w-7xl px-4">
                     <ul
                         className="flex justify-center items-center gap-1 py-1"
                         onMouseLeave={() => setHoveredIndex(null)}
@@ -264,7 +265,7 @@ export default function Header() {
                                 >
                                     <Link
                                         href={item.href}
-                                        className={`${itim.className} relative z-10 block px-4 py-2.5 text-[15px] font-bold transition-colors duration-300 ${isActive ? 'text-blue-600' : 'text-slate-600 hover:text-slate-900 focus:text-blue-600'
+                                        className={`${itim.className} relative z-10 block px-2 py-2.5 text-[15px] font-bold transition-colors duration-300 ${isActive ? 'text-blue-600' : 'text-slate-600 hover:text-slate-900 focus:text-blue-600'
                                             }`}
                                     >
                                         {item.label}
