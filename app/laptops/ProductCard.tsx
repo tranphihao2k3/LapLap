@@ -132,7 +132,10 @@ export default function ProductCard({ product }: ProductCardProps) {
                                 variant="outline"
                                 size="sm"
                                 fullWidth
-                                className={`text-xs px-2 h-9 whitespace-nowrap gap-1.5 ${isSelected ? 'bg-blue-50 border-blue-500 text-blue-600 font-bold' : 'border-slate-200 text-slate-500 hover:border-blue-400 hover:text-blue-600'}`}
+                                className={`text-xs px-2 h-9 whitespace-nowrap gap-1.5 rounded-full border-gray-200 shadow-sm hover:shadow-md transition-all ${isSelected
+                                    ? 'bg-blue-50 border-blue-500 text-blue-600 font-bold'
+                                    : 'text-gray-600 hover:text-blue-600 hover:border-blue-200 bg-white'
+                                    }`}
                                 leftIcon={isSelected ? <Check size={14} /> : <Scale size={14} />}
                             >
                                 {isSelected ? "Đã chọn" : "So sánh"}
@@ -143,7 +146,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                             variant="primary"
                             size="sm"
                             fullWidth
-                            className="text-xs px-2 h-9 shadow-blue-200"
+                            className="text-xs px-2 h-9 shadow-sm hover:shadow-md rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all"
                         >
                             Chi tiết
                         </Button>
@@ -154,8 +157,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                         variant="primary"
                         size="sm"
                         fullWidth
-                        className="text-xs h-9 shadow-blue-200 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                        leftIcon={<ShoppingBag size={14} />}
+                        className="text-sm h-10 shadow-lg shadow-blue-200 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold transition-all transform active:scale-95"
+                        leftIcon={<ShoppingBag size={16} />}
                     >
                         Thêm vào giỏ
                     </Button>

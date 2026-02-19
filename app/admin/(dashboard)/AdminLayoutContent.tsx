@@ -74,27 +74,28 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
             )}
 
             {/* Sidebar */}
+            {/* Sidebar */}
             <aside className={`
-                fixed top-0 left-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white z-50
-                transform transition-all duration-300 ease-in-out
+                fixed top-0 left-0 h-full bg-[#111827] text-gray-300 z-50
+                transform transition-all duration-300 ease-in-out border-r border-[#1f2937]
                 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-                ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-72'}
-                w-72
-                shadow-2xl
+                ${sidebarCollapsed ? 'lg:w-[80px]' : 'lg:w-[280px]'}
+                w-[280px]
+                flex flex-col
             `}>
                 {/* Logo */}
-                <div className="p-6 border-b border-white/10">
-                    <div className="flex items-center justify-between">
-                        <div className={`transition-all duration-300 ${sidebarCollapsed ? 'lg:hidden' : ''}`}>
-                            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                <div className="h-16 flex items-center justify-center border-b border-[#1f2937]">
+                    <div className="w-full px-6 flex items-center justify-between">
+                        <div className={`transition-all duration-300 overflow-hidden whitespace-nowrap ${sidebarCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
+                            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
                                 LapLap Admin
                             </h1>
-                            <p className="text-sm text-gray-400 mt-1">Management System</p>
+                            <p className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">Management</p>
                         </div>
 
                         {/* Collapsed Logo */}
-                        <div className={`hidden lg:block transition-all duration-300 ${sidebarCollapsed ? '' : 'lg:hidden'}`}>
-                            <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 flex items-center justify-center font-bold text-slate-900">
+                        <div className={`absolute left-0 right-0 flex justify-center transition-all duration-300 ${sidebarCollapsed ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'}`}>
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">
                                 L
                             </div>
                         </div>
@@ -102,7 +103,7 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
                         {/* Mobile Close Button */}
                         <button
                             onClick={() => setSidebarOpen(false)}
-                            className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+                            className="lg:hidden p-1.5 hover:bg-gray-800 rounded-lg transition-colors text-gray-400 hover:text-white"
                         >
                             <X className="w-5 h-5" />
                         </button>
@@ -114,12 +115,11 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
                     onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
                     className={`
                         hidden lg:flex items-center justify-center
-                        absolute top-20 -right-3 w-6 h-6 
-                        bg-slate-700 hover:bg-slate-600 
-                        rounded-full shadow-lg
-                        transition-all duration-300
-                        border-2 border-slate-900
-                        z-10
+                        absolute -right-3 top-20 w-6 h-6 
+                        bg-[#374151] hover:bg-blue-600 border border-[#1f2937]
+                        rounded-full text-gray-400 hover:text-white
+                        transition-all duration-200 shadow-sm
+                        z-50
                     `}
                     title={sidebarCollapsed ? 'Mở rộng' : 'Thu gọn'}
                 >
@@ -131,7 +131,7 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
                 </button>
 
                 {/* Navigation */}
-                <nav className="mt-6 px-3 space-y-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+                <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-1 dark-scrollbar">
                     {menuItems.map((item) => {
                         const active = isActive(item.href);
                         return (
@@ -140,57 +140,68 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
                                 href={item.href}
                                 onClick={() => setSidebarOpen(false)}
                                 className={`
-                                    flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group
+                                    relative flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group
                                     ${active
-                                        ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/50'
-                                        : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                                        ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-900/20'
+                                        : 'text-gray-400 hover:bg-gray-800/50 hover:text-gray-100'
                                     }
-                                    ${sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''}
+                                    ${sidebarCollapsed ? 'justify-center px-2' : ''}
                                 `}
                                 title={sidebarCollapsed ? item.label : ''}
                             >
                                 <div className={`
-                                    w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 flex-shrink-0
-                                    ${active
-                                        ? 'bg-white/20'
-                                        : 'bg-white/5 group-hover:bg-white/10'
-                                    }
+                                    flex items-center justify-center transition-colors duration-200
+                                    ${active ? 'text-white' : 'text-gray-500 group-hover:text-gray-300'}
                                 `}>
-                                    <item.icon className="w-5 h-5" />
+                                    <item.icon className="w-5 h-5" strokeWidth={active ? 2.5 : 2} />
                                 </div>
-                                <span className={`font-medium flex-1 transition-all duration-300 ${sidebarCollapsed ? 'lg:hidden' : ''}`}>
+                                <span className={`
+                                    font-medium text-sm whitespace-nowrap transition-all duration-300 origin-left
+                                    ${sidebarCollapsed ? 'w-0 opacity-0 hidden' : 'w-auto opacity-100 block'}
+                                `}>
                                     {item.label}
                                 </span>
-                                {active && !sidebarCollapsed && <ChevronRight className="w-4 h-4 lg:block hidden" />}
+
+                                {active && !sidebarCollapsed && (
+                                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white/50 shadow-sm" />
+                                )}
                             </Link>
                         );
                     })}
                 </nav>
 
                 {/* User Profile */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 bg-gradient-to-t from-black/20">
+                <div className="p-4 border-t border-[#1f2937] bg-[#0f1523]">
                     <div
                         onClick={() => signOut({ callbackUrl: '/admin/login' })}
                         className={`
-                            flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group
-                            ${sidebarCollapsed ? 'lg:justify-center lg:px-2' : ''}
+                            flex items-center gap-3 p-2 rounded-xl hover:bg-gray-800 transition-colors cursor-pointer group
+                            ${sidebarCollapsed ? 'justify-center' : ''}
                         `}
                         title={sidebarCollapsed ? 'Đăng xuất' : ''}
                     >
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center font-bold shadow-lg text-sm flex-shrink-0">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white text-sm shadow-inner ring-2 ring-gray-800 flex-shrink-0">
                             {session?.user?.name?.charAt(0).toUpperCase() || 'A'}
                         </div>
-                        <div className={`flex-1 min-w-0 transition-all duration-300 ${sidebarCollapsed ? 'lg:hidden' : ''}`}>
-                            <div className="font-medium text-sm truncate">{session?.user?.name || 'Admin User'}</div>
-                            <div className="text-xs text-gray-400 truncate">{session?.user?.email || 'admin@laplap.com'}</div>
+
+                        <div className={`flex-1 min-w-0 transition-opacity duration-300 ${sidebarCollapsed ? 'hidden' : 'block'}`}>
+                            <div className="font-semibold text-sm text-gray-200 truncate group-hover:text-white">
+                                {session?.user?.name || 'Admin User'}
+                            </div>
+                            <div className="text-xs text-gray-500 truncate group-hover:text-gray-400">
+                                {session?.user?.email || 'admin@laplap.com'}
+                            </div>
                         </div>
-                        <LogOut className={`w-4 h-4 text-gray-400 group-hover:text-white transition-colors ${sidebarCollapsed ? 'lg:hidden' : ''}`} />
+
+                        {!sidebarCollapsed && (
+                            <LogOut className="w-4 h-4 text-gray-500 group-hover:text-red-400 transition-colors" />
+                        )}
                     </div>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <div className={`transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-72'}`}>
+            <div className={`transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-[80px]' : 'lg:ml-[280px]'}`}>
                 {/* Top Header */}
                 <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-sm">
                     <div className="px-4 lg:px-8 py-4">
