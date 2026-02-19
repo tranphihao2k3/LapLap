@@ -62,6 +62,8 @@ const beVietnamPro = Be_Vietnam_Pro({
 
 import { ComparisonProvider } from "@/context/ComparisonContext";
 import ComparisonBar from "@/components/ComparisonBar";
+import { CartProvider } from "@/context/CartContext";
+import CartDrawer from "@/components/CartDrawer";
 
 export default function RootLayout({
   children,
@@ -71,10 +73,13 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className={`${beVietnamPro.className} min-h-screen flex flex-col`}>
-        <ComparisonProvider>
-          {children}
-          <ComparisonBar />
-        </ComparisonProvider>
+        <CartProvider>
+          <ComparisonProvider>
+            {children}
+            <ComparisonBar />
+          </ComparisonProvider>
+          <CartDrawer />
+        </CartProvider>
         <FacebookMessenger />
         <SpeedInsights />
         <Analytics />

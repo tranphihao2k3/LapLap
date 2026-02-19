@@ -3,11 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Itim } from "next/font/google";
-import { MapPin, Menu, X, Facebook, Search } from "lucide-react";
+import { MapPin, Menu, X, Facebook, Search, ShoppingBag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Button from "./ui/Button";
+import { useCart } from "@/context/CartContext";
 
 const itim = Itim({
     subsets: ["latin", "vietnamese"],
@@ -32,6 +33,8 @@ export default function Header() {
     const [isLoading, setIsLoading] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const pathname = usePathname();
+
+    const { isCartOpen, setIsCartOpen, totalItems } = useCart();
 
     // Typing animation state
     const [placeholderText, setPlaceholderText] = useState("");
@@ -232,6 +235,27 @@ export default function Header() {
                             >
                                 Ghé thăm Fanpage
                             </Button>
+                        </div>
+
+                        {/* Wishlist/Compare (Future) */}
+
+                        {/* Cart Button */}
+                        <div className="relative">
+                            <button
+                                className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
+                                onClick={() => setIsCartOpen(true)}
+                            >
+                                <ShoppingBag className="w-6 h-6 text-gray-700" />
+                                {totalItems > 0 && (
+                                    <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white"
+                                    >
+                                        {totalItems}
+                                    </motion.div>
+                                )}
+                            </button>
                         </div>
 
                         {/* Mobile Menu Button */}

@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Cpu, HardDrive, MemoryStick, Monitor, Battery, CreditCard, Scale, Check } from "lucide-react";
+import { Cpu, HardDrive, MemoryStick, Monitor, Battery, CreditCard, Scale, Check, ShoppingBag } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { useComparison } from "@/context/ComparisonContext";
+import { useCart } from "@/context/CartContext";
 
 interface ProductCardProps {
     product: {
@@ -31,7 +32,14 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
     const { addToCompare, removeFromCompare, selectedProducts } = useComparison();
+    const { addToCart } = useCart();
     const isSelected = selectedProducts.some((p) => p._id === product._id);
+
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        addToCart(product);
+    };
 
     const handleCompare = (e: React.MouseEvent) => {
         e.preventDefault(); // Prevent navigating to detail page if user clicks button
@@ -72,9 +80,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                     className="object-contain group-hover:scale-105 transition-transform duration-300"
                 />
             </div>
-
-            {/* COMPARE ACTION */}
-
 
             {/* CONTENT */}
             <div className="p-3 md:p-4 flex flex-col gap-2 md:gap-3 flex-1">
@@ -143,8 +148,18 @@ export default function ProductCard({ product }: ProductCardProps) {
                             Chi tiết
                         </Button>
                     </div>
-                </div>
 
+                    <Button
+                        onClick={handleAddToCart}
+                        variant="primary"
+                        size="sm"
+                        fullWidth
+                        className="text-xs h-9 shadow-blue-200 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                        leftIcon={<ShoppingBag size={14} />}
+                    >
+                        Thêm vào giỏ
+                    </Button>
+                </div>
             </div>
         </div>
     );

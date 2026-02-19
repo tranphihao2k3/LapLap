@@ -20,7 +20,8 @@ import {
     ChevronLeft,
     PanelLeftClose,
     PanelLeftOpen,
-    Cpu
+    Cpu,
+    ShoppingCart
 } from 'lucide-react';
 
 export default function AdminLayoutContent({ children }: { children: ReactNode }) {
@@ -33,6 +34,7 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
         { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
         { icon: FolderTree, label: 'Danh mục', href: '/admin/categories' },
         { icon: Building2, label: 'Thương hiệu', href: '/admin/brands' },
+        { icon: ShoppingCart, label: 'Đơn hàng', href: '/admin/orders' },
         { icon: Laptop, label: 'Sản phẩm', href: '/admin/laptops' },
         { icon: Cpu, label: 'Linh kiện', href: '/admin/linh-kien' },
         { icon: FileText, label: 'Blog', href: '/admin/blog' },
