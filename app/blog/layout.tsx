@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Blog Laptop Cần Thơ - Kinh Nghiệm & Thủ Thuật | LapLap',
+    title: 'Blog Laptop Cần Thơ - Kinh Nghiệm & Thủ Thuật',
     description: 'Chia sẻ kinh nghiệm mua laptop cũ, thủ thuật sử dụng máy tính, tin tức công nghệ mới nhất. Hướng dẫn sửa lỗi vặt laptop tại nhà.',
     keywords: ['blog laptop', 'tin tức laptop cần thơ', 'kinh nghiệm mua laptop cũ', 'thủ thuật laptop', 'review laptop cần thơ', 'sữa laptop cần thơ', 'laplap blog'],
     openGraph: {

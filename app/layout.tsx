@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     default: "LapLap - Laptop Cần Thơ | Laptop Cũ & Mới Chính Hãng Giá Tốt",
     template: "%s | LapLap Cần Thơ"
   },
-  description: "LapLap Cần Thơ - Chuyên mua bán laptop cũ, laptop mới chính hãng tại Cần Thơ. Dịch vụ sửa laptop (sữa laptop), vệ sinh máy tính uy tín. Giá rẻ, bảo hành dài hạn.",
+  description: "LapLap Cần Thơ - Mua bán laptop cũ mới giá tốt uy tín. Sửa chữa (sữa laptop), vệ sinh laptop lấy liền. Bảo hành dài hạn, hậu mãi tận tâm.",
   keywords: [
     "laptop cần thơ",
     "laptop cũ cần thơ",
@@ -29,6 +29,17 @@ export const metadata: Metadata = {
     "cài win cần thơ"
   ],
   authors: [{ name: "LapLap Cần Thơ" }],
+  alternates: {
+    canonical: './',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
   icons: {
     icon: "/favicon.ico",
   },

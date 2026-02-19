@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Laptop Cần Thơ | Mua Bán Laptop Cũ & Mới Giá Rẻ - LapLap',
+    title: 'Laptop Cần Thơ - Mua Bán Laptop Cũ & Mới',
     description: 'Kho laptop cũ, mới lớn nhất Cần Thơ. Đa dạng mẫu mã Dell, HP, ThinkPad, Macbook. Bảo hành uy tín, trả góp 0%.',
     keywords: ['laptop cần thơ', 'laptop cũ cần thơ', 'mua laptop cũ', 'laptop giá rẻ', 'dell cần thơ', 'hp cần thơ', 'thinkpad cần thơ', 'macbook cần thơ'],
     openGraph: {
