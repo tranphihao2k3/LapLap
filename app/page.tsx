@@ -64,7 +64,7 @@ export default function HomePage() {
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
       "name": "LapLap - Laptop Cần Thơ",
-      "description": "Chuyên laptop chính hãng tại Cần Thơ. Laptop mới, cũ giá tốt. Giao hàng tận nơi, bảo hành uy tín.",
+      "description": "Chuyên mua bán laptop cũ, mới chính hãng tại Cần Thơ. Dịch vụ sửa chữa (sữa laptop), vệ sinh laptop lấy liền uy tín.",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Cần Thơ",
@@ -197,12 +197,13 @@ export default function HomePage() {
                     Laptop Cần Thơ
                     <br />
                     <span className="text-cyan-300">
-                      Chính Hãng
+                      LapLap - Cũ & Mới
                     </span>
                   </motion.h1>
 
                   <motion.p variants={fadeInUp} className="text-base md:text-lg text-blue-100/90 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-                    Sở hữu ngay laptop đỉnh cao với giá tốt nhất tại Cần Thơ.
+                    Hệ thống bán lẻ laptop cũ Cần Thơ & laptop mới chính hãng uy tín nhất.
+                    Dịch vụ sửa chữa (sữa laptop), vệ sinh máy tính lấy liền.
                     <span className="block mt-2 text-cyan-200 font-bold">Giao hàng tức thì • Bảo hành 24/7 chuyên nghiệp</span>
                   </motion.p>
 

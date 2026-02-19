@@ -53,7 +53,7 @@ const Footer = () => {
                             <p className="text-sm font-medium text-gray-400 tracking-wider">LAPTOP CẦN THƠ</p>
                         </Link>
                         <p className="text-sm leading-relaxed text-gray-400">
-                            Chuyên laptop chính hãng, giá tốt nhất Cần Thơ. Uy tín - Chất lượng - Tận tâm.
+                            Chuyên mua bán laptop cũ, laptop mới tại Cần Thơ. Sửa chữa (sữa laptop) uy tín, giá rẻ, lấy liền.
                         </p>
                         <div className="flex space-x-4 pt-2">
                             {socialLinks.map((social, index) => (

@@ -1,4 +1,5 @@
 import "./globals.css";
+import Script from "next/script";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Header from "@/components/Header";
@@ -11,12 +12,23 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   metadataBase: new URL("https://laplapcantho.store"),
   title: {
-    default: "LapLap - Laptop Cần Thơ | Mua Bán Laptop Chính Hãng Giá Tốt",
+    default: "LapLap - Laptop Cần Thơ | Laptop Cũ & Mới Chính Hãng Giá Tốt",
     template: "%s | LapLap Cần Thơ"
   },
-  description: "LapLap - Chuyên laptop tại Cần Thơ. Laptop mới, laptop cũ chính hãng, giá tốt nhất. Giao hàng tận nơi, bảo hành uy tín. Test laptop miễn phí online.",
-  keywords: ["laptop cần thơ", "mua laptop cần thơ", "laptop giá rẻ cần thơ", "test laptop", "laptop cũ cần thơ", "LapLap"],
-  authors: [{ name: "LapLap" }],
+  description: "LapLap Cần Thơ - Chuyên mua bán laptop cũ, laptop mới chính hãng tại Cần Thơ. Dịch vụ sửa laptop (sữa laptop), vệ sinh máy tính uy tín. Giá rẻ, bảo hành dài hạn.",
+  keywords: [
+    "laptop cần thơ",
+    "laptop cũ cần thơ",
+    "mua laptop cần thơ",
+    "sữa laptop cần thơ",
+    "sửa laptop cần thơ",
+    "laplap cần thơ",
+    "laplap",
+    "laptop giá rẻ cần thơ",
+    "thu mua laptop cũ cần thơ",
+    "cài win cần thơ"
+  ],
+  authors: [{ name: "LapLap Cần Thơ" }],
   icons: {
     icon: "/favicon.ico",
   },
@@ -24,8 +36,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "vi_VN",
     siteName: "LapLap - Laptop Cần Thơ",
-    title: "Laptop Cần Thơ - Mua Bán Laptop Chính Hãng",
-    description: "Chuyên laptop tại Cần Thơ. Giao hàng tận nơi, bảo hành uy tín.",
+    title: "LapLap - Laptop Cần Thơ | Laptop Cũ & Mới Chính Hãng",
+    description: "Chuyên mua bán laptop cũ, mới tại Cần Thơ. Sửa chữa (sữa laptop) uy tín, giá tốt. Giao hàng tận nơi.",
   },
 };
 
@@ -55,6 +67,19 @@ export default function RootLayout({
         <FacebookMessenger />
         <SpeedInsights />
         <Analytics />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-L4692QM7NF"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-L4692QM7NF');
+          `}
+        </Script>
       </body>
     </html>
   );
