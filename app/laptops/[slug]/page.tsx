@@ -83,9 +83,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         };
     }
 
-    const title = `${product.name} - Giá Rẻ, Chính Hãng | LapLap Cần Thơ`;
-    const description = `Mua ${product.name} chính hãng, giá tốt nhất tại LapLap Cần Thơ. Cấu hình: ${product.specs?.cpu || ''} / ${product.specs?.ram || ''} / ${product.specs?.ssd || ''}. Bảo hành uy tín, trả góp 0%.`;
-    const imageUrl = product.image || (product.images && product.images[0]) || 'https://laplapcantho.store/placeholder-laptop.png';
+    const title = `${product.name} | Trả góp 0%, Giá Ưu Đãi`;
+    const description = `Mua Laptop ${product.name} giá rẻ tại Cần Thơ. Chip ${product.specs?.cpu || ''}, RAM ${product.specs?.ram || ''}, SSD ${product.specs?.ssd || ''}. Hỗ trợ trả góp 0%, bảo hành uy tín.`;
+
+    let imageUrl = product.image || (product.images && product.images[0]) || '/placeholder-laptop.png';
+    // Ensure absolute URL for Open Graph
+    if (imageUrl.startsWith('/')) {
+        imageUrl = `https://laplapcantho.store${imageUrl}`;
+    }
 
     return {
         title: title,
