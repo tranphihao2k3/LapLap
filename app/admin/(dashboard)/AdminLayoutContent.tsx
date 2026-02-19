@@ -21,7 +21,8 @@ import {
     PanelLeftClose,
     PanelLeftOpen,
     Cpu,
-    ShoppingCart
+    ShoppingCart,
+    Megaphone
 } from 'lucide-react';
 
 export default function AdminLayoutContent({ children }: { children: ReactNode }) {
