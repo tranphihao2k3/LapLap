@@ -24,6 +24,7 @@ interface Group {
     id: string;
     name: string;
     url: string;
+    realId?: string;
 }
 
 export default function MarketingPage() {
@@ -35,6 +36,11 @@ export default function MarketingPage() {
     const [postContent, setPostContent] = useState('');
     const [copied, setCopied] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    // API Mode State
+    const [useApi, setUseApi] = useState(false);
+    const [accessToken, setAccessToken] = useState('');
+    const [apiResults, setApiResults] = useState<any[]>([]);
 
     useEffect(() => {
         fetchProducts();
@@ -95,28 +101,86 @@ export default function MarketingPage() {
 
         // Simple extraction of group name from URL (could be improved)
         let name = 'Facebook Group';
+        let groupId = '';
+
         try {
             const urlObj = new URL(newGroupUrl);
             const pathParts = urlObj.pathname.split('/').filter(p => p);
             if (pathParts.length > 0) {
                 // Usually /groups/group-name or /groups/12345
-                const groupPart = pathParts[pathParts.indexOf('groups') + 1] || pathParts[pathParts.length - 1];
-                name = groupPart.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                const groupIndex = pathParts.indexOf('groups');
+                if (groupIndex !== -1 && pathParts[groupIndex + 1]) {
+                    const groupPart = pathParts[groupIndex + 1];
+                    name = groupPart.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+                    // If it looks like a number, it might be the ID
+                    if (/^\d+$/.test(groupPart)) {
+                        groupId = groupPart;
+                    }
+                }
             }
         } catch (e) {
             // Invalid URL
         }
 
         const newGroup = {
-            id: Date.now().toString(),
+            id: groupId || Date.now().toString(), // Prefer real numeric ID if available for API
             name: name,
-            url: newGroupUrl
+            url: newGroupUrl,
+            realId: groupId // Store potential real ID
         };
 
         const updatedGroups = [...groups, newGroup];
         setGroups(updatedGroups);
         localStorage.setItem('marketing_groups', JSON.stringify(updatedGroups));
         setNewGroupUrl('');
+    };
+
+    const handleApiPost = async () => {
+        if (!accessToken) {
+            toast.error("Vui lòng nhập Access Token!");
+            return;
+        }
+
+        const groupIdsToPost = groups.map(g => g.realId || g.id).filter(id => /^\d+$/.test(id));
+
+        if (groupIdsToPost.length === 0) {
+            toast.error("Không tìm thấy ID nhóm hợp lệ (phải là số). Vui lòng kiểm tra lại link nhóm.");
+            return;
+        }
+
+        setLoading(true);
+        setApiResults([]);
+
+        try {
+            const link = selectedProduct ? `https://laplapcantho.store/laptops/${selectedProduct.slug || selectedProduct._id}` : undefined;
+
+            const res = await fetch('/api/facebook/post', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: postContent,
+                    link: link,
+                    accessToken: accessToken,
+                    groupIds: groupIdsToPost
+                })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                setApiResults(data.results);
+                toast.success(`Đã xử lý xong! Thành công: ${data.successCount}/${data.total}`);
+            } else {
+                toast.error(data.error || "Có lỗi xảy ra");
+            }
+
+        } catch (error) {
+            toast.error("Lỗi kết nối đến server");
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleRemoveGroup = (id: string) => {
@@ -191,8 +255,8 @@ export default function MarketingPage() {
                                     key={product._id}
                                     onClick={() => setSelectedProduct(product)}
                                     className={`p-3 rounded-lg border cursor-pointer transition-all hover:bg-blue-50 flex items-center gap-3 ${selectedProduct?._id === product._id
-                                            ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500'
-                                            : 'border-gray-200'
+                                        ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500'
+                                        : 'border-gray-200'
                                         }`}
                                 >
                                     <div className="w-12 h-12 relative flex-shrink-0 bg-white rounded border border-gray-100 p-1">
@@ -309,15 +373,55 @@ export default function MarketingPage() {
                                 Đã chọn <span className="font-bold text-gray-900">{groups.length}</span> nhóm để đăng bài.
                             </div>
                             <Button
-                                onClick={openAllGroups}
+                                onClick={useApi ? handleApiPost : openAllGroups}
                                 variant="primary"
                                 size="lg"
-                                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-200 animate-pulse-slow"
-                                leftIcon={<Rocket size={20} />}
-                                disabled={groups.length === 0 || !postContent}
+                                className={`bg-gradient-to-r ${useApi ? 'from-purple-600 to-pink-600' : 'from-blue-600 to-indigo-600'} hover:opacity-90 shadow-lg shadow-blue-200 animate-pulse-slow`}
+                                leftIcon={loading ? <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div> : <Rocket size={20} />}
+                                disabled={groups.length === 0 || !postContent || loading}
                             >
-                                Bắt đầu đăng bài hàng loạt
+                                {loading ? 'Đang xử lý...' : (useApi ? 'Đăng tự động (API)' : 'Bắt đầu đăng bài hàng loạt')}
                             </Button>
+                        </div>
+
+                        {/* API Mode Toggle & Settings */}
+                        <div className="mt-6 pt-6 border-t border-gray-100">
+                            <div className="flex items-center gap-3 mb-4">
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" checked={useApi} onChange={(e) => setUseApi(e.target.checked)} className="sr-only peer" />
+                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                    <span className="ml-3 text-sm font-medium text-gray-900">Chế độ API (Tự động hóa hoàn toàn)</span>
+                                </label>
+                            </div>
+
+                            {useApi && (
+                                <div className="space-y-3 bg-purple-50 p-4 rounded-xl border border-purple-100">
+                                    <div className="text-sm text-purple-800 font-medium">
+                                        ⚠️ Cảnh báo: Facebook API yêu cầu Token quyền cao (publish_to_groups). Chỉ dùng nếu bạn là Admin nhóm hoặc có App đã được duyệt.
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={accessToken}
+                                        onChange={(e) => setAccessToken(e.target.value)}
+                                        placeholder="Nhập Facebook Access Token (User hoặc Page)..."
+                                        className="w-full px-4 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm"
+                                    />
+                                    <p className="text-xs text-gray-500">
+                                        Lưu ý: Link nhóm phải có dạng ID số (vd: /groups/123456789) để API hoạt động tốt nhất.
+                                    </p>
+
+                                    {/* Results Log */}
+                                    {apiResults.length > 0 && (
+                                        <div className="mt-4 bg-white rounded-lg border border-gray-200 p-3 max-h-40 overflow-y-auto">
+                                            {apiResults.map((res, idx) => (
+                                                <div key={idx} className={`text-xs p-1 ${res.success ? 'text-green-600' : 'text-red-600'}`}>
+                                                    {res.success ? `✅ Nhóm ${res.groupId}: Đăng thành công` : `❌ Nhóm ${res.groupId}: ${res.error}`}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

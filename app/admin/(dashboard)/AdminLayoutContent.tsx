@@ -41,6 +41,7 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
         { icon: FileText, label: 'Blog', href: '/admin/blog' },
         { icon: Laptop, label: 'Driver & Soft', href: '/admin/software' }, // Reusing Laptop icon or finding a better one but Laptop is fine for now
         { icon: Users, label: 'Users', href: '/admin/users' },
+        { icon: Megaphone, label: 'Marketing', href: '/admin/marketing' },
     ];
 
     const isActive = (href: string) => {
