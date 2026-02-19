@@ -24,7 +24,6 @@ interface Group {
     id: string;
     name: string;
     url: string;
-    realId?: string;
 }
 
 export default function MarketingPage() {
@@ -37,10 +36,9 @@ export default function MarketingPage() {
     const [copied, setCopied] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    // API Mode State
-    const [useApi, setUseApi] = useState(false);
-    const [accessToken, setAccessToken] = useState('');
-    const [apiResults, setApiResults] = useState<any[]>([]);
+    // Batch Posting State
+    const [batchSize, setBatchSize] = useState(5);
+    const [currentBatchIndex, setCurrentBatchIndex] = useState(0);
 
     useEffect(() => {
         fetchProducts();
@@ -101,7 +99,6 @@ export default function MarketingPage() {
 
         // Simple extraction of group name from URL (could be improved)
         let name = 'Facebook Group';
-        let groupId = '';
 
         try {
             const urlObj = new URL(newGroupUrl);
@@ -112,11 +109,6 @@ export default function MarketingPage() {
                 if (groupIndex !== -1 && pathParts[groupIndex + 1]) {
                     const groupPart = pathParts[groupIndex + 1];
                     name = groupPart.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-
-                    // If it looks like a number, it might be the ID
-                    if (/^\d+$/.test(groupPart)) {
-                        groupId = groupPart;
-                    }
                 }
             }
         } catch (e) {
@@ -124,63 +116,15 @@ export default function MarketingPage() {
         }
 
         const newGroup = {
-            id: groupId || Date.now().toString(), // Prefer real numeric ID if available for API
+            id: Date.now().toString(),
             name: name,
             url: newGroupUrl,
-            realId: groupId // Store potential real ID
         };
 
         const updatedGroups = [...groups, newGroup];
         setGroups(updatedGroups);
         localStorage.setItem('marketing_groups', JSON.stringify(updatedGroups));
         setNewGroupUrl('');
-    };
-
-    const handleApiPost = async () => {
-        if (!accessToken) {
-            toast.error("Vui lòng nhập Access Token!");
-            return;
-        }
-
-        const groupIdsToPost = groups.map(g => g.realId || g.id).filter(id => /^\d+$/.test(id));
-
-        if (groupIdsToPost.length === 0) {
-            toast.error("Không tìm thấy ID nhóm hợp lệ (phải là số). Vui lòng kiểm tra lại link nhóm.");
-            return;
-        }
-
-        setLoading(true);
-        setApiResults([]);
-
-        try {
-            const link = selectedProduct ? `https://laplapcantho.store/laptops/${selectedProduct.slug || selectedProduct._id}` : undefined;
-
-            const res = await fetch('/api/facebook/post', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: postContent,
-                    link: link,
-                    accessToken: accessToken,
-                    groupIds: groupIdsToPost
-                })
-            });
-
-            const data = await res.json();
-
-            if (data.success) {
-                setApiResults(data.results);
-                toast.success(`Đã xử lý xong! Thành công: ${data.successCount}/${data.total}`);
-            } else {
-                toast.error(data.error || "Có lỗi xảy ra");
-            }
-
-        } catch (error) {
-            toast.error("Lỗi kết nối đến server");
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
     };
 
     const handleRemoveGroup = (id: string) => {
@@ -196,21 +140,37 @@ export default function MarketingPage() {
         toast.success("Đã sao chép nội dung!");
     };
 
-    const openAllGroups = () => {
-        // Copy content first
+    const openNextBatch = () => {
         copyToClipboard();
 
-        // Open each group in a new tab
-        groups.forEach((group) => {
+        const start = currentBatchIndex;
+        const end = Math.min(start + batchSize, groups.length);
+        const batch = groups.slice(start, end);
+
+        if (batch.length === 0) {
+            toast.success("Đã mở hết tất cả các nhóm!");
+            setCurrentBatchIndex(0); // Reset
+            return;
+        }
+
+        batch.forEach((group) => {
             window.open(group.url, '_blank');
         });
 
-        toast.success(`Đã mở ${groups.length} nhóm. Hãy dán (Ctrl+V) nội dung đã sao chép!`);
+        setCurrentBatchIndex(end);
+
+        const remaining = groups.length - end;
+        if (remaining > 0) {
+            toast.success(`Đã mở ${batch.length} nhóm. Còn lại ${remaining} nhóm.`);
+        } else {
+            toast.success(`Đã hoàn thành! Đã mở tất cả ${groups.length} nhóm.`);
+            setCurrentBatchIndex(0);
+        }
     };
 
-    const openSingleGroup = (url: string) => {
-        copyToClipboard();
-        window.open(url, '_blank');
+    const resetBatch = () => {
+        setCurrentBatchIndex(0);
+        toast.success("Đã đặt lại tiến trình đăng bài.");
     };
 
     const filteredProducts = products.filter(p =>
@@ -317,7 +277,7 @@ export default function MarketingPage() {
                                 type="text"
                                 value={newGroupUrl}
                                 onChange={(e) => setNewGroupUrl(e.target.value)}
-                                placeholder="Dán link nhóm Facebook vào đây (Ví dụ: https://facebook.com/groups/...)"
+                                placeholder="Dán link nhóm Facebook vào đây..."
                                 className="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                             />
                             <Button
@@ -335,25 +295,21 @@ export default function MarketingPage() {
                                 <div className="text-center text-gray-400 py-4">Chưa có nhóm nào. Hãy thêm nhóm để bắt đầu.</div>
                             ) : (
                                 <div className="space-y-2">
-                                    {groups.map(group => (
-                                        <div key={group.id} className="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200 shadow-sm group">
-                                            <div className="flex items-center gap-3 overflow-hidden">
-                                                <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 font-bold">
-                                                    G
+                                    {groups.map((group, index) => {
+                                        const isPosted = index < currentBatchIndex;
+                                        const isNext = index >= currentBatchIndex && index < currentBatchIndex + batchSize;
+
+                                        return (
+                                            <div key={group.id} className={`flex items-center justify-between p-3 rounded-lg border shadow-sm group ${isPosted ? 'bg-green-50 border-green-200' : isNext ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200'}`}>
+                                                <div className="flex items-center gap-3 overflow-hidden">
+                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold ${isPosted ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'}`}>
+                                                        {isPosted ? <CheckCircle size={16} /> : 'G'}
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <div className="font-medium truncate">{group.name}</div>
+                                                        <div className="text-xs text-gray-400 truncate">{group.url}</div>
+                                                    </div>
                                                 </div>
-                                                <div className="min-w-0">
-                                                    <div className="font-medium truncate">{group.name}</div>
-                                                    <div className="text-xs text-gray-400 truncate">{group.url}</div>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={() => openSingleGroup(group.url)}
-                                                    className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                    title="Mở nhóm này"
-                                                >
-                                                    <ExternalLink size={18} />
-                                                </button>
                                                 <button
                                                     onClick={() => handleRemoveGroup(group.id)}
                                                     className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
@@ -362,66 +318,59 @@ export default function MarketingPage() {
                                                     <Trash2 size={18} />
                                                 </button>
                                             </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
 
-                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                            <div className="text-sm text-gray-500">
-                                Đã chọn <span className="font-bold text-gray-900">{groups.length}</span> nhóm để đăng bài.
+                        {/* Control Panel */}
+                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                            <div className="flex items-center justify-between mb-4">
+                                <span className="font-bold text-gray-700">Cấu hình đăng hàng loạt:</span>
+                                <select
+                                    value={batchSize}
+                                    onChange={(e) => setBatchSize(Number(e.target.value))}
+                                    className="border rounded-md p-1 bg-white text-sm"
+                                >
+                                    <option value={3}>Mở 3 nhóm / lần</option>
+                                    <option value={5}>Mở 5 nhóm / lần</option>
+                                    <option value={10}>Mở 10 nhóm / lần</option>
+                                </select>
                             </div>
-                            <Button
-                                onClick={useApi ? handleApiPost : openAllGroups}
-                                variant="primary"
-                                size="lg"
-                                className={`bg-gradient-to-r ${useApi ? 'from-purple-600 to-pink-600' : 'from-blue-600 to-indigo-600'} hover:opacity-90 shadow-lg shadow-blue-200 animate-pulse-slow`}
-                                leftIcon={loading ? <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div> : <Rocket size={20} />}
-                                disabled={groups.length === 0 || !postContent || loading}
-                            >
-                                {loading ? 'Đang xử lý...' : (useApi ? 'Đăng tự động (API)' : 'Bắt đầu đăng bài hàng loạt')}
-                            </Button>
+
+                            <div className="flex items-center gap-3">
+                                <Button
+                                    onClick={openNextBatch}
+                                    variant="primary"
+                                    size="lg"
+                                    className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg"
+                                    leftIcon={<Rocket size={20} />}
+                                    disabled={groups.length === 0 || !postContent || currentBatchIndex >= groups.length}
+                                >
+                                    {currentBatchIndex === 0 ? 'Bắt đầu đăng bài' : `Mở tiếp ${Math.min(batchSize, groups.length - currentBatchIndex)} nhóm`}
+                                </Button>
+
+                                {currentBatchIndex > 0 && (
+                                    <Button
+                                        onClick={resetBatch}
+                                        variant="outline"
+                                        size="lg"
+                                        className="border-gray-300 text-gray-600"
+                                    >
+                                        Làm lại
+                                    </Button>
+                                )}
+                            </div>
+
+                            <div className="text-center mt-3 text-sm text-gray-500">
+                                Tiến độ: <span className="font-bold text-blue-600">{currentBatchIndex}/{groups.length}</span> nhóm
+                            </div>
                         </div>
 
-                        {/* API Mode Toggle & Settings */}
-                        <div className="mt-6 pt-6 border-t border-gray-100">
-                            <div className="flex items-center gap-3 mb-4">
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" checked={useApi} onChange={(e) => setUseApi(e.target.checked)} className="sr-only peer" />
-                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                                    <span className="ml-3 text-sm font-medium text-gray-900">Chế độ API (Tự động hóa hoàn toàn)</span>
-                                </label>
-                            </div>
-
-                            {useApi && (
-                                <div className="space-y-3 bg-purple-50 p-4 rounded-xl border border-purple-100">
-                                    <div className="text-sm text-purple-800 font-medium">
-                                        ⚠️ Cảnh báo: Facebook API yêu cầu Token quyền cao (publish_to_groups). Chỉ dùng nếu bạn là Admin nhóm hoặc có App đã được duyệt.
-                                    </div>
-                                    <input
-                                        type="text"
-                                        value={accessToken}
-                                        onChange={(e) => setAccessToken(e.target.value)}
-                                        placeholder="Nhập Facebook Access Token (User hoặc Page)..."
-                                        className="w-full px-4 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 text-sm"
-                                    />
-                                    <p className="text-xs text-gray-500">
-                                        Lưu ý: Link nhóm phải có dạng ID số (vd: /groups/123456789) để API hoạt động tốt nhất.
-                                    </p>
-
-                                    {/* Results Log */}
-                                    {apiResults.length > 0 && (
-                                        <div className="mt-4 bg-white rounded-lg border border-gray-200 p-3 max-h-40 overflow-y-auto">
-                                            {apiResults.map((res, idx) => (
-                                                <div key={idx} className={`text-xs p-1 ${res.success ? 'text-green-600' : 'text-red-600'}`}>
-                                                    {res.success ? `✅ Nhóm ${res.groupId}: Đăng thành công` : `❌ Nhóm ${res.groupId}: ${res.error}`}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                        <div className="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400 text-center">
+                            *Do chính sách mới của Facebook, tính năng đăng bài tự động qua API (publish_to_groups) đã bị hạn chế.
+                            Vui lòng sử dụng công cụ hỗ trợ mở nhóm hàng loạt ở trên để đăng bài an toàn và hiệu quả nhất.
                         </div>
                     </div>
                 </div>
