@@ -46,7 +46,6 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
     return (
         <div className="min-h-screen bg-[#F8FAFC]">
             {/* Breadcrumb - Redesigned */}
-            {/* Breadcrumb - Redesigned */}
             <div className="sticky top-[80px] z-30 pointer-events-none">
                 <div className="max-w-6xl mx-auto px-4 py-3 pointer-events-auto">
                     <div className="bg-white/90 backdrop-blur-md border border-slate-200/60 shadow-sm rounded-xl px-4 py-2">
@@ -125,14 +124,6 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                                 ))}
                             </div>
                         )}
-
-                        {/* DESCRIPTIVE HIGHLIGHTS (Trust Tray) */}
-                        <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-2 border border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-2 shadow-inner">
-                            <HighlightCard icon={BadgeCheck} title="Chính hãng" desc="Cam kết 100%" />
-                            <HighlightCard icon={Truck} title="Giao hàng" desc="Toàn quốc" />
-                            <HighlightCard icon={Shield} title="Bảo hành" desc={`${product.warrantyMonths || 12} Tháng`} />
-                            <HighlightCard icon={Headphones} title="Hỗ trợ" desc="24/7 Online" />
-                        </div>
                     </div>
 
                     {/* RIGHT COLUMN: Info & CTAs (Span 6 - 50%) */}
@@ -169,7 +160,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                             </div>
 
                             <div className="space-y-3">
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-2 gap-3">
                                     <Button
                                         onClick={() => {
                                             if (product) {
@@ -180,26 +171,27 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                                         variant="primary"
                                         size="lg"
                                         fullWidth
-                                        leftIcon={<CheckCircle size={20} />}
-                                        className="h-auto py-2 text-sm md:text-base bg-red-600 hover:bg-red-700 shadow-red-200 col-span-2"
+                                        leftIcon={<CheckCircle size={22} />}
+                                        className="h-auto py-3 md:py-4 text-sm md:text-base bg-gradient-to-r from-rose-600 to-orange-500 hover:from-rose-700 hover:to-orange-600 shadow-xl shadow-rose-200 border-none col-span-2 group overflow-hidden relative"
                                     >
-                                        <div className="flex flex-col items-center">
-                                            <span className="font-bold uppercase">Tiến hành thanh toán</span>
-                                            <span className="text-[10px] font-normal opacity-90">Giao hàng tận nơi</span>
+                                        <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
+                                        <div className="flex flex-col items-center relative z-10">
+                                            <span className="font-extrabold uppercase tracking-wider text-white">Tiến hành thanh toán</span>
+                                            <span className="text-[10px] font-medium text-rose-50 opacity-90">Giao tận nơi hoặc nhận tại cửa hàng</span>
                                         </div>
                                     </Button>
 
                                     <Button
                                         onClick={() => product && addToCart(product)}
-                                        variant="outline"
+                                        variant="white"
                                         size="lg"
                                         fullWidth
-                                        leftIcon={<ShoppingBag size={20} />}
-                                        className="h-auto py-2 text-sm md:text-base border-blue-600/30 text-blue-600 hover:bg-blue-50"
+                                        leftIcon={<ShoppingBag size={20} className="text-blue-600" />}
+                                        className="h-auto py-3 text-sm md:text-base border-2 border-blue-100 hover:border-blue-300"
                                     >
                                         <div className="flex flex-col items-center">
-                                            <span className="font-bold uppercase">Thêm vào giỏ</span>
-                                            <span className="text-[10px] font-normal opacity-90">Mua thêm sản phẩm khác</span>
+                                            <span className="font-bold uppercase text-slate-800">Thêm vào giỏ</span>
+                                            <span className="text-[10px] font-medium text-slate-400">Mua thêm sản phẩm khác</span>
                                         </div>
                                     </Button>
 
@@ -209,11 +201,11 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                                         size="lg"
                                         fullWidth
                                         leftIcon={<CreditCard size={20} />}
-                                        className="h-auto py-2 text-sm md:text-base bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200"
+                                        className="h-auto py-3 text-sm md:text-base bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-xl shadow-blue-200 border-none"
                                     >
                                         <div className="flex flex-col items-center">
-                                            <span className="font-bold uppercase">Mua trả góp</span>
-                                            <span className="text-[10px] font-normal opacity-90">Duyệt hồ sơ 5 phút</span>
+                                            <span className="font-bold uppercase tracking-wide">Mua trả góp</span>
+                                            <span className="text-[10px] font-medium text-blue-50 opacity-90">Duyệt hồ sơ nhanh 5 phút</span>
                                         </div>
                                     </Button>
                                 </div>
@@ -244,6 +236,14 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                                     </Button>
                                 </div>
                             </div>
+                        </div>
+
+                        {/* DESCRIPTIVE HIGHLIGHTS (Trust Tray) - Moved here to follow Price Info on Mobile */}
+                        <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-2 border border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-2 shadow-inner">
+                            <HighlightCard icon={BadgeCheck} title="Chính hãng" desc="Cam kết 100%" />
+                            <HighlightCard icon={Truck} title="Giao hàng" desc="Toàn quốc" />
+                            <HighlightCard icon={Shield} title="Bảo hành" desc={`${product.warrantyMonths || 12} Tháng`} />
+                            <HighlightCard icon={Headphones} title="Hỗ trợ" desc="24/7 Online" />
                         </div>
 
                         {/* Specs Summary Card */}

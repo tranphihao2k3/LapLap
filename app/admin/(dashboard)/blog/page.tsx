@@ -87,55 +87,56 @@ export default function AdminBlogPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-[#F8FAFC]">
             <Toast
                 message={toast.message}
                 type={toast.type}
                 isVisible={toast.isVisible}
                 onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
             />
-            <div className="container mx-auto p-6">
-                {/* Header */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-800">Quản lý Blog</h1>
-                            <p className="text-gray-600 mt-1">Tạo và quản lý bài viết blog</p>
-                        </div>
-                        <Link
-                            href="/admin/blog/new"
-                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors font-semibold"
-                        >
-                            <Plus className="w-5 h-5" />
-                            Tạo bài viết mới
-                        </Link>
+            <div className="max-w-7xl mx-auto px-4 py-6 md:py-8 lg:px-8">
+                {/* Header Section */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                    <div>
+                        <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Quản lý Blog</h1>
+                        <p className="text-sm text-slate-500 font-medium mt-1">Hệ thống biên tập và quản lý nội dung bài viết</p>
                     </div>
+                    <Link
+                        href="/admin/blog/new"
+                        className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl transition-all shadow-lg shadow-blue-200 font-bold text-sm md:text-base active:scale-95"
+                    >
+                        <Plus className="w-5 h-5" />
+                        Tạo bài viết mới
+                    </Link>
+                </div>
 
-                    {/* Filter */}
-                    <div className="mt-6 flex gap-3">
+                {/* Filter & Stats Bar */}
+                <div className="bg-white rounded-2xl border border-slate-100 p-3 mb-6 shadow-sm overflow-x-auto no-scrollbar">
+                    <div className="flex items-center gap-2 min-w-max">
+                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-3">Lọc trạng thái:</div>
                         <button
                             onClick={() => setFilterStatus('')}
-                            className={`px-4 py-2 rounded-lg transition-colors ${filterStatus === ''
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${filterStatus === ''
+                                ? 'bg-blue-600 text-white shadow-md'
+                                : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
                                 }`}
                         >
                             Tất cả ({blogs.length})
                         </button>
                         <button
                             onClick={() => setFilterStatus('published')}
-                            className={`px-4 py-2 rounded-lg transition-colors ${filterStatus === 'published'
-                                ? 'bg-green-600 text-white'
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${filterStatus === 'published'
+                                ? 'bg-emerald-600 text-white shadow-md'
+                                : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
                                 }`}
                         >
                             Đã xuất bản
                         </button>
                         <button
                             onClick={() => setFilterStatus('draft')}
-                            className={`px-4 py-2 rounded-lg transition-colors ${filterStatus === 'draft'
-                                ? 'bg-yellow-600 text-white'
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${filterStatus === 'draft'
+                                ? 'bg-amber-500 text-white shadow-md'
+                                : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
                                 }`}
                         >
                             Bản nháp
@@ -143,126 +144,147 @@ export default function AdminBlogPage() {
                     </div>
                 </div>
 
-                {/* Blog List */}
+                {/* Blog Content */}
                 {loading ? (
-                    <div className="text-center py-20">
-                        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
-                        <p className="text-gray-600 mt-4">Đang tải...</p>
+                    <div className="bg-white rounded-3xl border border-slate-100 p-20 text-center shadow-sm">
+                        <div className="relative inline-flex mb-4">
+                            <div className="w-16 h-16 rounded-full border-4 border-slate-100 border-t-blue-600 animate-spin"></div>
+                            <FileText className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-blue-600" />
+                        </div>
+                        <p className="text-slate-400 font-bold text-sm uppercase tracking-widest">Đang tải dữ liệu...</p>
                     </div>
                 ) : blogs.length > 0 ? (
-                    <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                        <table className="w-full">
-                            <thead className="bg-gray-100 border-b">
-                                <tr>
-                                    <th className="text-left p-4 font-semibold text-gray-700">Tiêu đề</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">Tác giả</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">Trạng thái</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">Lượt xem</th>
-                                    <th className="text-left p-4 font-semibold text-gray-700">Ngày tạo</th>
-                                    <th className="text-right p-4 font-semibold text-gray-700">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {blogs.map((blog) => (
-                                    <tr key={blog._id} className="border-b hover:bg-gray-50 transition-colors">
-                                        <td className="p-4">
-                                            <div className="flex items-start gap-3">
-                                                <FileText className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
-                                                <div>
-                                                    <h3 className="font-semibold text-gray-800">{blog.title}</h3>
-                                                    <p className="text-sm text-gray-500 line-clamp-1">{blog.excerpt}</p>
-                                                    {blog.tags.length > 0 && (
-                                                        <div className="flex gap-1 mt-1">
-                                                            {blog.tags.map(tag => (
-                                                                <span
-                                                                    key={tag}
-                                                                    className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded"
-                                                                >
-                                                                    {tag}
-                                                                </span>
-                                                            ))}
-                                                        </div>
-                                                    )}
+                    <div className="space-y-4">
+                        {/* Desktop Header */}
+                        <div className="hidden lg:grid grid-cols-[1fr_150px_120px_120px_150px] gap-4 px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 items-center">
+                            <div>Thông tin bài viết</div>
+                            <div>Tác giả</div>
+                            <div className="text-center">Trạng thái</div>
+                            <div className="text-center">Số liệu</div>
+                            <div className="text-right">Thao tác</div>
+                        </div>
+
+                        {/* Blog List Items */}
+                        <div className="grid grid-cols-1 gap-3">
+                            {blogs.map((blog) => (
+                                <div key={blog._id} className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group overflow-hidden">
+                                    <div className="grid grid-cols-1 lg:grid-cols-[1fr_150px_120px_120px_150px] gap-4 p-4 lg:px-6 lg:py-4 items-center relative">
+                                        {/* Content Preview */}
+                                        <div className="flex items-start gap-4">
+                                            <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                                                <FileText className="w-6 h-6" />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <h3 className="font-bold text-slate-800 text-sm md:text-base group-hover:text-blue-600 transition-colors line-clamp-2 uppercase tracking-tight leading-tight">
+                                                    {blog.title}
+                                                </h3>
+                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                    <span className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-1">
+                                                        {formatDate(blog.createdAt)}
+                                                    </span>
+                                                    {blog.tags.slice(0, 3).map(tag => (
+                                                        <span key={tag} className="text-[9px] font-black bg-blue-50 text-blue-600 px-2 py-0.5 rounded-lg uppercase tracking-tighter">
+                                                            {tag}
+                                                        </span>
+                                                    ))}
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td className="p-4 text-gray-600">{blog.author}</td>
-                                        <td className="p-4">
+                                        </div>
+
+                                        {/* Author (Desktop Only in column) */}
+                                        <div className="hidden lg:block text-sm font-bold text-slate-600">
+                                            {blog.author}
+                                        </div>
+
+                                        {/* Status */}
+                                        <div className="flex lg:justify-center items-center justify-between mt-2 lg:mt-0 pt-2 lg:pt-0 border-t lg:border-none border-slate-50">
+                                            <span className="lg:hidden text-[10px] font-bold text-slate-400 uppercase">Trạng thái:</span>
                                             <span
-                                                className={`px-3 py-1 rounded-full text-sm font-medium ${blog.status === 'published'
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : 'bg-yellow-100 text-yellow-700'
+                                                className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${blog.status === 'published'
+                                                    ? 'bg-emerald-100 text-emerald-700'
+                                                    : 'bg-amber-100 text-amber-700'
                                                     }`}
                                             >
                                                 {blog.status === 'published' ? 'Đã xuất bản' : 'Bản nháp'}
                                             </span>
-                                        </td>
-                                        <td className="p-4 text-gray-600">
-                                            <div className="flex items-center gap-1">
-                                                <Eye className="w-4 h-4" />
+                                        </div>
+
+                                        {/* Views */}
+                                        <div className="flex lg:justify-center items-center justify-between mt-1 lg:mt-0">
+                                            <span className="lg:hidden text-[10px] font-bold text-slate-400 uppercase">Lượt xem:</span>
+                                            <div className="flex items-center gap-1.5 text-slate-500 font-bold text-sm">
+                                                <Eye className="w-4 h-4 text-slate-400" />
                                                 {blog.viewCount}
                                             </div>
-                                        </td>
-                                        <td className="p-4 text-gray-600">{formatDate(blog.createdAt)}</td>
-                                        <td className="p-4">
-                                            <div className="flex justify-end gap-2">
-                                                {blog.status === 'published' && (
-                                                    <a
-                                                        href={`/blog/${blog.slug}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                        title="Xem bài viết"
-                                                    >
-                                                        <Eye className="w-5 h-5" />
-                                                    </a>
-                                                )}
-                                                <Link
-                                                    href={`/admin/blog/edit/${blog._id}`}
-                                                    className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                                                    title="Chỉnh sửa"
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="flex items-center justify-end gap-1.5 mt-4 lg:mt-0 pt-3 lg:pt-0 border-t lg:border-none border-slate-50 relative z-10">
+                                            {blog.status === 'published' && (
+                                                <a
+                                                    href={`/blog/${blog.slug}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="p-2.5 text-blue-600 bg-blue-50 rounded-xl hover:bg-blue-100 transition-all active:scale-90"
+                                                    title="Xem bài viết"
                                                 >
-                                                    <Edit className="w-5 h-5" />
-                                                </Link>
-                                                <button
-                                                    onClick={() => handleDelete(blog._id, blog.title)}
-                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                    title="Xóa"
-                                                >
-                                                    <Trash2 className="w-5 h-5" />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                                    <Eye className="w-5 h-5" />
+                                                </a>
+                                            )}
+                                            <Link
+                                                href={`/admin/blog/edit/${blog._id}`}
+                                                className="p-2.5 text-emerald-600 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-all active:scale-90"
+                                                title="Chỉnh sửa"
+                                            >
+                                                <Edit className="w-5 h-5" />
+                                            </Link>
+                                            <button
+                                                onClick={() => handleDelete(blog._id, blog.title)}
+                                                className="p-2.5 text-rose-600 bg-rose-50 rounded-xl hover:bg-rose-100 transition-all active:scale-90"
+                                                title="Xóa"
+                                            >
+                                                <Trash2 className="w-5 h-5" />
+                                            </button>
+                                        </div>
+
+                                        {/* Mobile Author Info */}
+                                        <div className="lg:hidden absolute top-4 right-4 animate-in fade-in duration-500 text-[10px] font-bold text-slate-300">
+                                            {blog.author}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 ) : (
-                    <div className="bg-white rounded-lg shadow-md p-12 text-center">
-                        <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <p className="text-gray-600 text-lg mb-4">
+                    <div className="bg-white rounded-3xl border border-dashed border-slate-200 p-16 text-center shadow-sm">
+                        <div className="w-24 h-24 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-6 text-slate-200">
+                            <FileText size={48} />
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-800 mb-2">Chưa có bài viết nào</h3>
+                        <p className="text-slate-500 text-sm max-w-md mx-auto mb-8 font-medium">
                             {filterStatus
-                                ? `Không có bài viết nào với trạng thái "${filterStatus === 'published' ? 'Đã xuất bản' : 'Bản nháp'}"`
-                                : 'Chưa có bài viết nào'}
+                                ? `Không tìm thấy bài viết nào với trạng thái "${filterStatus === 'published' ? 'Đã xuất bản' : 'Bản nháp'}"`
+                                : 'Hãy bắt đầu xây dựng nội dung cho website của bạn bằng cách tạo bài viết mới ngay bây giờ!'}
                         </p>
                         <Link
                             href="/admin/blog/new"
-                            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
+                            className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-3.5 rounded-2xl transition-all shadow-xl shadow-blue-100 font-bold hover:bg-blue-700 active:scale-95"
                         >
                             <Plus className="w-5 h-5" />
-                            Tạo bài viết đầu tiên
+                            Viết bài ngay
                         </Link>
                     </div>
                 )}
 
-                {/* Back to Admin */}
-                <div className="mt-6">
+                {/* Navigation Footer */}
+                <div className="mt-10 border-t border-slate-100 pt-6">
                     <Link
                         href="/admin"
-                        className="text-blue-600 hover:text-blue-700 transition-colors"
+                        className="inline-flex items-center gap-2 text-slate-400 font-bold text-sm uppercase tracking-widest hover:text-blue-600 transition-all group"
                     >
-                        ← Quay lại trang Admin
+                        <span className="group-hover:-translate-x-1 transition-transform">←</span>
+                        Quay lại trang chính
                     </Link>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { Plus, Edit2, Trash2, X, Image as ImageIcon, MinusCircle, PlusCircle, Search, Filter, ChevronDown, ChevronUp, Sparkles, Loader2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Image as ImageIcon, MinusCircle, PlusCircle, Search, Filter, ChevronDown, ChevronUp, Sparkles, Loader2, Cpu } from 'lucide-react';
 import SearchableSelect from './SearchableSelect';
 import PriceInput from './PriceInput';
 import Toast from '@/components/admin/Toast';
@@ -550,385 +550,189 @@ export default function LaptopsPage() {
                 onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
             />
             {/* Header with Search and Add Button */}
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex-1">
-                    <h1 className="text-3xl font-bold text-gray-800">Laptops</h1>
-                    <p className="text-gray-600 mt-2">Manage laptop products - {filteredLaptops.length} of {laptops.length} products</p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Laptops</h1>
+                    <p className="text-sm text-gray-600 mt-1 md:mt-2">Quản lý {filteredLaptops.length} / {laptops.length} sản phẩm</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                     {selectedIds.length > 0 && (
                         <button
                             onClick={handleBulkDelete}
-                            className="flex items-center gap-2 bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-red-600 text-white px-4 md:px-6 py-2.5 md:py-3 rounded-lg hover:bg-red-700 transition-all duration-200 shadow-md text-sm md:text-base font-medium"
                         >
-                            <Trash2 className="w-5 h-5" />
-                            Xoá đã chọn ({selectedIds.length})
+                            <Trash2 className="w-4 h-4 md:w-5 h-5" />
+                            Xoá gợi ý ({selectedIds.length})
                         </button>
                     )}
                     <button
                         onClick={() => setShowModal(true)}
-                        className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-lg hover:shadow-xl"
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-4 md:px-6 py-2.5 md:py-3 rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-md text-sm md:text-base font-medium"
                     >
-                        <Plus className="w-5 h-5" />
-                        Add Laptop
+                        <Plus className="w-4 h-4 md:w-5 h-5" />
+                        Thêm Laptop
                     </button>
                 </div>
             </div>
 
             {/* Search Bar with AI Toggle */}
-            <div className="flex gap-4 mb-4">
+            <div className="flex flex-col lg:flex-row gap-3 md:gap-4 mb-4">
                 <div className="flex-1 relative">
                     <div className={`relative flex items-center ${aiSearchMode ? 'ring-2 ring-purple-500 rounded-lg' : ''}`}>
                         {aiSearchMode ? (
-                            <Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-600" />
+                            <Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-600" />
                         ) : (
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         )}
                         <input
                             type="text"
                             placeholder={aiSearchMode
-                                ? "Ví dụ: tìm máy gaming 15tr asus màn hình FHD vga RTX..."
-                                : "Tìm kiếm theo tên, model, CPU, GPU, RAM, SSD..."}
+                                ? "Ví dụ: máy gaming 15tr asus rtx..."
+                                : "Tìm kiếm nhanh..."}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onKeyPress={handleSearchKeyPress}
-                            className={`w-full pl-11 pr-32 py-3 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition-all ${aiSearchMode
+                            className={`w-full pl-10 pr-24 md:pr-32 py-2.5 md:py-3 border rounded-lg focus:ring-2 focus:border-transparent outline-none transition-all text-sm md:text-base ${aiSearchMode
                                 ? 'border-purple-300 bg-purple-50 focus:ring-purple-500 placeholder-purple-400'
                                 : 'border-gray-300 focus:ring-blue-500'
                                 }`}
                         />
                         {aiSearchMode && aiSearchLoading && (
-                            <Loader2 className="absolute right-24 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-600 animate-spin" />
+                            <Loader2 className="absolute right-20 md:right-24 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-600 animate-spin" />
                         )}
                         <button
                             onClick={() => {
                                 setAiSearchMode(!aiSearchMode);
                                 setAiSearchCriteria(null);
-                                if (aiSearchMode) {
-                                    // Reset to normal search when turning off AI mode
-                                    fetchData();
-                                }
+                                if (aiSearchMode) fetchData();
                             }}
-                            className={`absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2 px-4 py-1.5 rounded-md transition-all ${aiSearchMode
-                                ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            className={`absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${aiSearchMode
+                                ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-sm'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
-                            title={aiSearchMode ? "Tắt AI Search" : "Bật AI Search"}
                         >
-                            <Sparkles className="w-4 h-4" />
-                            <span className="text-sm font-medium">AI</span>
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span className="text-xs font-bold uppercase tracking-wider">AI</span>
                         </button>
                     </div>
-                    {aiSearchMode && aiSearchCriteria && (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                            <span className="text-xs text-purple-600 font-medium">Tiêu chí tìm kiếm:</span>
-                            {aiSearchCriteria.brand && (
-                                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">
-                                    Brand: {aiSearchCriteria.brand}
-                                </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    {aiSearchMode ? (
+                        <button
+                            onClick={handleAISearch}
+                            disabled={aiSearchLoading || !searchQuery.trim()}
+                            className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-bold text-sm shadow-md disabled:opacity-50"
+                        >
+                            {aiSearchLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                            Tìm AI
+                        </button>
+                    ) : (
+                        <>
+                            <button
+                                onClick={() => setShowFilters(!showFilters)}
+                                className={`flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg border transition-all text-sm font-bold ${showFilters ? 'bg-blue-600 border-blue-600 text-white shadow-md' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                            >
+                                <Filter className="w-4 h-4" />
+                                {showFilters ? 'Ẩn bộ lọc' : 'Lọc thêm'}
+                            </button>
+                            {(selectedBrands.length > 0 || selectedCPUs.length > 0) && (
+                                <button onClick={clearAllFilters} className="p-2.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                                    <X className="w-5 h-5" />
+                                </button>
                             )}
-                            {aiSearchCriteria.priceMax && (
-                                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">
-                                    Giá ≤ {(aiSearchCriteria.priceMax / 1000000).toFixed(1)}tr
-                                </span>
-                            )}
-                            {aiSearchCriteria.cpu && (
-                                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">
-                                    CPU: {aiSearchCriteria.cpu}
-                                </span>
-                            )}
-                            {aiSearchCriteria.gpu && (
-                                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">
-                                    GPU: {aiSearchCriteria.gpu}
-                                </span>
-                            )}
-                        </div>
+                        </>
                     )}
                 </div>
-                {aiSearchMode && (
-                    <button
-                        onClick={handleAISearch}
-                        disabled={aiSearchLoading || !searchQuery.trim()}
-                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {aiSearchLoading ? (
-                            <>
-                                <Loader2 className="w-5 h-5 animate-spin" />
-                                Đang tìm...
-                            </>
-                        ) : (
-                            <>
-                                <Sparkles className="w-5 h-5" />
-                                Tìm kiếm
-                            </>
-                        )}
-                    </button>
-                )}
-                {!aiSearchMode && (
-                    <>
-                        <button
-                            onClick={() => setShowFilters(!showFilters)}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all ${showFilters
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
-                                }`}
-                        >
-                            <Filter className="w-5 h-5" />
-                            Filters
-                        </button>
-                        {(selectedBrands.length > 0 || selectedCPUs.length > 0 || selectedRAMs.length > 0 || selectedSSDs.length > 0 || selectedGPUs.length > 0 || selectedScreens.length > 0) && (
-                            <button
-                                onClick={clearAllFilters}
-                                className="px-4 py-3 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
-                            >
-                                Xóa bộ lọc
-                            </button>
-                        )}
-                    </>
-                )}
             </div>
 
             {/* Horizontal Filters */}
             {showFilters && !aiSearchMode && (
-                <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Danh mục phân loại</h3>
-                    <div className="flex flex-wrap gap-3">
+                <div className="bg-white/50 backdrop-blur-sm rounded-xl border border-gray-100 p-3 mb-6 overflow-x-auto no-scrollbar">
+                    <div className="flex flex-nowrap md:flex-wrap items-center gap-2 min-w-max md:min-w-0">
+                        <div className="text-xs font-black text-gray-400 uppercase tracking-widest mr-2 ml-1">Bộ lọc:</div>
+
                         {/* Brand Filter */}
-                        <div className="relative filter-dropdown">
-                            <button
-                                onClick={() => toggleSection('brands')}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                            >
-                                Theo hãng
-                                <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.brands ? 'rotate-180' : ''}`} />
-                            </button>
-                            {expandedSections.brands && (
-                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-[200px]">
-                                    <div className="space-y-2 max-h-64 overflow-y-auto">
-                                        {brands.map(brand => (
-                                            <label key={brand._id} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedBrands.includes(brand._id)}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            setSelectedBrands([...selectedBrands, brand._id]);
-                                                        } else {
-                                                            setSelectedBrands(selectedBrands.filter(id => id !== brand._id));
-                                                        }
-                                                    }}
-                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                                                />
-                                                <span className="text-sm text-gray-700">{brand.name}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                        <FilterButton
+                            label="Hãng"
+                            active={selectedBrands.length > 0}
+                            onClick={() => toggleSection('brands')}
+                            isExpanded={expandedSections.brands}
+                        />
 
                         {/* CPU Filter */}
-                        <div className="relative filter-dropdown">
-                            <button
-                                onClick={() => toggleSection('cpu')}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                            >
-                                CPU
-                                <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.cpu ? 'rotate-180' : ''}`} />
-                            </button>
-                            {expandedSections.cpu && (
-                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-[200px]">
-                                    <div className="space-y-2 max-h-64 overflow-y-auto">
-                                        {filterOptions.cpus.map(cpu => (
-                                            <label key={cpu} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedCPUs.includes(cpu)}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            setSelectedCPUs([...selectedCPUs, cpu]);
-                                                        } else {
-                                                            setSelectedCPUs(selectedCPUs.filter(c => c !== cpu));
-                                                        }
-                                                    }}
-                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                                                />
-                                                <span className="text-sm text-gray-700">{cpu}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                        <FilterButton
+                            label="CPU"
+                            active={selectedCPUs.length > 0}
+                            onClick={() => toggleSection('cpu')}
+                            isExpanded={expandedSections.cpu}
+                        />
 
                         {/* SSD Filter */}
-                        <div className="relative filter-dropdown">
-                            <button
-                                onClick={() => toggleSection('ssd')}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                            >
-                                SSD HDD
-                                <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.ssd ? 'rotate-180' : ''}`} />
-                            </button>
-                            {expandedSections.ssd && (
-                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-[200px]">
-                                    <div className="space-y-2 max-h-64 overflow-y-auto">
-                                        {filterOptions.ssds.map(ssd => (
-                                            <label key={ssd} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedSSDs.includes(ssd)}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            setSelectedSSDs([...selectedSSDs, ssd]);
-                                                        } else {
-                                                            setSelectedSSDs(selectedSSDs.filter(s => s !== ssd));
-                                                        }
-                                                    }}
-                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                                                />
-                                                <span className="text-sm text-gray-700">{ssd}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                        <FilterButton
+                            label="SSD"
+                            active={selectedSSDs.length > 0}
+                            onClick={() => toggleSection('ssd')}
+                            isExpanded={expandedSections.ssd}
+                        />
 
-                        {/* GPU Filter */}
-                        <div className="relative filter-dropdown">
-                            <button
-                                onClick={() => toggleSection('gpu')}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                            >
-                                VGA
-                                <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.gpu ? 'rotate-180' : ''}`} />
-                            </button>
-                            {expandedSections.gpu && (
-                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-[200px]">
-                                    <div className="space-y-2 max-h-64 overflow-y-auto">
-                                        {filterOptions.gpus.map(gpu => (
-                                            <label key={gpu} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedGPUs.includes(gpu)}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            setSelectedGPUs([...selectedGPUs, gpu]);
-                                                        } else {
-                                                            setSelectedGPUs(selectedGPUs.filter(g => g !== gpu));
-                                                        }
-                                                    }}
-                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                                                />
-                                                <span className="text-sm text-gray-700">{gpu}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                        {/* VGA Filter */}
+                        <FilterButton
+                            label="VGA"
+                            active={selectedGPUs.length > 0}
+                            onClick={() => toggleSection('gpu')}
+                            isExpanded={expandedSections.gpu}
+                        />
 
                         {/* RAM Filter */}
-                        <div className="relative filter-dropdown">
-                            <button
-                                onClick={() => toggleSection('ram')}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                            >
-                                Theo giá
-                                <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.ram ? 'rotate-180' : ''}`} />
-                            </button>
+                        <FilterButton
+                            label="RAM"
+                            active={selectedRAMs.length > 0}
+                            onClick={() => toggleSection('ram')}
+                            isExpanded={expandedSections.ram}
+                        />
+
+                        {/* Price Filter */}
+                        <FilterButton
+                            label="Giá"
+                            active={priceRange.min > 0 || priceRange.max < 100000000}
+                            onClick={() => toggleSection('price')}
+                            isExpanded={expandedSections.price}
+                        />
+
+                        {/* Custom Dropdowns Rendering */}
+                        <div className="relative">
+                            {expandedSections.brands && (
+                                <FilterDropdown items={brands} selected={selectedBrands} onSelect={setSelectedBrands} onClose={() => toggleSection('brands')} />
+                            )}
+                            {expandedSections.cpu && (
+                                <FilterDropdown items={filterOptions.cpus} selected={selectedCPUs} onSelect={setSelectedCPUs} onClose={() => toggleSection('cpu')} />
+                            )}
+                            {expandedSections.ssd && (
+                                <FilterDropdown items={filterOptions.ssds} selected={selectedSSDs} onSelect={setSelectedSSDs} onClose={() => toggleSection('ssd')} />
+                            )}
+                            {expandedSections.gpu && (
+                                <FilterDropdown items={filterOptions.gpus} selected={selectedGPUs} onSelect={setSelectedGPUs} onClose={() => toggleSection('gpu')} />
+                            )}
                             {expandedSections.ram && (
-                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-[200px]">
-                                    <div className="space-y-2 max-h-64 overflow-y-auto">
-                                        {filterOptions.rams.map(ram => (
-                                            <label key={ram} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedRAMs.includes(ram)}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            setSelectedRAMs([...selectedRAMs, ram]);
-                                                        } else {
-                                                            setSelectedRAMs(selectedRAMs.filter(r => r !== ram));
-                                                        }
-                                                    }}
-                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                                                />
-                                                <span className="text-sm text-gray-700">{ram}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
+                                <FilterDropdown items={filterOptions.rams} selected={selectedRAMs} onSelect={setSelectedRAMs} onClose={() => toggleSection('ram')} />
                             )}
-                        </div>
-
-                        {/* Screen Filter */}
-                        <div className="relative filter-dropdown">
-                            <button
-                                onClick={() => toggleSection('screen')}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                            >
-                                Kích thước màn hình
-                                <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.screen ? 'rotate-180' : ''}`} />
-                            </button>
-                            {expandedSections.screen && (
-                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-[200px]">
-                                    <div className="space-y-2 max-h-64 overflow-y-auto">
-                                        {filterOptions.screens.map(screen => (
-                                            <label key={screen} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedScreens.includes(screen)}
-                                                    onChange={(e) => {
-                                                        if (e.target.checked) {
-                                                            setSelectedScreens([...selectedScreens, screen]);
-                                                        } else {
-                                                            setSelectedScreens(selectedScreens.filter(s => s !== screen));
-                                                        }
-                                                    }}
-                                                    className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                                                />
-                                                <span className="text-sm text-gray-700">{screen}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Price Range Filter */}
-                        <div className="relative filter-dropdown">
-                            <button
-                                onClick={() => toggleSection('price')}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                            >
-                                Tình trạng
-                                <ChevronDown className={`w-4 h-4 transition-transform ${expandedSections.price ? 'rotate-180' : ''}`} />
-                            </button>
                             {expandedSections.price && (
-                                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 min-w-[280px]">
-                                    <div className="space-y-3">
-                                        <div className="flex gap-2">
-                                            <input
-                                                type="number"
-                                                placeholder="Min"
-                                                value={priceRange.min}
-                                                onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value) })}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                                            />
-                                            <span className="text-gray-500 self-center">-</span>
-                                            <input
-                                                type="number"
-                                                placeholder="Max"
-                                                value={priceRange.max}
-                                                onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value) })}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                                            />
+                                <div className="absolute top-full left-0 mt-2 bg-white border rounded-xl shadow-xl p-4 z-40 min-w-[280px] animate-in fade-in zoom-in-95 duration-200">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-bold text-gray-500 uppercase">Khoảng giá</span>
+                                            <button onClick={() => toggleSection('price')} className="p-1 hover:bg-gray-100 rounded-full"><X size={14} /></button>
                                         </div>
-                                        <p className="text-xs text-gray-500">
-                                            {formatPrice(priceRange.min)} - {formatPrice(priceRange.max)}
-                                        </p>
+                                        <div className="flex gap-2">
+                                            <input type="number" placeholder="Min" value={priceRange.min} onChange={(e) => setPriceRange({ ...priceRange, min: Number(e.target.value) })} className="w-full px-3 py-2 border rounded-lg text-sm font-bold" />
+                                            <span className="self-center text-gray-300">-</span>
+                                            <input type="number" placeholder="Max" value={priceRange.max} onChange={(e) => setPriceRange({ ...priceRange, max: Number(e.target.value) })} className="w-full px-3 py-2 border rounded-lg text-sm font-bold" />
+                                        </div>
+                                        <div className="flex justify-between text-[10px] font-black text-blue-600 bg-blue-50 p-2 rounded-lg">
+                                            <span>{formatPrice(priceRange.min)}</span>
+                                            <span>{formatPrice(priceRange.max)}</span>
+                                        </div>
                                     </div>
                                 </div>
                             )}
@@ -937,103 +741,78 @@ export default function LaptopsPage() {
                 </div>
             )}
 
-            {/* Products Table */}
+            {/* Products Table / Cards */}
             <div>
                 {loading ? (
-                    <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-                        <p className="text-gray-600 mt-4">Loading...</p>
+                    <div className="bg-white/50 rounded-2xl border border-gray-100 p-12 text-center">
+                        <Loader2 className="w-10 h-10 text-blue-600 animate-spin mx-auto mb-4" />
+                        <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">Đang tải dữ liệu...</p>
                     </div>
                 ) : (
-                    <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-gray-50 border-b border-gray-200">
-                                    <tr>
-                                        <th className="px-6 py-4 text-left">
-                                            <input
-                                                type="checkbox"
-                                                checked={filteredLaptops.length > 0 && selectedIds.length === filteredLaptops.length}
-                                                onChange={handleSelectAll}
-                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                            />
-                                        </th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Image</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Name</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Slug</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Model</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Category</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Brand</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Price</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
-                                        <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200">
-                                    {filteredLaptops.map((laptop) => (
-                                        <tr key={laptop._id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedIds.includes(laptop._id)}
-                                                    onChange={() => handleSelectOne(laptop._id)}
-                                                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                                />
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                {laptop.image || (laptop.images && laptop.images.length > 0 && laptop.images[0]) ? (
-                                                    <img
-                                                        src={laptop.image || laptop.images[0]}
-                                                        alt={laptop.name}
-                                                        className="w-16 h-12 object-cover rounded"
-                                                    />
-                                                ) : (
-                                                    <div className="w-16 h-12 bg-gray-200 rounded flex items-center justify-center">
-                                                        <ImageIcon className="w-6 h-6 text-gray-400" />
-                                                    </div>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4 font-medium text-gray-800">{laptop.name}</td>
-                                            <td className="px-6 py-4 text-gray-500 text-sm max-w-[150px] truncate" title={laptop.slug || 'No slug'}>{laptop.slug || '-'}</td>
-                                            <td className="px-6 py-4 text-gray-600 font-mono text-sm">{laptop.model}</td>
-                                            <td className="px-6 py-4 text-gray-600">{laptop.categoryId?.name || '-'}</td>
-                                            <td className="px-6 py-4 text-gray-600">{laptop.brandId?.name || '-'}</td>
-                                            <td className="px-6 py-4 text-gray-800 font-semibold">{formatPrice(laptop.price)}</td>
-                                            <td className="px-6 py-4">
-                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${laptop.status === 'active'
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : 'bg-gray-100 text-gray-700'
-                                                    }`}>
-                                                    {laptop.status}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <button
-                                                        onClick={() => handleEdit(laptop)}
-                                                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                                                    >
-                                                        <Edit2 className="w-4 h-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete(laptop._id)}
-                                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                    {laptops.length === 0 && (
-                                        <tr>
-                                            <td colSpan={9} className="px-6 py-12 text-center text-gray-500">
-                                                No laptops found. Click "Add Laptop" to create one.
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                    <div className="space-y-4">
+                        {/* Table Header (Hidden on Mobile) */}
+                        <div className="hidden lg:grid grid-cols-[40px_80px_1.5fr_1fr_1fr_100px_120px_100px] gap-4 px-6 py-4 bg-gray-50 border border-gray-200 rounded-xl text-xs font-black text-gray-400 uppercase tracking-widest mb-2 items-center">
+                            <div className="flex justify-center">
+                                <input type="checkbox" checked={filteredLaptops.length > 0 && selectedIds.length === filteredLaptops.length} onChange={handleSelectAll} className="w-4 h-4 rounded border-gray-300 text-blue-600" />
+                            </div>
+                            <div className="pl-2">Ảnh</div>
+                            <div>Tên sản phẩm</div>
+                            <div>Model</div>
+                            <div>Cấu hình</div>
+                            <div>Giá</div>
+                            <div className="text-center">Trạng thái</div>
+                            <div className="text-right">Thao tác</div>
+                        </div>
+
+                        {/* Product List */}
+                        <div className="space-y-3">
+                            {filteredLaptops.map((laptop) => (
+                                <div key={laptop._id} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all group overflow-hidden">
+                                    <div className="grid grid-cols-1 lg:grid-cols-[40px_80px_1.5fr_1fr_1fr_100px_120px_100px] gap-3 lg:gap-4 p-4 lg:px-6 lg:py-4 items-center relative">
+                                        <div className="flex lg:contents items-center justify-between mb-2 lg:mb-0 pb-3 lg:pb-0 border-b lg:border-none border-gray-50">
+                                            <div className="flex items-center gap-3">
+                                                <input type="checkbox" checked={selectedIds.includes(laptop._id)} onChange={() => handleSelectOne(laptop._id)} className="w-4 h-4 lg:w-4 lg:h-4 rounded border-gray-300 text-blue-600" />
+                                                <span className="lg:hidden text-[10px] font-black text-gray-400 uppercase tracking-widest">#ID: {laptop._id.slice(-6).toUpperCase()}</span>
+                                            </div>
+                                            <div className="lg:hidden flex items-center gap-1">
+                                                <button onClick={() => handleEdit(laptop)} className="p-2 text-blue-600 bg-blue-50 rounded-xl"><Edit2 size={16} /></button>
+                                                <button onClick={() => handleDelete(laptop._id)} className="p-2 text-red-600 bg-red-50 rounded-xl ml-1"><Trash2 size={16} /></button>
+                                            </div>
+                                        </div>
+                                        <div className="flex lg:contents items-center gap-4 lg:gap-0">
+                                            <div className="w-20 lg:w-16 h-16 lg:h-12 flex-shrink-0 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 flex items-center justify-center">
+                                                {(laptop.image || (laptop.images && laptop.images.length > 0)) ? (
+                                                    <img src={laptop.image || laptop.images[0]} alt="" className="w-full h-full object-contain" />
+                                                ) : <ImageIcon className="text-gray-200" size={24} />}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="text-sm md:text-base font-black text-gray-800 line-clamp-1 group-hover:text-blue-600 transition-colors uppercase tracking-tight">{laptop.name}</div>
+                                                <div className="lg:hidden text-xs font-bold text-gray-400 mt-0.5">{laptop.brandId?.name} • {laptop.categoryId?.name}</div>
+                                            </div>
+                                        </div>
+                                        <div className="hidden lg:block text-sm font-bold text-gray-500 font-mono truncate">{laptop.model}</div>
+                                        <div className="lg:contents">
+                                            <div className="bg-gray-50 lg:bg-transparent p-2 lg:p-0 rounded-xl flex lg:flex-col flex-wrap gap-x-3 gap-y-1 lg:gap-0">
+                                                <span className="text-[10px] lg:text-xs font-bold text-gray-600 flex items-center gap-1.5 whitespace-nowrap"><Cpu size={12} />{laptop.specs.cpu || 'N/A'}</span>
+                                                <span className="text-[10px] lg:text-xs font-bold text-gray-400 flex items-center gap-1.5 whitespace-nowrap"><ImageIcon size={12} />{laptop.specs.ram || '-'} / {laptop.specs.ssd || '-'}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex lg:contents items-baseline justify-between py-2 border-y lg:border-none border-gray-50 mt-1 lg:mt-0">
+                                            <span className="lg:hidden text-[10px] font-bold text-gray-400 uppercase">Giá bán:</span>
+                                            <div className="text-base lg:text-sm font-black text-blue-600">{formatPrice(laptop.price)}</div>
+                                        </div>
+                                        <div className="flex lg:contents justify-center">
+                                            <span className={`px-3 py-1 lg:w-full lg:text-center rounded-full text-[10px] font-black uppercase tracking-widest ${laptop.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                                                {laptop.status}
+                                            </span>
+                                        </div>
+                                        <div className="hidden lg:flex items-center justify-end gap-2">
+                                            <button onClick={() => handleEdit(laptop)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-xl transition-all"><Edit2 size={16} /></button>
+                                            <button onClick={() => handleDelete(laptop._id)} className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition-all"><Trash2 size={16} /></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}
@@ -1263,6 +1042,63 @@ export default function LaptopsPage() {
                 </div>
             )}
         </div>
+    );
+}
 
+// Helper Components for Cleaner Main Component
+function FilterButton({ label, active, onClick, isExpanded }: { label: string, active: boolean, onClick: () => void, isExpanded: boolean }) {
+    return (
+        <button
+            onClick={onClick}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all text-xs font-bold whitespace-nowrap ${active
+                ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300'
+                }`}
+        >
+            {label}
+            <ChevronDown className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+        </button>
+    );
+}
+
+function FilterDropdown({ items, selected, onSelect, onClose }: { items: any[], selected: string[], onSelect: (val: string[]) => void, onClose: () => void }) {
+    return (
+        <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl p-3 z-40 min-w-[200px] animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-50">
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Tùy chọn</span>
+                <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full"><X size={12} /></button>
+            </div>
+            <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1 thin-scrollbar">
+                {items.map(item => {
+                    const id = typeof item === 'string' ? item : item._id;
+                    const name = typeof item === 'string' ? item : item.name;
+                    return (
+                        <label key={id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
+                            <input
+                                type="checkbox"
+                                checked={selected.includes(id)}
+                                onChange={(e) => {
+                                    if (e.target.checked) {
+                                        onSelect([...selected, id]);
+                                    } else {
+                                        onSelect(selected.filter(i => i !== id));
+                                    }
+                                }}
+                                className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                            />
+                            <span className="text-sm font-bold text-gray-700">{name}</span>
+                        </label>
+                    );
+                })}
+            </div>
+            {selected.length > 0 && (
+                <button
+                    onClick={() => onSelect([])}
+                    className="w-full mt-2 py-1.5 text-[10px] font-black text-red-500 uppercase tracking-tighter hover:bg-red-50 rounded-lg transition-colors border border-red-100"
+                >
+                    Xóa lựa chọn
+                </button>
+            )}
+        </div>
     );
 }

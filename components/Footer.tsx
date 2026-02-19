@@ -1,7 +1,8 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Facebook, Instagram, Mail, Phone, MapPin, User, ArrowRight } from 'lucide-react';
+import { Facebook, Instagram, Mail, Phone, MapPin, User, ArrowRight, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Footer = () => {
@@ -29,6 +30,36 @@ const Footer = () => {
         visible: { opacity: 1, y: 0 }
     };
 
+    const [visitorCount, setVisitorCount] = useState<number | null>(null);
+
+    useEffect(() => {
+        const updateVisitors = async () => {
+            try {
+                // Determine if we should increment (once per session)
+                const hasVisited = sessionStorage.getItem('hasVisited');
+
+                if (!hasVisited) {
+                    const res = await fetch('/api/stats/visitors', { method: 'POST' });
+                    const data = await res.json();
+                    if (data.success) {
+                        setVisitorCount(data.count);
+                        sessionStorage.setItem('hasVisited', 'true');
+                    }
+                } else {
+                    const res = await fetch('/api/stats/visitors');
+                    const data = await res.json();
+                    if (data.success) {
+                        setVisitorCount(data.count);
+                    }
+                }
+            } catch (error) {
+                console.error('Error with visitor counter:', error);
+            }
+        };
+
+        updateVisitors();
+    }, []);
+
     return (
         <footer className="relative bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-gray-300 overflow-hidden">
             {/* Animated Top Border */}
@@ -55,7 +86,27 @@ const Footer = () => {
                         <p className="text-sm leading-relaxed text-gray-400">
                             Chuyên mua bán laptop cũ, laptop mới tại Cần Thơ. Sửa chữa (sữa laptop) uy tín, giá rẻ, lấy liền.
                         </p>
-                        <div className="flex space-x-4 pt-2">
+
+                        {/* Visitor Counter */}
+                        <div className="pt-2">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-2xl border border-white/10 shadow-inner group">
+                                <div className="p-1.5 bg-blue-500/20 rounded-lg text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
+                                    <Users size={14} className="animate-pulse" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 leading-none mb-1">Lượt truy cập</span>
+                                    <span className="text-sm font-black text-white tabular-nums">
+                                        {visitorCount !== null ? (
+                                            visitorCount.toLocaleString('vi-VN')
+                                        ) : (
+                                            <span className="inline-block w-8 h-4 bg-white/10 animate-pulse rounded"></span>
+                                        )}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex space-x-4 pt-4">
                             {socialLinks.map((social, index) => (
                                 <motion.a
                                     key={index}

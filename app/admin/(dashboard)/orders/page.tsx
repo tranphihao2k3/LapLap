@@ -64,83 +64,109 @@ export default function AdminOrdersPage() {
     );
 
     return (
-        <div className="flex-1 w-full">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Quản lý đơn hàng</h1>
+        <div className="flex-1 w-full bg-[#F8FAFC] min-h-screen">
+            <div className="max-w-7xl mx-auto px-4 py-6 md:py-8 lg:px-8">
+                {/* Header & Search */}
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
+                    <div>
+                        <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Quản lý đơn hàng</h1>
+                        <p className="text-sm text-slate-500 font-medium mt-1">Theo dõi và xử lý các đơn hàng từ khách hàng</p>
+                    </div>
 
-                <div className="relative">
-                    <input
-                        type="text"
-                        placeholder="Tìm kiếm đơn hàng..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-full sm:w-64"
-                    />
-                    <Search className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
+                    <div className="relative w-full lg:w-96">
+                        <input
+                            type="text"
+                            placeholder="Tìm khách hàng, số điện thoại, mã đơn..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-12 pr-4 py-3 md:py-3.5 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all shadow-sm font-medium placeholder:text-slate-400 text-sm md:text-base"
+                        />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
+                    </div>
                 </div>
-            </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead className="bg-gray-50 border-b border-gray-200">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Mã đơn</th>
-                                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Khách hàng</th>
-                                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Ngày đặt</th>
-                                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Tổng tiền</th>
-                                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Trạng thái</th>
-                                <th className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                            {loading ? (
-                                <tr>
-                                    <td colSpan={6} className="px-6 py-10 text-center text-gray-500">
-                                        Đang tải dữ liệu...
-                                    </td>
-                                </tr>
-                            ) : filteredOrders.length === 0 ? (
-                                <tr>
-                                    <td colSpan={6} className="px-6 py-10 text-center text-gray-500">
-                                        Không tìm thấy đơn hàng nào.
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredOrders.map((order) => (
-                                    <tr key={order._id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
-                                            #{order._id.slice(-6).toUpperCase()}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            <div className="font-medium">{order.customer.name}</div>
-                                            <div className="text-gray-500 text-xs">{order.customer.phone}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {new Date(order.createdAt).toLocaleDateString('vi-VN')}
-                                            <br />
-                                            <span className="text-xs">{new Date(order.createdAt).toLocaleTimeString('vi-VN')}</span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.totalAmount)}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
+                {/* Orders Content */}
+                {loading ? (
+                    <div className="bg-white rounded-3xl border border-slate-100 p-20 text-center shadow-sm">
+                        <div className="w-16 h-16 rounded-full border-4 border-slate-100 border-t-blue-600 animate-spin mx-auto mb-4"></div>
+                        <p className="text-slate-400 font-bold text-sm uppercase tracking-widest">Đang tải dữ liệu...</p>
+                    </div>
+                ) : filteredOrders.length === 0 ? (
+                    <div className="bg-white rounded-3xl border border-dashed border-slate-200 p-16 text-center shadow-sm">
+                        <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center mx-auto mb-6 text-slate-200">
+                            <Truck size={40} />
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-800 mb-2">Không tìm thấy đơn hàng</h3>
+                        <p className="text-slate-500 text-sm font-medium">Thử thay đổi từ khóa tìm kiếm hoặc kiểm tra lại thông tin.</p>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        {/* Desktop Header */}
+                        <div className="hidden xl:grid grid-cols-[120px_1fr_180px_150px_150px_120px] gap-4 px-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 items-center">
+                            <div>Mã đơn</div>
+                            <div>Khách hàng</div>
+                            <div>Ngày đặt</div>
+                            <div>Tổng tiền</div>
+                            <div className="text-center">Trạng thái</div>
+                            <div className="text-right">Thao tác</div>
+                        </div>
+
+                        {/* Order Items */}
+                        <div className="grid grid-cols-1 gap-3">
+                            {filteredOrders.map((order) => (
+                                <div key={order._id} className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group overflow-hidden">
+                                    <div className="grid grid-cols-1 xl:grid-cols-[120px_1fr_180px_150px_150px_120px] gap-4 p-4 lg:px-6 lg:py-4 items-center relative">
+                                        {/* Order ID & Phone (Mobile top info) */}
+                                        <div>
+                                            <span className="text-xs font-black text-blue-600 bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 uppercase tracking-tighter">
+                                                #{order._id.slice(-6).toUpperCase()}
+                                            </span>
+                                            <div className="xl:hidden absolute top-4 right-4">
+                                                {getStatusBadge(order.status)}
+                                            </div>
+                                        </div>
+
+                                        {/* Customer Info */}
+                                        <div className="flex flex-col">
+                                            <span className="font-bold text-slate-800 text-sm md:text-base">{order.customer.name}</span>
+                                            <span className="text-xs font-medium text-slate-400 mt-0.5">{order.customer.phone}</span>
+                                        </div>
+
+                                        {/* Date */}
+                                        <div className="flex xl:flex-col items-center xl:items-start gap-2 xl:gap-0 mt-2 xl:mt-0 pt-2 xl:pt-0 border-t xl:border-none border-slate-50">
+                                            <span className="xl:hidden text-[10px] font-bold text-slate-400 uppercase">Ngày:</span>
+                                            <span className="text-xs font-bold text-slate-600">{new Date(order.createdAt).toLocaleDateString('vi-VN')}</span>
+                                            <span className="hidden xl:block text-[10px] font-medium text-slate-400">{new Date(order.createdAt).toLocaleTimeString('vi-VN')}</span>
+                                        </div>
+
+                                        {/* Amount */}
+                                        <div className="flex xl:flex-col items-center xl:items-start gap-2 xl:gap-0 mt-1 xl:mt-0">
+                                            <span className="xl:hidden text-[10px] font-bold text-slate-400 uppercase">Tiền:</span>
+                                            <span className="text-sm xl:text-base font-black text-rose-600">
+                                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.totalAmount)}
+                                            </span>
+                                        </div>
+
+                                        {/* Status Badge (Desktop Only) */}
+                                        <div className="hidden xl:flex justify-center">
                                             {getStatusBadge(order.status)}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="flex items-center justify-end mt-4 xl:mt-0 pt-3 xl:pt-0 border-t xl:border-none border-slate-50 relative z-10">
                                             <Link
                                                 href={`/admin/orders/${order._id}`}
-                                                className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors"
+                                                className="w-full xl:w-auto flex items-center justify-center gap-2 text-blue-600 bg-blue-50 hover:bg-blue-100 px-4 py-2.5 rounded-xl transition-all font-bold text-xs active:scale-95"
                                             >
-                                                <Eye size={16} /> Chi tiết
+                                                <Eye size={16} /> Xem chi tiết
                                             </Link>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

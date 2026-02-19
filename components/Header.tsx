@@ -109,37 +109,39 @@ export default function Header() {
         <header className="w-full sticky top-0 z-50 shadow-md bg-white">
             {/* Logo */}
             <div className="bg-white">
-                <div className="container mx-auto max-w-5xl px-4 py-8 flex justify-between items-center">
-                    <Link href="/" className="group relative z-10">
-                        <motion.div
-                            className="flex items-center"
-                            animate={{ scale: [0, 1.2, 1, 1, 1.2, 0] }}
-                            transition={{
-                                duration: 4,
-                                repeat: Infinity,
-                                times: [0, 0.1, 0.2, 0.8, 0.9, 1],
-                                ease: "easeInOut"
-                            }}
-                        >
-                            {"Lap Lap Store".split("").map((char, index) => (
-                                <motion.span
-                                    key={index}
-                                    className={itim.className + " text-3xl font-black text-gray-800 cursor-pointer"}
-                                    animate={{
-                                        color: ["#1f2937", "#1f2937", "#2563eb", "#1f2937", "#1f2937"],
-                                    }}
-                                    transition={{
-                                        duration: 4, // Match parent duration
-                                        repeat: Infinity,
-                                        times: [0, 0.3, 0.4 + (index * 0.03), 0.5 + (index * 0.03), 1], // Wave happens during the "Stay" phase (0.2-0.8)
-                                        ease: "easeInOut",
-                                    }}
-                                >
-                                    {char === " " ? "\u00A0" : char}
-                                </motion.span>
-                            ))}
-                        </motion.div>
-                    </Link>
+                <div className="container mx-auto max-w-7xl px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex-shrink-0 min-w-[200px]">
+                        <Link href="/" className="group relative z-10 block">
+                            <motion.div
+                                className="flex items-center origin-left"
+                                animate={{ scale: [0, 1.05, 1, 1, 1.05, 0] }}
+                                transition={{
+                                    duration: 4,
+                                    repeat: Infinity,
+                                    times: [0, 0.1, 0.2, 0.8, 0.9, 1],
+                                    ease: "easeInOut"
+                                }}
+                            >
+                                {"Lap Lap Store".split("").map((char, index) => (
+                                    <motion.span
+                                        key={index}
+                                        className={itim.className + " text-3xl font-black text-gray-800 cursor-pointer inline-block"}
+                                        animate={{
+                                            color: ["#1f2937", "#1f2937", "#2563eb", "#1f2937", "#1f2937"],
+                                        }}
+                                        transition={{
+                                            duration: 4,
+                                            repeat: Infinity,
+                                            times: [0, 0.3, 0.4 + (index * 0.03), 0.5 + (index * 0.03), 1],
+                                            ease: "easeInOut",
+                                        }}
+                                    >
+                                        {char === " " ? "\u00A0" : char}
+                                    </motion.span>
+                                ))}
+                            </motion.div>
+                        </Link>
+                    </div>
 
                     {/* Search Bar */}
                     <div className="flex-1 max-w-md mx-4 relative hidden md:block">
@@ -152,15 +154,30 @@ export default function Header() {
                             <input
                                 type="text"
                                 placeholder={placeholderText}
-                                className={`w-full pl-10 pr-4 py-2 rounded-full border transition-all duration-300 ${isSearchFocused
-                                    ? "border-blue-500 ring-2 ring-blue-200 shadow-lg"
-                                    : "border-gray-300 hover:border-blue-400"
-                                    } focus:outline-none`}
+                                className={`w-full pl-10 pr-12 py-2.5 rounded-full border transition-all duration-300 ${isSearchFocused
+                                    ? "border-blue-500 ring-4 ring-blue-100 shadow-xl bg-white"
+                                    : "border-gray-200 hover:border-blue-300 bg-gray-50/50"
+                                    } focus:outline-none font-medium text-slate-700`}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 onFocus={() => setIsSearchFocused(true)}
                                 onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
                             />
+
+                            {/* Clear Button */}
+                            <AnimatePresence>
+                                {searchTerm && (
+                                    <motion.button
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.8 }}
+                                        onClick={() => setSearchTerm("")}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-gray-100 rounded-full text-gray-400 transition-colors"
+                                    >
+                                        <X size={14} />
+                                    </motion.button>
+                                )}
+                            </AnimatePresence>
                             <motion.div
                                 className="absolute left-3 top-1/2 transform -translate-y-1/2"
                                 animate={{
@@ -173,44 +190,110 @@ export default function Header() {
                             </motion.div>
                         </motion.div>
 
-                        {/* Search Results Dropdown */}
-                        {isSearchFocused && (searchTerm.length > 0 || searchResults.length > 0) && (
-                            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-100 max-h-96 overflow-y-auto z-50">
-                                {isLoading ? (
-                                    <div className="p-4 text-center text-gray-500">Đang tìm kiếm...</div>
-                                ) : searchResults.length > 0 ? (
-                                    <ul>
-                                        {searchResults.map((product) => (
-                                            <li key={product._id}>
-                                                <Link
-                                                    href={`/laptops/${product.slug || product._id}`}
-                                                    className="flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
-                                                    onClick={() => setIsSearchFocused(false)}
-                                                >
-                                                    <div className="w-12 h-12 relative flex-shrink-0">
-                                                        <Image
-                                                            src={product.images?.[0] || 'https://placehold.co/100x100?text=No+Image'}
-                                                            alt={product.name}
-                                                            width={48}
-                                                            height={48}
-                                                            className="w-full h-full object-cover rounded-md"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <h4 className="text-sm font-medium text-gray-800 line-clamp-1">{product.name}</h4>
-                                                        <p className="text-xs text-blue-600 font-bold">
-                                                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
-                                                        </p>
-                                                    </div>
-                                                </Link>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                ) : searchTerm.length > 0 ? (
-                                    <div className="p-4 text-center text-gray-500">Không tìm thấy sản phẩm nào</div>
-                                ) : null}
-                            </div>
-                        )}
+                        {/* Premium Search Results Dropdown */}
+                        <AnimatePresence>
+                            {isSearchFocused && (searchTerm.length > 0 || searchResults.length > 0) && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    className="absolute top-full left-0 right-0 mt-3 bg-white/90 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-white/40 overflow-hidden z-[100] ring-1 ring-black/5"
+                                >
+                                    <div className="p-4 border-b border-gray-100/50 bg-gray-50/50 flex justify-between items-center">
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Kết quả tìm kiếm</h3>
+                                        {searchResults.length > 0 && !isLoading && (
+                                            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                                                {searchResults.length} sản phẩm
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="max-h-[min(480px,70vh)] overflow-y-auto no-scrollbar custom-scrollbar">
+                                        {isLoading ? (
+                                            <div className="p-10 text-center">
+                                                <motion.div
+                                                    animate={{ rotate: 360 }}
+                                                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                                    className="w-8 h-8 border-2 border-blue-100 border-t-blue-600 rounded-full mx-auto mb-3"
+                                                />
+                                                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Đang tìm dữ liệu...</p>
+                                            </div>
+                                        ) : searchResults.length > 0 ? (
+                                            <div className="p-2 space-y-1">
+                                                {searchResults.map((product, idx) => (
+                                                    <motion.div
+                                                        key={product._id}
+                                                        initial={{ opacity: 0, x: -10 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        transition={{ delay: idx * 0.05 }}
+                                                    >
+                                                        <Link
+                                                            href={`/laptops/${product.slug || product._id}`}
+                                                            className="flex items-center gap-4 p-3 hover:bg-white hover:shadow-lg hover:shadow-blue-500/5 rounded-2xl transition-all duration-300 group relative border border-transparent hover:border-blue-100 active:scale-[0.98]"
+                                                            onClick={() => setIsSearchFocused(false)}
+                                                        >
+                                                            <div className="w-16 h-16 relative flex-shrink-0 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:scale-105 transition-transform duration-500">
+                                                                <Image
+                                                                    src={product.image || product.images?.[0] || 'https://placehold.co/100x100?text=No+Image'}
+                                                                    alt={product.name}
+                                                                    fill
+                                                                    className="object-contain p-1"
+                                                                />
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <h4 className={`${itim.className} text-sm font-bold text-gray-800 line-clamp-1 group-hover:text-blue-600 transition-colors uppercase tracking-tight`}>
+                                                                    {product.name}
+                                                                </h4>
+                                                                <div className="flex flex-wrap gap-1 mt-1">
+                                                                    {product.specs?.cpu && (
+                                                                        <span className="text-[9px] font-black text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100 uppercase">
+                                                                            {product.specs.cpu.split(' ')[0]}
+                                                                        </span>
+                                                                    )}
+                                                                    {product.specs?.ram && (
+                                                                        <span className="text-[9px] font-black text-blue-400 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 uppercase">
+                                                                            {product.specs.ram}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <div className="mt-1 flex items-baseline gap-2">
+                                                                    <span className="text-sm font-black text-rose-600">
+                                                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                                                                <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/30">
+                                                                    <Search size={14} />
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    </motion.div>
+                                                ))}
+                                            </div>
+                                        ) : searchTerm.length > 0 ? (
+                                            <div className="p-12 text-center">
+                                                <div className="w-16 h-16 bg-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-4 text-gray-300 border border-dashed border-gray-200">
+                                                    <X size={24} />
+                                                </div>
+                                                <p className="text-sm font-bold text-gray-500">Không tìm thấy sản phẩm nào</p>
+                                                <p className="text-[10px] text-gray-400 mt-1">Hãy thử từ khóa khác như "Dell XPS" hoặc "Nitro 5"</p>
+                                            </div>
+                                        ) : null}
+                                    </div>
+
+                                    {searchResults.length > 0 && !isLoading && (
+                                        <Link
+                                            href={`/laptops?search=${encodeURIComponent(searchTerm)}`}
+                                            className="block p-4 bg-gray-50/80 text-center text-[10px] font-black uppercase tracking-widest text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300 border-t border-gray-100/50"
+                                            onClick={() => setIsSearchFocused(false)}
+                                        >
+                                            Xem tất cả kết quả cho "{searchTerm}"
+                                        </Link>
+                                    )}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
 
                     <div className="flex items-center gap-4">
@@ -292,7 +375,7 @@ export default function Header() {
                                 >
                                     <Link
                                         href={item.href}
-                                        className={`${itim.className} relative z-10 block px-2 py-2.5 text-[15px] font-bold transition-colors duration-300 ${isActive ? 'text-blue-600' : 'text-slate-600 hover:text-slate-900 focus:text-blue-600'
+                                        className={`${itim.className} relative z-10 block px-2 py-1.5 text-[15px] font-bold transition-colors duration-300 ${isActive ? 'text-blue-600' : 'text-slate-600 hover:text-slate-900 focus:text-blue-600'
                                             }`}
                                     >
                                         {item.label}

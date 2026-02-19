@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import ProductCard from './ProductCard';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, X, Search as SearchIcon } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import TechLoader from '@/components/ui/TechLoader';
 
@@ -45,10 +46,28 @@ interface Product {
 }
 
 export default function LaptopsPage() {
+    return (
+        <Suspense fallback={<TechLoader />}>
+            <LaptopsContent />
+        </Suspense>
+    );
+}
+
+function LaptopsContent() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const initialSearch = searchParams.get('search') || '';
+
     const [products, setProducts] = useState<Product[]>([]);
     const [brands, setBrands] = useState<Brand[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState(initialSearch);
+
+    // Sync search query from URL
+    useEffect(() => {
+        setSearchQuery(searchParams.get('search') || '');
+    }, [searchParams]);
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
@@ -127,6 +146,18 @@ export default function LaptopsPage() {
     // Filter products
     const filteredProducts = useMemo(() => {
         return products.filter(product => {
+            // Search filter
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                const matchesSearch =
+                    product.name.toLowerCase().includes(query) ||
+                    product.model.toLowerCase().includes(query) ||
+                    product.specs.cpu.toLowerCase().includes(query) ||
+                    product.specs.gpu.toLowerCase().includes(query);
+
+                if (!matchesSearch) return false;
+            }
+
             // Category filter
             if (filters.categories.length > 0 && !filters.categories.includes(product.categoryId._id)) {
                 return false;
@@ -174,7 +205,7 @@ export default function LaptopsPage() {
 
             return true;
         });
-    }, [products, filters, priceRanges]);
+    }, [products, filters, priceRanges, searchQuery]);
 
     // Paginate products
     const paginatedProducts = useMemo(() => {
@@ -213,6 +244,8 @@ export default function LaptopsPage() {
             weights: [],
             statuses: [],
         });
+        setSearchQuery("");
+        router.push("/laptops");
     };
 
     // Toggle dropdown
@@ -221,7 +254,7 @@ export default function LaptopsPage() {
     };
 
     // Count active filters
-    const activeFiltersCount = Object.values(filters).reduce((acc, arr) => acc + arr.length, 0);
+    const activeFiltersCount = Object.values(filters).reduce((acc, arr) => acc + arr.length, 0) + (searchQuery ? 1 : 0);
 
     return (
         <>
@@ -240,33 +273,37 @@ export default function LaptopsPage() {
                             💻 Kho Laptop Chất Lượng
                         </div>
                         <h1 className="text-3xl md:text-5xl font-black mb-4 leading-tight">
-                            Danh Sách Laptop <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">
-                                Giá Tốt Nhất Cần Thơ
-                            </span>
+                            {searchQuery ? (
+                                <>
+                                    Kết quả cho: <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400 px-2 italic">
+                                        "{searchQuery}"
+                                    </span>
+                                </>
+                            ) : (
+                                <>
+                                    Danh Sách Laptop <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">
+                                        Giá Tốt Nhất Cần Thơ
+                                    </span>
+                                </>
+                            )}
                         </h1>
                         <p className="text-lg text-blue-100 max-w-lg mx-auto md:mx-0 leading-relaxed font-medium">
-                            Đa dạng mẫu mã từ Dell, HP, ThinkPad đến MacBook. <br />
-                            Bảo hành uy tín, hỗ trợ trả góp 0%.
+                            {searchQuery
+                                ? "Tìm thấy các mẫu laptop phù hợp với yêu cầu của bạn."
+                                : "Đa dạng mẫu mã từ Dell, HP, ThinkPad đến MacBook. Bảo hành uy tín, hỗ trợ trả góp 0%."
+                            }
                         </p>
                     </div>
 
                     {/* Right: Illustration */}
                     <div className="hidden md:flex w-2/5 items-center justify-center relative">
-                        {/* Abstract Shape or Image placeholder since we don't have motion imported yet, wait, we do not have motion imported in this file? Let's check imports. */}
-                        {/* Actually defaults might be better without complex motion if not imported. checking file... */}
-                        {/* File has: import { useEffect, useState, useMemo } from 'react'; - NO framer-motion! */}
-                        {/* I should stick to simple CSS animations or add framer-motion import. */}
-                        {/* User asked for consistent look. I will add framer-motion import in a separate step or just use CSS for now to avoid errors if I miss the import. */}
-                        {/* Actually, I can use simple CSS classes like 'animate-pulse' or just static for now to be safe, or add the import. */}
-                        {/* Let's add the import in a separate tool call to be safe, or just use standard div with CSS animations. */}
                         <div className="relative z-10 p-8">
-                            <div className="relative w-64 h-40 bg-gray-800 rounded-lg shadow-2xl transform rotate-[-5deg] border-4 border-gray-700 items-center justify-center flex">
-                                <div className="text-blue-400 font-bold">LapLap Store</div>
-                            </div>
-                            <div className="absolute -bottom-4 -right-4 bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 shadow-lg">
-                                <div className="text-xs font-bold text-white">100+ Model</div>
-                                <div className="text-xs text-blue-200">Có sẵn hàng</div>
+                            <div className="relative w-64 h-40 bg-gray-800 rounded-lg shadow-2xl transform rotate-[-5deg] border-4 border-gray-700 items-center justify-center flex overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-transparent"></div>
+                                <SearchIcon className="w-12 h-12 text-blue-500/30 absolute" />
+                                <div className="text-blue-400 font-black text-xl italic z-10">LapLap Store</div>
                             </div>
                         </div>
                     </div>
@@ -276,11 +313,27 @@ export default function LaptopsPage() {
             <main className="bg-gray-50 min-h-screen py-10">
                 <div className="container mx-auto max-w-5xl px-4">
                     {/* Header - Simplified since we have Hero */}
-                    <div className="flex items-center justify-between mb-6 border-b border-gray-200 pb-4">
-                        <p className="text-gray-600">
-                            Hiển thị <span className="font-bold text-gray-900">{filteredProducts.length}</span> sản phẩm
-                            {activeFiltersCount > 0 && ` (${activeFiltersCount} bộ lọc đang áp dụng)`}
-                        </p>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 border-b border-gray-200 pb-4 gap-4">
+                        <div className="flex flex-col gap-1">
+                            <p className="text-gray-600">
+                                Hiển thị <span className="font-bold text-gray-900">{filteredProducts.length}</span> sản phẩm
+                                {activeFiltersCount > 0 && ` (${activeFiltersCount} bộ lọc đang áp dụng)`}
+                            </p>
+                            {searchQuery && (
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-medium text-gray-400 italic">Đang lọc theo từ khóa:</span>
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[10px] font-black uppercase">
+                                        {searchQuery}
+                                        <button onClick={() => {
+                                            setSearchQuery("");
+                                            router.push("/laptops");
+                                        }} className="hover:text-blue-900">
+                                            <X size={10} />
+                                        </button>
+                                    </span>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Brand Logos Filter */}
