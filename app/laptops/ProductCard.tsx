@@ -68,7 +68,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     src={product.image || (product.images && product.images[0]) || '/placeholder-laptop.png'}
                     alt={product.name}
                     fill
-                    unoptimized
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-contain group-hover:scale-105 transition-transform duration-300"
                 />
             </div>

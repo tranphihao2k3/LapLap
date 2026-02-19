@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import Image from "next/image";
 import { Itim } from "next/font/google";
 import { MapPin, Menu, X, Facebook, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -184,9 +185,11 @@ export default function Header() {
                                                     onClick={() => setIsSearchFocused(false)}
                                                 >
                                                     <div className="w-12 h-12 relative flex-shrink-0">
-                                                        <img
+                                                        <Image
                                                             src={product.images?.[0] || 'https://placehold.co/100x100?text=No+Image'}
                                                             alt={product.name}
+                                                            width={48}
+                                                            height={48}
                                                             className="w-full h-full object-cover rounded-md"
                                                         />
                                                     </div>

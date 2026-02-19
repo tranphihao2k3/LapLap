@@ -25,7 +25,15 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'placehold.co',
+      },
+      {
+        protocol: 'https',
         hostname: 'via.placeholder.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'bizweb.dktcdn.net',
       },
     ],
   },

@@ -246,10 +246,13 @@ export default function HomePage() {
                     {/* Premium Glow around image */}
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-blue-400/20 blur-[80px] rounded-[100%] animate-pulse"></div>
 
-                    <img
+                    <Image
                       src="https://bizweb.dktcdn.net/thumb/grande/100/512/769/products/alienware-x16-r2-3.jpg?v=1716871837957"
                       alt="High-end Gaming Laptop"
-                      className="w-full h-full object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.5)] animate-float relative z-10"
+                      fill
+                      priority
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-contain drop-shadow-[0_25px_50px_rgba(0,0,0,0.5)] animate-float relative z-10"
                     />
 
 
