@@ -228,7 +228,10 @@ export default function WarrantyPage() {
                                                 <Package className="w-8 h-8 text-gray-400" />
                                             </div>
                                             <h3 className="text-lg font-bold text-gray-800">Không tìm thấy đơn hàng</h3>
-                                            <p className="text-gray-500">Vui lòng kiểm tra lại số điện thoại hoặc mã đơn hàng của bạn.</p>
+                                            <p className="text-gray-500 max-w-md mx-auto">
+                                                Vui lòng kiểm tra lại thông tin. <br />
+                                                Lưu ý: Chỉ đơn hàng <strong>đã hoàn thành (đã giao)</strong> mới có thông tin bảo hành.
+                                            </p>
                                         </div>
                                     )}
                                 </div>

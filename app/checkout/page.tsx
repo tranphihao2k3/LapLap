@@ -296,7 +296,8 @@ export default function CheckoutPage() {
                                 </div>
 
                                 <Button
-                                    onClick={() => document.getElementById('checkout-form')?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))}
+                                    type="submit"
+                                    form="checkout-form"
                                     fullWidth
                                     size="lg"
                                     variant="primary"

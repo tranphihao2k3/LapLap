@@ -266,48 +266,48 @@ export default function HomePage() {
         <div className="container mx-auto max-w-5xl px-4 py-12 space-y-12">
           {/* Benefits Section */}
           <motion.section
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
             variants={stagger}
           >
-            <motion.div variants={fadeInUp} className="group bg-gradient-to-br from-blue-50 to-white p-6 rounded-2xl shadow-lg border border-blue-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-              <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <MapPin className="w-7 h-7 text-blue-600" />
+            <motion.div variants={fadeInUp} className="group bg-gradient-to-br from-blue-50 to-white p-4 md:p-6 rounded-2xl shadow-lg border border-blue-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center">
+              <div className="w-10 h-10 md:w-14 md:h-14 bg-blue-100 rounded-full flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 transition-transform">
+                <MapPin className="w-5 h-5 md:w-7 md:h-7 text-blue-600" />
               </div>
-              <h3 className="font-bold text-xl text-gray-800 mb-2">Tại Cần Thơ</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <h3 className="font-bold text-sm md:text-xl text-gray-800 mb-1 md:mb-2">Tại Cần Thơ</h3>
+              <p className="hidden md:block text-gray-600 text-sm leading-relaxed">
                 Phục vụ khách hàng tại Cần Thơ và các tỉnh lân cận nhanh chóng.
               </p>
             </motion.div>
 
-            <motion.div variants={fadeInUp} className="group bg-gradient-to-br from-green-50 to-white p-6 rounded-2xl shadow-lg border border-green-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-              <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Truck className="w-7 h-7 text-green-600" />
+            <motion.div variants={fadeInUp} className="group bg-gradient-to-br from-green-50 to-white p-4 md:p-6 rounded-2xl shadow-lg border border-green-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center">
+              <div className="w-10 h-10 md:w-14 md:h-14 bg-green-100 rounded-full flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 transition-transform">
+                <Truck className="w-5 h-5 md:w-7 md:h-7 text-green-600" />
               </div>
-              <h3 className="font-bold text-xl text-gray-800 mb-2">Giao Hàng Tận Nơi</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <h3 className="font-bold text-sm md:text-xl text-gray-800 mb-1 md:mb-2">Giao Hàng Tận Nơi</h3>
+              <p className="hidden md:block text-gray-600 text-sm leading-relaxed">
                 Miễn phí giao hàng nội thành Cần Thơ, ship COD toàn quốc.
               </p>
             </motion.div>
 
-            <motion.div variants={fadeInUp} className="group bg-gradient-to-br from-purple-50 to-white p-6 rounded-2xl shadow-lg border border-purple-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-              <div className="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Shield className="w-7 h-7 text-purple-600" />
+            <motion.div variants={fadeInUp} className="group bg-gradient-to-br from-purple-50 to-white p-4 md:p-6 rounded-2xl shadow-lg border border-purple-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center">
+              <div className="w-10 h-10 md:w-14 md:h-14 bg-purple-100 rounded-full flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 transition-transform">
+                <Shield className="w-5 h-5 md:w-7 md:h-7 text-purple-600" />
               </div>
-              <h3 className="font-bold text-xl text-gray-800 mb-2">Bảo Hành Uy Tín</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <h3 className="font-bold text-sm md:text-xl text-gray-800 mb-1 md:mb-2">Bảo Hành Uy Tín</h3>
+              <p className="hidden md:block text-gray-600 text-sm leading-relaxed">
                 Bảo hành chính hãng, hỗ trợ kỹ thuật trọn đời máy.
               </p>
             </motion.div>
 
-            <motion.div variants={fadeInUp} className="group bg-gradient-to-br from-orange-50 to-white p-6 rounded-2xl shadow-lg border border-orange-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-              <div className="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <TestTube className="w-7 h-7 text-orange-600" />
+            <motion.div variants={fadeInUp} className="group bg-gradient-to-br from-orange-50 to-white p-4 md:p-6 rounded-2xl shadow-lg border border-orange-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center">
+              <div className="w-10 h-10 md:w-14 md:h-14 bg-orange-100 rounded-full flex items-center justify-center mb-3 md:mb-4 group-hover:scale-110 transition-transform">
+                <TestTube className="w-5 h-5 md:w-7 md:h-7 text-orange-600" />
               </div>
-              <h3 className="font-bold text-xl text-gray-800 mb-2">Test Miễn Phí</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <h3 className="font-bold text-sm md:text-xl text-gray-800 mb-1 md:mb-2">Test Miễn Phí</h3>
+              <p className="hidden md:block text-gray-600 text-sm leading-relaxed">
                 Công cụ test laptop online miễn phí, chính xác 100%.
               </p>
             </motion.div>

@@ -43,6 +43,7 @@ const ProductSchema = new Schema(
             ssd: String,
             screen: String,
             battery: String,
+            weight: String, // e.g. "1.3 kg"
         },
         warranty: {
             duration: String,
@@ -54,6 +55,14 @@ const ProductSchema = new Schema(
             type: String,
             enum: ["active", "inactive"],
             default: "active",
+        },
+        averageRating: {
+            type: Number,
+            default: 0,
+        },
+        reviewCount: {
+            type: Number,
+            default: 0,
         },
     },
     { timestamps: true }

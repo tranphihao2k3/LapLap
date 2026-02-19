@@ -65,6 +65,14 @@ import ComparisonBar from "@/components/ComparisonBar";
 import { CartProvider } from "@/context/CartContext";
 import CartDrawer from "@/components/CartDrawer";
 
+import MobileBottomMenu from "@/components/MobileBottomMenu";
+
+// ... (omitted imports)
+
+import FloatingContact from "@/components/FloatingContact";
+
+// ... (omitted imports)
+
 export default function RootLayout({
   children,
 }: {
@@ -76,10 +84,13 @@ export default function RootLayout({
         <CartProvider>
           <ComparisonProvider>
             {children}
+            <div className="md:hidden h-20"></div> {/* Spacer for Mobile Bottom Menu */}
             <ComparisonBar />
           </ComparisonProvider>
           <CartDrawer />
+          <MobileBottomMenu />
         </CartProvider>
+        <FloatingContact />
         <FacebookMessenger />
         <SpeedInsights />
         <Analytics />

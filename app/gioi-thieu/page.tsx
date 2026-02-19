@@ -220,9 +220,11 @@ export default function AboutPage() {
                 </section>
 
                 {/* 4. STATS (Social Proof) */}
-                <section className="py-16 md:py-20 bg-blue-600 relative overflow-hidden">
-                    {/* Background Pattern */}
-                    <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <section className="py-20 md:py-28 bg-slate-950 relative overflow-hidden">
+                    {/* Background Subtle Elements */}
+                    <div className="absolute top-0 left-1/4 w-64 h-64 bg-blue-600/10 rounded-full blur-[100px]"></div>
+                    <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px]"></div>
+                    <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:32px_32px]"></div>
 
                     <div className="container mx-auto px-4 md:px-6 max-w-7xl relative z-10">
                         <motion.div
@@ -230,17 +232,32 @@ export default function AboutPage() {
                             whileInView="visible"
                             viewport={{ once: true }}
                             variants={staggerContainer}
-                            className="grid grid-cols-2 md:grid-cols-4 gap-8 md:divide-x md:divide-blue-500/50 text-center"
+                            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
                         >
                             {[
-                                { num: '10K+', label: 'Khách hàng' },
-                                { num: '5+', label: 'Năm kinh nghiệm' },
-                                { num: '20+', label: 'Nhân sự' },
-                                { num: '100%', label: 'Hài lòng' },
+                                { num: '10K+', label: 'Khách hàng', icon: Users, color: 'text-blue-400' },
+                                { num: '5+', label: 'Năm kinh nghiệm', icon: Briefcase, color: 'text-purple-400' },
+                                { num: '20+', label: 'Nhân sự', icon: Award, color: 'text-green-400' },
+                                { num: '100%', label: 'Hài lòng', icon: Star, color: 'text-yellow-400' },
                             ].map((item, idx) => (
-                                <motion.div key={idx} variants={fadeInUp} className="p-4">
-                                    <h3 className="text-4xl md:text-6xl font-black text-white mb-2">{item.num}</h3>
-                                    <p className="text-blue-100 font-medium uppercase tracking-wider text-sm">{item.label}</p>
+                                <motion.div
+                                    key={idx}
+                                    variants={fadeInUp}
+                                    className="relative group h-full"
+                                >
+                                    <div className="h-full bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-[2.5rem] flex flex-col items-center text-center transition-all duration-500 group-hover:bg-white/10 group-hover:border-white/20 group-hover:-translate-y-2 shadow-2xl">
+                                        <div className="mb-6 p-4 bg-white/5 rounded-2xl group-hover:scale-110 transition-transform duration-500">
+                                            <item.icon size={28} className={item.color} />
+                                        </div>
+                                        <h3 className="text-4xl md:text-5xl font-black text-white mb-2 tracking-tighter tabular-nums">
+                                            {item.num}
+                                        </h3>
+                                        <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] sm:text-xs">
+                                            {item.label}
+                                        </p>
+                                    </div>
+                                    {/* Decorative subtle pulse effect on hover */}
+                                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-[2.6rem] blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
                                 </motion.div>
                             ))}
                         </motion.div>

@@ -38,9 +38,14 @@ export async function PATCH(
         const { id } = await params;
         const body = await request.json();
 
+        const updateData: any = { status: body.status };
+        if (body.status === 'delivered') {
+            updateData.deliveryDate = new Date();
+        }
+
         const updatedOrder = await Order.findByIdAndUpdate(
             id,
-            { status: body.status },
+            updateData,
             { new: true }
         );
 

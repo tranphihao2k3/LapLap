@@ -22,7 +22,9 @@ import {
     PanelLeftOpen,
     Cpu,
     ShoppingCart,
-    Megaphone
+    Megaphone,
+    Shield,
+    MessageSquare
 } from 'lucide-react';
 
 export default function AdminLayoutContent({ children }: { children: ReactNode }) {
@@ -38,9 +40,11 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
         { icon: ShoppingCart, label: 'Đơn hàng', href: '/admin/orders' },
         { icon: Laptop, label: 'Sản phẩm', href: '/admin/laptops' },
         { icon: Cpu, label: 'Linh kiện', href: '/admin/linh-kien' },
+        { icon: MessageSquare, label: 'Đánh giá', href: '/admin/reviews' },
+        { icon: Users, label: 'Khách hàng', href: '/admin/customers' }, // CRM
         { icon: FileText, label: 'Blog', href: '/admin/blog' },
-        { icon: Laptop, label: 'Driver & Soft', href: '/admin/software' }, // Reusing Laptop icon or finding a better one but Laptop is fine for now
-        { icon: Users, label: 'Users', href: '/admin/users' },
+        { icon: Laptop, label: 'Driver & Soft', href: '/admin/software' },
+        { icon: Shield, label: 'Quản trị viên', href: '/admin/users' },
         { icon: Megaphone, label: 'Marketing', href: '/admin/marketing' },
     ];
 

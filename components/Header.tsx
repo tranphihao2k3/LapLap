@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Itim } from "next/font/google";
 import { MapPin, Menu, X, Facebook, Search, ShoppingBag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Button from "./ui/Button";
 import { useCart } from "@/context/CartContext";
@@ -93,23 +93,61 @@ export default function Header() {
     }, [searchTerm]);
 
     const menuItems = [
-        { href: "/gioi-thieu", label: "Giới thiệu" },
         { href: "/laptops", label: "Laptop" },
         { href: "/linh-kien-phu-kien", label: "Linh kiện & Phụ kiện" },
-        { href: "/thu-cu-doi-moi", label: "Thu cũ đổi mới" },
-        { href: "/nang-cap", label: "Nâng cấp" },
-        { href: "/ve-sinh-laptop", label: "Vệ sinh máy" },
-        { href: "/sua-chua-laptop", label: "Sửa chữa" },
-        { href: "/cai-dat-phan-mem", label: "Driver & Soft" },
-        { href: "/blog", label: "Blog" },
-        { href: "/test", label: "Kiểm tra máy" },
+        {
+            label: "Dịch vụ",
+            href: "#",
+            children: [
+                { href: "/thu-cu-doi-moi", label: "Thu cũ đổi mới" },
+                { href: "/nang-cap", label: "Nâng cấp" },
+                { href: "/ve-sinh-laptop", label: "Vệ sinh máy" },
+                { href: "/sua-chua-laptop", label: "Sửa chữa" },
+                { href: "/test", label: "Kiểm tra máy" },
+                { href: "/cai-dat-phan-mem", label: "Driver & Soft" },
+            ]
+        },
+        {
+            label: "Về Shop",
+            href: "#",
+            children: [
+                { href: "/gioi-thieu", label: "Giới thiệu" },
+                { href: "/reviews", label: "Đánh giá" },
+                { href: "/blog", label: "Blog" },
+            ]
+        },
     ];
 
+    const [isVisible, setIsVisible] = useState(true);
+    const lastScrollY = useRef(0);
+
+    // Header visibility on scroll
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+
+            // Show header if scrolling up OR at the very top (buffer zone)
+            if (currentScrollY < lastScrollY.current || currentScrollY < 10) {
+                setIsVisible(true);
+            }
+            // Hide header if scrolling down AND past the top threshold
+            else if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+                setIsVisible(false);
+            }
+
+            lastScrollY.current = currentScrollY;
+        };
+
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+
     return (
-        <header className="w-full sticky top-0 z-50 shadow-md bg-white">
+        <header className={`w-full sticky top-0 z-50 shadow-md bg-white transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
             {/* Logo */}
             <div className="bg-white">
-                <div className="container mx-auto max-w-7xl px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div className="container mx-auto max-w-7xl px-4 py-3 flex flex-wrap md:flex-row justify-between items-center gap-y-4 md:gap-6">
                     <div className="flex-shrink-0 min-w-[200px]">
                         <Link href="/" className="group relative z-10 block">
                             <motion.div
@@ -144,7 +182,7 @@ export default function Header() {
                     </div>
 
                     {/* Search Bar */}
-                    <div className="flex-1 max-w-md mx-4 relative hidden md:block">
+                    <div className="w-full md:flex-1 max-w-md md:mx-4 relative order-3 md:order-none">
                         <motion.div
                             className="relative"
                             initial={{ scale: 1 }}
@@ -296,7 +334,7 @@ export default function Header() {
                         </AnimatePresence>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 sm:gap-4 order-2 md:order-none ml-auto md:ml-0">
                         <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 shadow-sm">
                             <motion.div
                                 animate={{ y: [0, -4, 0] }}
@@ -365,23 +403,28 @@ export default function Header() {
                         onMouseLeave={() => setHoveredIndex(null)}
                     >
                         {menuItems.map((item, index) => {
-                            const isActive = pathname === item.href;
+                            const isActive = pathname === item.href || (item.children && item.children.some(child => pathname === child.href));
 
                             return (
                                 <li
-                                    key={item.href}
-                                    className="relative"
+                                    key={index}
+                                    className="relative group/menu"
                                     onMouseEnter={() => setHoveredIndex(index)}
                                 >
                                     <Link
                                         href={item.href}
-                                        className={`${itim.className} relative z-10 block px-2 py-1.5 text-[15px] font-bold transition-colors duration-300 ${isActive ? 'text-blue-600' : 'text-slate-600 hover:text-slate-900 focus:text-blue-600'
-                                            }`}
+                                        className={`${itim.className} relative z-10 block px-4 py-2 text-[15px] font-bold transition-colors duration-300 ${isActive ? 'text-blue-600' : 'text-slate-600 hover:text-slate-900 group-hover/menu:text-blue-600'
+                                            } flex items-center gap-1`}
                                     >
                                         {item.label}
+                                        {item.children && (
+                                            <svg xmlns="http://www.w3.org/2000/svg" className={`w-3 h-3 transition-transform duration-200 ${hoveredIndex === index ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        )}
 
                                         {/* Active State Dot */}
-                                        {isActive && (
+                                        {isActive && !item.children && (
                                             <motion.div
                                                 layoutId="activeDot"
                                                 className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full"
@@ -390,19 +433,32 @@ export default function Header() {
                                     </Link>
 
                                     {/* Hover Pill Effect */}
-                                    {hoveredIndex === index && (
+                                    {hoveredIndex === index && !item.children && (
                                         <motion.div
                                             layoutId="hoverPill"
                                             className="absolute inset-0 bg-blue-50/80 rounded-xl z-0"
                                             initial={{ opacity: 0, scale: 0.95 }}
                                             animate={{ opacity: 1, scale: 1 }}
                                             exit={{ opacity: 0, scale: 0.95 }}
-                                            transition={{
-                                                type: "spring",
-                                                bounce: 0.25,
-                                                duration: 0.5
-                                            }}
+                                            transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
                                         />
+                                    )}
+
+                                    {/* Dropdown Menu */}
+                                    {item.children && (
+                                        <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover/menu:opacity-100 group-hover/menu:visible transition-all duration-300 transform group-hover/menu:translate-y-0 translate-y-2 z-50 min-w-[200px]">
+                                            <div className="bg-white rounded-xl shadow-xl shadow-blue-500/10 border border-slate-100 overflow-hidden p-1.5 ring-1 ring-black/5">
+                                                {item.children.map((child, childIdx) => (
+                                                    <Link
+                                                        key={childIdx}
+                                                        href={child.href}
+                                                        className={`${itim.className} block px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors whitespace-nowrap`}
+                                                    >
+                                                        {child.label}
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        </div>
                                     )}
                                 </li>
                             );
@@ -413,17 +469,18 @@ export default function Header() {
 
             {/* Mobile Sidebar */}
             <div
-                className={`fixed inset-0 bg-black/50 z-50 lg:hidden transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                className={`fixed inset-0 bg-black/50 z-[100] lg:hidden transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
                     }`}
                 onClick={() => setIsMobileMenuOpen(false)}
             >
                 <div
-                    className={`fixed top-0 right-0 h-full w-[280px] bg-white shadow-2xl transform transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                    className={`fixed top-0 right-0 h-full h-screen w-[280px] bg-white z-[101] shadow-2xl transform transition-transform duration-300 overflow-y-auto ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
                         }`}
                     onClick={(e) => e.stopPropagation()}
+                    style={{ backgroundColor: '#ffffff' }}
                 >
                     {/* Sidebar Header */}
-                    <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                    <div className="flex items-center justify-between p-4 border-b border-gray-200">
                         <h2 className={itim.className + " text-xl font-bold text-gray-800"}>
                             Menu
                         </h2>
@@ -436,7 +493,7 @@ export default function Header() {
                     </div>
 
                     {/* Location */}
-                    <div className="px-6 py-4 bg-blue-50 border-b border-gray-200">
+                    <div className="px-4 py-2 bg-blue-50 border-b border-gray-200">
                         <div className="flex items-center gap-2 text-sm text-gray-700">
                             <MapPin className="w-4 h-4 text-blue-600" />
                             <span className="font-medium">Cần Thơ</span>
@@ -444,30 +501,48 @@ export default function Header() {
                     </div>
 
                     {/* Mobile Fanpage Button */}
-                    <div className="px-6 pb-2 pt-4">
+                    <div className="px-4 py-2">
                         <a
                             href="https://facebook.com/profile.php?id=61582947329036"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-[#1877F2] text-white rounded-xl shadow-md font-bold active:scale-95 transition-transform"
+                            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[#1877F2] text-white rounded-xl shadow-md font-bold active:scale-95 transition-transform text-sm"
                         >
-                            <Facebook className="w-5 h-5 animate-pulse" />
+                            <Facebook className="w-4 h-4 animate-pulse" />
                             <span>Ghé thăm Fanpage</span>
                         </a>
                     </div>
 
                     {/* Menu Items */}
-                    <nav className="p-4">
-                        <ul className="space-y-2">
-                            {menuItems.map((item) => (
-                                <li key={item.href}>
-                                    <Link
-                                        href={item.href}
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                        className={`${itim.className} block px-4 py-3 text-lg font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors`}
-                                    >
-                                        {item.label}
-                                    </Link>
+                    <nav className="px-4 py-2">
+                        <ul className="space-y-1">
+                            {menuItems.map((item: any, index) => (
+                                <li key={index}>
+                                    {item.children ? (
+                                        <div className="space-y-1">
+                                            <div className={`${itim.className} block px-4 py-2 text-sm font-bold text-gray-400 uppercase tracking-wider`}>
+                                                {item.label}
+                                            </div>
+                                            {item.children.map((child: any, childIdx: number) => (
+                                                <Link
+                                                    key={childIdx}
+                                                    href={child.href}
+                                                    onClick={() => setIsMobileMenuOpen(false)}
+                                                    className={`${itim.className} block px-4 py-2.5 pl-8 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors`}
+                                                >
+                                                    {child.label}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <Link
+                                            href={item.href}
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className={`${itim.className} block px-4 py-2.5 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors`}
+                                        >
+                                            {item.label}
+                                        </Link>
+                                    )}
                                 </li>
                             ))}
                         </ul>

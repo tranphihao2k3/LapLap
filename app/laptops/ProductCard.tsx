@@ -27,6 +27,7 @@ interface ProductCardProps {
         categoryId?: {
             name: string;
         };
+        createdAt?: string;
     };
 }
 
@@ -34,6 +35,9 @@ export default function ProductCard({ product }: ProductCardProps) {
     const { addToCompare, removeFromCompare, selectedProducts } = useComparison();
     const { addToCart } = useCart();
     const isSelected = selectedProducts.some((p) => p._id === product._id);
+
+    // Check if product is new (created within 24 hours)
+    const isNew = product.createdAt ? (new Date(product.createdAt).getTime() > Date.now() - 24 * 60 * 60 * 1000) : false;
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -61,7 +65,14 @@ export default function ProductCard({ product }: ProductCardProps) {
     };
 
     return (
-        <div className="h-full flex flex-col border-2 border-[var(--color-border)] rounded-2xl bg-white hover:shadow-2xl transition-all duration-300 overflow-hidden group relative">
+        <div className={`h-full flex flex-col border-2 rounded-2xl bg-white hover:shadow-2xl transition-all duration-300 overflow-hidden group relative ${isNew ? 'border-blue-500 shadow-blue-200 shadow-lg' : 'border-[var(--color-border)]'}`}>
+
+            {/* NEW BADGE */}
+            {isNew && (
+                <div className="absolute top-2 right-2 z-20 bg-gradient-to-r from-red-500 to-pink-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-md">
+                    MỚI
+                </div>
+            )}
 
             {/* COMPARING BADGE (Optional) */}
             {isSelected && (

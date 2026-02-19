@@ -214,7 +214,7 @@ export default function UnifiedTestPage() {
 
                     {/* Test Grid */}
                     <motion.div
-                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12"
+                        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6 mb-12"
                         variants={containerVariants}
                         initial="hidden"
                         animate="visible"
@@ -227,18 +227,18 @@ export default function UnifiedTestPage() {
                                     variants={itemVariants}
                                     whileHover={{ scale: 1.05, y: -5 }}
                                     whileTap={{ scale: 0.95 }}
-                                    className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-blue-500 h-full flex flex-col items-center text-center cursor-pointer block"
+                                    className="group bg-white rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-500 h-full flex flex-col items-center text-center cursor-pointer block"
                                 >
-                                    <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
+                                    <div className="text-4xl md:text-5xl lg:text-6xl mb-2 md:mb-4 group-hover:scale-110 transition-transform">
                                         {test.title.split(" ")[0]}
                                     </div>
-                                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                                    <h2 className="text-sm md:text-xl lg:text-2xl font-bold text-gray-800 mb-1 md:mb-2 line-clamp-1">
                                         {test.title.split(" ").slice(1).join(" ")}
                                     </h2>
-                                    <p className="text-gray-600 flex-grow">{test.desc}</p>
-                                    <div className="mt-4">
-                                        <div className="flex items-center gap-2 text-blue-600 font-bold group-hover:translate-x-2 transition-transform">
-                                            Bắt đầu test <ArrowRight size={18} />
+                                    <p className="text-xs md:text-sm text-gray-500 flex-grow hidden md:block">{test.desc}</p>
+                                    <div className="mt-2 md:mt-4">
+                                        <div className="flex items-center gap-1 md:gap-2 text-blue-600 font-bold group-hover:translate-x-1 transition-transform text-xs md:text-base">
+                                            Test <span className="hidden md:inline">Ngay</span> <ArrowRight size={14} className="md:w-5 md:h-5" />
                                         </div>
                                     </div>
                                 </motion.a>
@@ -250,19 +250,18 @@ export default function UnifiedTestPage() {
                                     whileHover={{ scale: 1.05, y: -5 }}
                                     whileTap={{ scale: 0.95 }}
                                     role="button"
-                                    include-tab-index="0"
-                                    className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-blue-500 h-full flex flex-col items-center text-center w-full cursor-pointer"
+                                    className="group bg-white rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-500 h-full flex flex-col items-center text-center w-full cursor-pointer"
                                 >
-                                    <div className="text-6xl mb-4 group-hover:scale-110 transition-transform">
+                                    <div className="text-4xl md:text-5xl lg:text-6xl mb-2 md:mb-4 group-hover:scale-110 transition-transform">
                                         {test.title.split(" ")[0]}
                                     </div>
-                                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                                    <h2 className="text-sm md:text-xl lg:text-2xl font-bold text-gray-800 mb-1 md:mb-2 line-clamp-1">
                                         {test.title.split(" ").slice(1).join(" ")}
                                     </h2>
-                                    <p className="text-gray-600 flex-grow">{test.desc}</p>
-                                    <div className="mt-4">
-                                        <div className="flex items-center gap-2 text-blue-600 font-bold group-hover:translate-x-2 transition-transform">
-                                            Bắt đầu test <ArrowRight size={18} />
+                                    <p className="text-xs md:text-sm text-gray-500 flex-grow hidden md:block">{test.desc}</p>
+                                    <div className="mt-2 md:mt-4">
+                                        <div className="flex items-center gap-1 md:gap-2 text-blue-600 font-bold group-hover:translate-x-1 transition-transform text-xs md:text-base">
+                                            Test <span className="hidden md:inline">Ngay</span> <ArrowRight size={14} className="md:w-5 md:h-5" />
                                         </div>
                                     </div>
                                 </motion.div>

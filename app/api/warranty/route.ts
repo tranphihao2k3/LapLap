@@ -23,6 +23,7 @@ export async function GET(request: Request) {
         // 2. Search by customer.phone
 
         let conditions: any = {
+            status: 'delivered', // Only show completed orders
             $or: [
                 { "customer.phone": query },
             ]
@@ -51,7 +52,7 @@ export async function GET(request: Request) {
 
         // Process orders to calculate warranty status
         const warrantyData = orders.map(order => {
-            const deliveryDate = order.status === 'delivered' ? order.updatedAt : null;
+            const deliveryDate = order.status === 'delivered' ? (order.deliveryDate || order.updatedAt) : null;
 
             return {
                 orderId: order._id,

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
+import { Customer } from "@/models/Customer";
+import { Product } from "@/models/Product";
 import nodemailer from "nodemailer";
 
 // Create Nodemailer transporter
@@ -19,13 +21,42 @@ export async function POST(request: Request) {
 
         const { customer, items, totalAmount, paymentMethod, note } = body;
 
-        // Create new order
+        // 1. Find or Create Customer
+        let customerDoc = await Customer.findOne({ phone: customer.phone });
+
+        if (!customerDoc) {
+            // New Customer
+            customerDoc = await Customer.create({
+                name: customer.name,
+                phone: customer.phone,
+                email: customer.email,
+                address: customer.address,
+                totalSpent: 0,
+                orders: []
+            });
+        } else {
+            // Update existing customer info (optional: keep latest address/email)
+            customerDoc.name = customer.name;
+            customerDoc.email = customer.email || customerDoc.email;
+            customerDoc.address = customer.address || customerDoc.address;
+            await customerDoc.save();
+        }
+
+        // 2. Create new order with customerId
         const newOrder = await Order.create({
             customer,
+            customerId: customerDoc._id, // Link to Customer model
             items,
             totalAmount,
             paymentMethod,
             note,
+        });
+
+        // 3. Update Customer's stats
+        await Customer.findByIdAndUpdate(customerDoc._id, {
+            $push: { orders: newOrder._id },
+            $inc: { totalSpent: totalAmount },
+            $set: { tags: ["Returning"] } // Mark as returning customer
         });
 
         // Send email notification to Admin

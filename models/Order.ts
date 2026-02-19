@@ -8,6 +8,7 @@ const OrderSchema = new Schema(
             email: { type: String },
             address: { type: String, required: true },
         },
+        customerId: { type: Schema.Types.ObjectId, ref: "Customer" }, // Link to Customer profile
         items: [
             {
                 product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
@@ -24,6 +25,7 @@ const OrderSchema = new Schema(
             enum: ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"],
             default: "pending",
         },
+        deliveryDate: { type: Date },
         paymentMethod: { type: String, default: "cod" }, // cod, banking
         note: { type: String },
         isPaid: { type: Boolean, default: false },

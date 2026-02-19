@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Battery, HardDrive, Monitor, CheckCircle, Upload, ArrowRight, Smartphone } from 'lucide-react';
+import { Battery, HardDrive, Monitor, CheckCircle, Upload, ArrowRight, Smartphone, Mail } from 'lucide-react';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -20,6 +20,8 @@ export default function TradeInPage() {
         notes: '',
         contact: ''
     });
+
+    const [submitType, setSubmitType] = useState<'zalo' | 'gmail'>('zalo');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -40,10 +42,14 @@ export default function TradeInPage() {
 Mong LapLap báo giá sớm ạ!
         `.trim();
 
-        navigator.clipboard.writeText(message);
-
-        // Open Zalo immediately
-        window.open('https://zalo.me/0978648720', '_blank');
+        if (submitType === 'zalo') {
+            navigator.clipboard.writeText(message);
+            window.open('https://zalo.me/0978648720', '_blank');
+        } else {
+            const subject = encodeURIComponent(`Thu cũ đổi mới: ${formData.model}`);
+            const body = encodeURIComponent(message);
+            window.location.href = `mailto:laplapcantho@gmail.com?subject=${subject}&body=${body}`;
+        }
 
         // Send email notification in background
         try {
@@ -56,6 +62,8 @@ Mong LapLap báo giá sớm ạ!
             console.error('Failed to send email notification', error);
         }
     };
+
+    // ... rest of the component until the form buttons ...
 
     const fadeIn = {
         hidden: { opacity: 0, y: 20 },
@@ -333,15 +341,28 @@ Mong LapLap báo giá sớm ạ!
                                 <textarea name="notes" value={formData.notes} onChange={handleChange} rows={2} className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 focus:ring-1 focus:ring-blue-500 outline-none"></textarea>
                             </div>
 
-                            <Button
-                                type="submit"
-                                variant="primary"
-                                fullWidth
-                                size="lg"
-                                leftIcon={<Smartphone size={18} />}
-                            >
-                                Gửi Báo Giá Qua Zalo
-                            </Button>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Button
+                                    type="submit"
+                                    variant="primary"
+                                    size="lg"
+                                    onClick={() => setSubmitType('zalo')}
+                                    leftIcon={<Smartphone size={18} />}
+                                    className="bg-blue-600 hover:bg-blue-700 shadow-blue-200"
+                                >
+                                    Gửi Qua Zalo
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    variant="outline"
+                                    size="lg"
+                                    onClick={() => setSubmitType('gmail')}
+                                    leftIcon={<Mail size={18} />}
+                                    className="border-rose-200 text-rose-600 hover:bg-rose-50 hover:border-rose-300 shadow-rose-50"
+                                >
+                                    Gửi Qua Gmail
+                                </Button>
+                            </div>
                         </form>
                     </div>
                 </motion.section>

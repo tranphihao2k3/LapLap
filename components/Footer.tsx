@@ -67,23 +67,23 @@ const Footer = () => {
 
             {/* Main Footer Content */}
             <motion.div
-                className="container mx-auto px-6 py-16"
+                className="container mx-auto px-6 py-10 md:py-16"
                 variants={containerVariants}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
             >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
 
                     {/* Brand Column */}
-                    <motion.div variants={itemVariants} className="space-y-6">
+                    <motion.div variants={itemVariants} className="space-y-4 md:space-y-6 col-span-2 lg:col-span-1">
                         <Link href="/" className="inline-block">
-                            <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                            <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
                                 LapLap
                             </h2>
-                            <p className="text-sm font-medium text-gray-400 tracking-wider">LAPTOP CẦN THƠ</p>
+                            <p className="text-xs md:text-sm font-medium text-gray-400 tracking-wider">LAPTOP CẦN THƠ</p>
                         </Link>
-                        <p className="text-sm leading-relaxed text-gray-400">
+                        <p className="text-sm leading-relaxed text-gray-400 hidden md:block">
                             Chuyên mua bán laptop cũ, laptop mới tại Cần Thơ. Sửa chữa (sữa laptop) uy tín, giá rẻ, lấy liền.
                         </p>
 
@@ -126,11 +126,11 @@ const Footer = () => {
 
                     {/* Quick Links Column */}
                     <motion.div variants={itemVariants}>
-                        <h3 className="text-lg font-bold text-white mb-6 relative inline-block">
+                        <h3 className="text-base md:text-lg font-bold text-white mb-4 md:mb-6 relative inline-block">
                             Liên kết nhanh
                             <span className="absolute -bottom-2 left-0 w-1/2 h-1 bg-blue-500 rounded-full"></span>
                         </h3>
-                        <ul className="space-y-3">
+                        <ul className="space-y-2 md:space-y-3 text-sm md:text-base">
                             {[
                                 { label: "Trang chủ", href: "/" },
                                 { label: "Giới thiệu", href: "/gioi-thieu" },
@@ -151,11 +151,11 @@ const Footer = () => {
 
                     {/* Services Column */}
                     <motion.div variants={itemVariants}>
-                        <h3 className="text-lg font-bold text-white mb-6 relative inline-block">
+                        <h3 className="text-base md:text-lg font-bold text-white mb-4 md:mb-6 relative inline-block">
                             Dịch vụ
                             <span className="absolute -bottom-2 left-0 w-1/2 h-1 bg-purple-500 rounded-full"></span>
                         </h3>
-                        <ul className="space-y-3">
+                        <ul className="space-y-2 md:space-y-3 text-sm md:text-base">
                             {[
                                 { label: "Vệ sinh laptop", href: "/ve-sinh-laptop" },
                                 { label: "Cài đặt phần mềm", href: "/cai-dat-phan-mem" },
@@ -174,8 +174,8 @@ const Footer = () => {
                     </motion.div>
 
                     {/* Contact Column */}
-                    <motion.div variants={itemVariants} className="space-y-6">
-                        <h3 className="text-lg font-bold text-white mb-6 relative inline-block">
+                    <motion.div variants={itemVariants} className="space-y-4 md:space-y-6 col-span-2 lg:col-span-1">
+                        <h3 className="text-base md:text-lg font-bold text-white mb-4 md:mb-6 relative inline-block">
                             Liên hệ
                             <span className="absolute -bottom-2 left-0 w-1/2 h-1 bg-green-500 rounded-full"></span>
                         </h3>
@@ -189,8 +189,8 @@ const Footer = () => {
                                     <MapPin size={20} />
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-white">Địa chỉ</p>
-                                    <p className="text-gray-400">....</p>
+                                    <p className="font-semibold text-white text-sm md:text-base">Địa chỉ</p>
+                                    <p className="text-gray-400 text-sm md:text-base">....</p>
                                 </div>
                             </motion.div>
 
@@ -202,8 +202,8 @@ const Footer = () => {
                                     <Phone size={20} />
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-white">Hotline / Zalo</p>
-                                    <a href="tel:0978648720" className="text-lg font-bold text-green-400 hover:underline">0978.648.720</a>
+                                    <p className="font-semibold text-white text-sm md:text-base">Hotline / Zalo</p>
+                                    <a href="tel:0978648720" className="text-base md:text-lg font-bold text-green-400 hover:underline">0978.648.720</a>
                                 </div>
                             </motion.div>
 
@@ -215,7 +215,7 @@ const Footer = () => {
                                     <Mail size={20} />
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-white">Email</p>
+                                    <p className="font-semibold text-white text-sm md:text-base">Email</p>
                                     <a href="mailto:laplapcantho@gmail.com" className="text-sm text-gray-400 hover:text-white transition-colors">laplapcantho@gmail.com</a>
                                 </div>
                             </motion.div>

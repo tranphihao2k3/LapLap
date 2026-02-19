@@ -12,6 +12,7 @@ import ProductCard from '../ProductCard';
 import { Product } from '../types';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
+import ProductReviews from '@/components/ProductReviews';
 
 interface ProductDetailClientProps {
     product: Product;
@@ -325,6 +326,10 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                         </div>
                     </div>
                 )}
+
+                {/* REVIEWS SECTION */}
+                <ProductReviews productId={product._id} />
+
             </main>
 
             <InstallmentModal
