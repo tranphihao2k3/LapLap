@@ -27,6 +27,7 @@ interface Brand {
     _id: string;
     name: string;
     slug: string;
+    logo?: string;
 }
 
 interface Product {
@@ -281,6 +282,48 @@ export default function LaptopsPage() {
                             {activeFiltersCount > 0 && ` (${activeFiltersCount} bộ lọc đang áp dụng)`}
                         </p>
                     </div>
+
+                    {/* Brand Logos Filter */}
+                    {brands.length > 0 && (
+                        <div className="mb-8">
+                            <h2 className="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2">
+                                <span className="w-1 h-6 bg-blue-600 rounded-full"></span>
+                                Thương hiệu nổi bật
+                            </h2>
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+                                {brands.map(brand => (
+                                    <button
+                                        key={brand._id}
+                                        onClick={() => toggleFilter('brands', brand._id)}
+                                        className={`
+                                            flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 group
+                                            ${filters.brands.includes(brand._id)
+                                                ? 'bg-blue-50 border-blue-500 shadow-md ring-1 ring-blue-500'
+                                                : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-lg hover:-translate-y-1'
+                                            }
+                                        `}
+                                    >
+                                        <div className="w-12 h-12 relative mb-2 flex items-center justify-center bg-white rounded-full p-2">
+                                            {brand.logo ? (
+                                                <img
+                                                    src={brand.logo}
+                                                    alt={brand.name}
+                                                    className="w-full h-full object-contain"
+                                                />
+                                            ) : (
+                                                <span className="text-xl font-black text-gray-400 uppercase">
+                                                    {brand.name.substring(0, 1)}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <span className={`text-xs font-bold text-center ${filters.brands.includes(brand._id) ? 'text-blue-700' : 'text-gray-600 group-hover:text-blue-600'}`}>
+                                            {brand.name}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Filters */}
                     <div className="mb-6 bg-white p-4 rounded-lg shadow-sm">
