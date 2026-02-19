@@ -68,7 +68,7 @@ export async function POST(request: Request) {
     } catch (error) {
         console.error('❌ UPLOAD ERROR:', error);
         return NextResponse.json(
-            { success: false, message: 'Lỗi khi upload ảnh' },
+            { success: false, message: `Lỗi khi upload ảnh: ${(error as Error).message}` },
             { status: 500 }
         );
     }

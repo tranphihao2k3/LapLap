@@ -100,7 +100,7 @@ export default function ImageUploader({
                     setPendingImages(prev => prev.map(p =>
                         p.id === item.id ? { ...p, status: 'error' } : p
                     ));
-                    alert(`Lỗi upload ${item.file.name}`);
+                    alert(error instanceof Error ? error.message : `Lỗi upload ${item.file.name}`);
                     return null;
                 }
             });
