@@ -349,7 +349,7 @@ export default function HomePage() {
                       </Button>
                     </div>
                     <motion.div
-                      className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6"
+                      className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6"
                       initial="hidden"
                       whileInView="visible"
                       viewport={{ once: true, amount: 0.1 }}

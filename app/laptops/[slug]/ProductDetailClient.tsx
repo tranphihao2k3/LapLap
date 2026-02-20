@@ -195,10 +195,13 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                                 </span>
                             </div>
 
-                            <div className="mb-6">
-                                <div className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-0.5">Giá ưu đãi</div>
-                                <div className="text-2xl md:text-3xl font-black text-blue-600 tracking-tight">
-                                    {formatPrice(product.price)}
+                            <div className="mb-6 p-4 md:p-6 bg-blue-50/50 rounded-2xl border border-blue-100/50 shadow-inner">
+                                <div className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Giá ưu đãi đặc biệt</div>
+                                <div className="flex items-baseline gap-1 text-blue-600">
+                                    <span className="text-2xl md:text-4xl font-bold tracking-tight">
+                                        {product.price.toLocaleString('vi-VN')}
+                                    </span>
+                                    <span className="text-lg md:text-xl font-bold underline decoration-[2px] underline-offset-8">đ</span>
                                 </div>
                             </div>
 
@@ -324,7 +327,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                             <TrendingUp className="text-blue-600" />
                             Có thể bạn sẽ thích
                         </h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                             {relatedProducts.map(p => (
                                 <ProductCard key={p._id} product={p} />
                             ))}

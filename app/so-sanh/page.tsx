@@ -64,20 +64,83 @@ export default function ComparisonPage() {
             <main className="min-h-screen bg-gray-50 py-12">
                 <div className="container mx-auto px-4 max-w-7xl">
 
-                    {/* Comparison Table Container */}
-                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+                    {/* Mobile View: Vertical Comparison Cards */}
+                    <div className="md:hidden space-y-6">
+                        {/* Sticky Product Header for Mobile */}
+                        <div className="fixed top-16 left-0 right-0 z-40 bg-white/95 backdrop-blur-md shadow-md border-b border-gray-100 flex justify-around p-2 gap-2">
+                            {selectedProducts.map((p) => (
+                                <div key={p._id} className="flex flex-col items-center flex-1 min-w-0 max-w-[120px]">
+                                    <div className="relative w-10 h-10 mb-1">
+                                        <Image src={p.image} alt={p.name} fill className="object-contain" />
+                                    </div>
+                                    <span className="text-[9px] font-bold text-gray-800 truncate w-full text-center">{p.name}</span>
+                                    <span className="text-[9px] font-black text-blue-600 italic">
+                                        {p.price.toLocaleString('vi-VN')}đ
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Spacer for sticky header */}
+                        <div className="h-20"></div>
+
+                        {/* Spec Rows for Mobile */}
+                        <div className="space-y-4">
+                            {specRows.map((row) => (
+                                <div key={row.key} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                                    <div className="bg-blue-50/50 px-4 py-2 border-b border-blue-100 flex items-center gap-2">
+                                        <row.icon size={16} className="text-blue-600" />
+                                        <span className="text-xs font-black text-blue-900 uppercase tracking-widest">{row.label}</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-px bg-gray-100">
+                                        {selectedProducts.map((product) => (
+                                            <div key={product._id} className="bg-white p-4">
+                                                <div className="text-xs text-slate-400 font-bold mb-1 uppercase text-[9px]">Sản phẩm {selectedProducts.indexOf(product) + 1}</div>
+                                                <div className="text-sm font-bold text-gray-800 leading-relaxed italic">
+                                                    {(product.specs as any)[row.key] || "Đang cập nhật"}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Footer Actions for Mobile */}
+                        <div className="grid grid-cols-2 gap-3 pt-4">
+                            {selectedProducts.map((product) => (
+                                <div key={product._id} className="space-y-2">
+                                    <Link
+                                        href={`/laptops/${product.slug || product._id}`}
+                                        className="block w-full py-3 bg-blue-600 text-white text-[10px] font-black rounded-xl text-center shadow-lg shadow-blue-500/30 uppercase tracking-tighter"
+                                    >
+                                        Mua {product.name.split(' ')[0]}
+                                    </Link>
+                                    <button
+                                        onClick={() => removeFromCompare(product._id)}
+                                        className="w-full py-2 text-[10px] font-bold text-red-500 bg-red-50 rounded-lg flex items-center justify-center gap-1"
+                                    >
+                                        <X size={12} /> Bỏ so sánh
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Desktop View: Comparison Table */}
+                    <div className="hidden md:block bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
                         <div className="overflow-x-auto custom-scrollbar">
-                            <table className="w-full min-w-[800px] border-collapse">
+                            <table className="w-full min-w-[700px] border-collapse">
                                 <thead>
                                     <tr>
-                                        <th className="p-6 text-left w-[200px] bg-gray-50 border-b border-gray-200 sticky left-0 z-10 shadow-[2px_0_5px_rgba(0,0,0,0.05)] align-top">
-                                            <span className="text-lg font-bold block text-gray-400 uppercase tracking-wider text-sm mt-10">Sản phẩm</span>
+                                        <th className="p-6 text-left w-[200px] bg-gray-50 border-b border-gray-200 sticky left-0 z-20 shadow-[2px_0_10px_rgba(0,0,0,0.05)] align-top">
+                                            <span className="text-sm font-black block text-gray-400 uppercase tracking-widest mt-10">Sản phẩm</span>
                                         </th>
                                         {selectedProducts.map((product) => (
                                             <th key={product._id} className="p-6 w-[300px] border-b border-gray-200 align-top relative group hover:bg-gray-50 transition-colors">
                                                 <button
                                                     onClick={() => removeFromCompare(product._id)}
-                                                    className="absolute top-2 right-2 text-gray-400 hover:text-red-500 p-1 rounded-full hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
+                                                    className="absolute top-4 right-4 text-gray-400 hover:text-red-500 p-1.5 rounded-full hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
                                                     title="Xóa"
                                                 >
                                                     <X size={20} />
@@ -98,46 +161,46 @@ export default function ComparisonPage() {
                                                     </h3>
                                                 </Link>
 
-                                                <div className="text-2xl font-black text-blue-600 mb-4">
-                                                    {product.price.toLocaleString('vi-VN')}đ
+                                                <div className="flex items-baseline justify-center gap-0.5 text-blue-600 mb-4">
+                                                    <span className="text-xl font-bold tracking-tight">
+                                                        {product.price.toLocaleString('vi-VN')}
+                                                    </span>
+                                                    <span className="text-xs font-semibold underline decoration-1 underline-offset-4">đ</span>
                                                 </div>
 
                                                 <Link
                                                     href={`/laptops/${product.slug || product._id}`}
-                                                    className="block w-full py-2.5 bg-blue-600 text-white font-bold rounded-lg text-center shadow-lg shadow-blue-500/30 hover:bg-blue-700 hover:-translate-y-0.5 transition-all"
+                                                    className="block w-full py-2.5 bg-blue-600 text-white font-bold rounded-lg text-center shadow-lg shadow-blue-500/30 hover:bg-blue-700 hover:-translate-y-0.5 transition-all uppercase"
                                                 >
                                                     MUA NGAY
                                                 </Link>
                                             </th>
                                         ))}
-                                        {/* Fill empty columns if less than 2? No, simple map is fine. But for layout stability we might want placeholders. Let's stick to dynamic columns. */}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {/* Technical Specs Header */}
                                     <tr>
-                                        <td colSpan={selectedProducts.length + 1} className="bg-gray-100 p-3 font-bold text-gray-700 border-y border-gray-200">
+                                        <td colSpan={selectedProducts.length + 1} className="bg-blue-50/50 p-4 font-black text-blue-800 text-sm border-y border-blue-100/50 uppercase tracking-[0.2em]">
                                             THÔNG SỐ KỸ THUẬT
                                         </td>
                                     </tr>
 
                                     {specRows.map((row) => (
                                         <tr key={row.key} className="hover:bg-gray-50/50 transition-colors">
-                                            <td className="p-4 md:p-6 font-semibold text-gray-600 border-b border-gray-100 bg-gray-50/30 sticky left-0 z-10 backdrop-blur-sm border-r border-gray-200 align-middle">
-                                                <div className="flex items-center gap-2">
-                                                    <row.icon size={18} className="text-blue-500" />
-                                                    {row.label}
+                                            <td className="p-6 font-bold text-gray-500 text-sm border-b border-gray-100 bg-gray-50/30 sticky left-0 z-10 shadow-[2px_0_10px_rgba(0,0,0,0.03)] align-middle border-r border-gray-100">
+                                                <div className="flex items-center gap-3">
+                                                    <row.icon size={18} className="text-blue-500/70" />
+                                                    <span>{row.label}</span>
                                                 </div>
                                             </td>
                                             {selectedProducts.map((product) => (
-                                                <td key={`${product._id}-${row.key}`} className="p-4 md:p-6 text-gray-800 font-medium border-b border-gray-100 border-r border-gray-100 align-middle leading-relaxed">
+                                                <td key={`${product._id}-${row.key}`} className="p-6 text-gray-800 font-bold text-sm border-b border-gray-100 border-r border-gray-100 align-middle leading-relaxed italic">
                                                     {(product.specs as any)[row.key] || "Đang cập nhật"}
                                                 </td>
                                             ))}
                                         </tr>
                                     ))}
-
-                                    {/* Additional info usually exists but not in ProductSummary props yet. Can add later. */}
                                 </tbody>
                             </table>
                         </div>

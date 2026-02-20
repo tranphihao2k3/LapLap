@@ -127,11 +127,12 @@ export default function ProductCard({ product }: ProductCardProps) {
                     </div>
                 </div>
 
-                {/* PRICE - Compact */}
-                {/* PRICE & ACTIONS */}
-                <div className="mt-auto pt-3 border-t border-dashed border-gray-100 flex flex-col gap-3">
-                    <div className="text-center text-lg md:text-xl font-black text-primary tracking-tight">
-                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
+                <div className="mt-auto pt-4 border-t border-dashed border-slate-200 flex flex-col gap-3">
+                    <div className="flex items-baseline justify-center gap-1 text-[var(--color-primary)] mb-1">
+                        <span className="text-lg md:text-xl font-bold tracking-tight">
+                            {product.price.toLocaleString('vi-VN')}
+                        </span>
+                        <span className="text-xs md:text-sm font-semibold underline decoration-1 underline-offset-4">đ</span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
@@ -175,6 +176,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                     </Button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

@@ -12,7 +12,7 @@ export default function ComparisonBar() {
     if (selectedProducts.length === 0) return null;
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none flex flex-col items-center">
+        <div className="fixed bottom-16 md:bottom-0 left-0 right-0 z-[110] mb-1 md:mb-0 pointer-events-none flex flex-col items-center">
 
             {/* Toggle Button (always visible if content exists) */}
             <div className="pointer-events-auto bg-blue-600 text-white px-6 py-2 rounded-t-xl shadow-lg cursor-pointer flex items-center gap-2 hover:bg-blue-700 transition-colors" onClick={toggleOpen}>
@@ -84,8 +84,8 @@ export default function ComparisonBar() {
                                     <Link
                                         href={selectedProducts.length > 1 ? "/so-sanh" : "#"}
                                         className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-bold shadow-lg transition-all whitespace-nowrap ${selectedProducts.length > 1
-                                                ? "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-blue-500/30 active:scale-95"
-                                                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                            ? "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-blue-500/30 active:scale-95"
+                                            : "bg-gray-200 text-gray-400 cursor-not-allowed"
                                             }`}
                                         onClick={(e) => {
                                             if (selectedProducts.length <= 1) {
