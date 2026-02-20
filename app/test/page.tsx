@@ -91,23 +91,6 @@ export default function UnifiedTestPage() {
 
     return (
         <>
-            <Head>
-                <title>Test Laptop Cần Thơ - Kiểm Tra Laptop Miễn Phí Online | LapLap</title>
-                <meta name="description" content="Công cụ test laptop miễn phí tại Cần Thơ. Kiểm tra camera, micro, loa, màn hình, bàn phím laptop online. Dịch vụ test laptop chuyên nghiệp, nhanh chóng, chính xác." />
-                <meta name="keywords" content="test laptop, test laptop cần thơ, kiểm tra laptop, test camera laptop, test màn hình laptop, test bàn phím, test micro laptop, test loa laptop, công cụ test laptop" />
-                <meta name="author" content="LapLap" />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-                {/* Open Graph */}
-                <meta property="og:title" content="Test Laptop Cần Thơ - Kiểm Tra Laptop Miễn Phí" />
-                <meta property="og:description" content="Công cụ test laptop miễn phí tại Cần Thơ. Kiểm tra camera, micro, loa, màn hình, bàn phím laptop online." />
-                <meta property="og:type" content="website" />
-                <meta property="og:url" content="https://laplapcantho.store/test" />
-                <meta property="og:locale" content="vi_VN" />
-
-                {/* Canonical URL */}
-                <link rel="canonical" href="https://laplapcantho.store/test" />
-            </Head>
             <Header />
 
             {/* Hero Section - Full Width */}
@@ -343,25 +326,29 @@ export default function UnifiedTestPage() {
                         viewport={{ once: true, amount: 0.2 }}
                     >
                         <h2 className="font-bold text-xl text-gray-800 mb-6 flex items-center gap-2">
-                            ❓ Câu Hỏi Thường Gặp
+                            ❓ Câu Hỏi Thường Gặp & Kiến Thức Test Laptop
                         </h2>
                         <div className="grid md:grid-cols-2 gap-8">
                             <div>
                                 <h3 className="font-semibold text-gray-800 mb-2">Tại sao nên test laptop trước khi mua?</h3>
-                                <p className="text-sm text-gray-600 leading-relaxed">Test laptop giúp phát hiện lỗi phần cứng như camera hỏng, loa rè, màn hình lỗi pixel, bàn phím không nhạy. Đặc biệt quan trọng khi mua laptop cũ.</p>
+                                <p className="text-sm text-gray-600 leading-relaxed">Sử dụng <strong>công cụ test laptop</strong> giúp phát hiện các lỗi phần cứng tiềm ẩn như camera bị mờ, micro không thu âm, loa rè, hoặc màn hình bị điểm chết (dead pixel). Đặc biệt khi mua <strong>laptop cũ Cần Thơ</strong>, việc kiểm tra kỹ lưỡng giúp bạn tránh mua phải máy lỗi.</p>
                             </div>
                             <div>
-                                <h3 className="font-semibold text-gray-800 mb-2">Công cụ test laptop có miễn phí không?</h3>
-                                <p className="text-sm text-gray-600 leading-relaxed">Hoàn toàn miễn phí! Bạn chỉ cần truy cập website và bắt đầu test ngay, không cần đăng ký tài khoản hay thanh toán.</p>
+                                <h3 className="font-semibold text-gray-800 mb-2">Các công cụ kiểm tra laptop online có chính xác không?</h3>
+                                <p className="text-sm text-gray-600 leading-relaxed">Hệ thống <strong>kiểm tra laptop online</strong> của chúng tôi sử dụng công nghệ Web API chuẩn, cho kết quả chính xác 100% đối với các bài kiểm tra ngoại vi như: <strong>test bàn phím online</strong>, test cam, test mic và loa.</p>
                             </div>
                             <div>
-                                <h3 className="font-semibold text-gray-800 mb-2">Độ chính xác thế nào?</h3>
-                                <p className="text-sm text-gray-600 leading-relaxed">Công cụ sử dụng công nghệ web chuẩn HTML5, cho kết quả chính xác tương đương phần mềm chuyên dụng.</p>
+                                <h3 className="font-semibold text-gray-800 mb-2">Làm thế nào để test màn hình laptop chuyên sâu?</h3>
+                                <p className="text-sm text-gray-600 leading-relaxed">Bạn có thể sử dụng bài <strong>test màn hình</strong> trên website của LapLap để kiểm tra hở sáng và điểm chết bằng cách chuyển đổi qua các màu nền đơn sắc (trắng, đen, đỏ, xanh). Đây là cách nhanh nhất để đánh giá chất lượng tấm nền.</p>
                             </div>
                             <div>
-                                <h3 className="font-semibold text-gray-800 mb-2">Cần chuẩn bị gì?</h3>
-                                <p className="text-sm text-gray-600 leading-relaxed">Chỉ cần laptop có kết nối internet và trình duyệt web (Chrome, Edge, Firefox, Safari) là đủ.</p>
+                                <h3 className="font-semibold text-gray-800 mb-2">Cần chuẩn bị gì khi test máy?</h3>
+                                <p className="text-sm text-gray-600 leading-relaxed">Chỉ cần một trình duyệt web ổn định và cấp quyền truy cập thiết bị khi được hỏi. LapLap cam kết bảo mật thông tin, chúng tôi không lưu trữ bất kỳ hình ảnh hay âm thanh nào từ thiết bị của bạn.</p>
                             </div>
+                        </div>
+
+                        <div className="mt-10 pt-8 border-t border-gray-100 italic text-gray-500 text-sm">
+                            <p>Từ khóa tìm kiếm phổ biến: test laptop, công cụ test laptop online, kiểm tra laptop cũ cần thơ, test bàn phím, test camera, test màn hình.</p>
                         </div>
                     </motion.div>
                 </div>

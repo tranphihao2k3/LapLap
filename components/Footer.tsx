@@ -224,10 +224,28 @@ const Footer = () => {
                 </div>
             </motion.div>
 
+            {/* SEO Keyword Block */}
+            <div className="container mx-auto px-6 py-8 border-t border-white/5 opacity-40 hover:opacity-100 transition-opacity">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-[11px] leading-relaxed">
+                    <div>
+                        <h4 className="font-bold text-white mb-2 uppercase tracking-widest text-[10px]">Laptop Cũ Cần Thơ - LapLap</h4>
+                        <p>LapLap là địa chỉ uy tín chuyên mua bán <strong>laptop cũ Cần Thơ</strong>. Chúng tôi cung cấp đa dạng các mẫu laptop Dell, HP, Lenovo, Macbook với chất lượng đảm bảo, bảo hành dài hạn. Nếu bạn đang tìm kiếm <strong>laptop giá rẻ Cần Thơ</strong>, hãy đến ngay LapLap để được tư vấn tận tâm và nhận nhiều ưu đãi hấp dẫn.</p>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-white mb-2 uppercase tracking-widest text-[10px]">Công Cụ Test Laptop Online</h4>
+                        <p>Website cung cấp hệ thống <strong>test laptop</strong> miễn phí, giúp khách hàng tự kiểm tra các tính năng như: test camera, test microphone, test loa, test màn hình và test bàn phím online nhanh chóng. Đây là <strong>công cụ test laptop</strong> hữu ích cho người dùng muốn kiểm tra máy nhanh mà không cần cài đặt phần mềm.</p>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-white mb-2 uppercase tracking-widest text-[10px]">Dịch Vụ Máy Tính Cần Thơ</h4>
+                        <p>Ngoài bán máy, chúng tôi còn có các dịch vụ như: <strong>vệ sinh laptop Cần Thơ</strong>, cài đặt phần mềm, nâng cấp SSD/RAM và <strong>sửa chữa laptop Cần Thơ</strong> lấy liền. Với phương châm uy tín là trên hết, LapLap cam kết mang lại sự hài lòng cho mọi khách hàng tại khu vực Cần Thơ và miền Tây.</p>
+                    </div>
+                </div>
+            </div>
+
             {/* Bottom Bar */}
             <div className="relative border-t border-white/5 bg-black/20 backdrop-blur-sm">
                 <div className="container mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
-                    <p>&copy; {currentYear} LapLap. Designed with ❤️ in Can Tho.</p>
+                    <p>&copy; {currentYear} LapLap - Laptop Cũ Cần Thơ. All rights reserved.</p>
                     <div className="flex space-x-6 mt-4 md:mt-0">
                         <Link href="/terms" className="hover:text-white transition-colors">Điều khoản</Link>
                         <Link href="/privacy" className="hover:text-white transition-colors">Bảo mật</Link>

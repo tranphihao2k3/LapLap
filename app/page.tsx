@@ -194,17 +194,17 @@ export default function HomePage() {
                   </motion.div>
 
                   <motion.h1 variants={fadeInUp} className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight tracking-tight">
-                    Laptop Cần Thơ
+                    Laptop Cũ Cần Thơ
                     <br />
                     <span className="text-cyan-300">
-                      LapLap - Cũ & Mới
+                      LapLap - Uy Tín & Giá Rẻ
                     </span>
                   </motion.h1>
 
                   <motion.p variants={fadeInUp} className="text-base md:text-lg text-blue-100/90 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-                    Hệ thống bán lẻ laptop cũ Cần Thơ & laptop mới chính hãng uy tín nhất.
-                    Dịch vụ sửa chữa (sữa laptop), vệ sinh máy tính lấy liền.
-                    <span className="block mt-2 text-cyan-200 font-bold">Giao hàng tức thì • Bảo hành 24/7 chuyên nghiệp</span>
+                    Hệ thống mua bán <strong>laptop cũ Cần Thơ</strong> & laptop mới chính hãng giá tốt nhất.
+                    Dịch vụ sửa chữa (sữa laptop), vệ sinh máy tính lấy liền chuyên nghiệp.
+                    <span className="block mt-2 text-cyan-200 font-bold">Giao hàng tức thì • Bảo hành 24/7 uy tín</span>
                   </motion.p>
 
                   <motion.div variants={fadeInUp} className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mb-8">

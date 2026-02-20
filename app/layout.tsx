@@ -26,7 +26,11 @@ export const metadata: Metadata = {
     "laplap",
     "laptop giá rẻ cần thơ",
     "thu mua laptop cũ cần thơ",
-    "cài win cần thơ"
+    "cài win cần thơ",
+    "vệ sinh laptop cần thơ",
+    "test laptop online",
+    "kiểm tra laptop cũ",
+    "test camera laptop"
   ],
   authors: [{ name: "LapLap Cần Thơ" }],
   alternates: {
