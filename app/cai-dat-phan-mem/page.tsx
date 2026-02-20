@@ -80,8 +80,8 @@ export default function SoftwarePage() {
         <div className="min-h-screen bg-gray-50 font-sans">
             <Header />
 
-            {/* Hero Section */}
-            <div className="relative bg-gradient-to-br from-indigo-900 via-blue-900 to-purple-900 text-white overflow-hidden py-12 md:pb-20 md:pt-10">
+            {/* Hero Section - Standardized Height & Style */}
+            <div className="relative w-full h-auto bg-gradient-to-r from-[#124A84] via-[#0d3560] to-[#0a2d54] text-white overflow-hidden shadow-lg border-b border-white/10 py-12 md:py-16">
                 {/* Animated Background & Icons */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-blob"></div>

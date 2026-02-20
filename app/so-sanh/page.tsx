@@ -44,18 +44,25 @@ export default function ComparisonPage() {
     return (
         <>
             <Header />
+            {/* Hero Section - Standardized Height & Style */}
+            <section className="relative w-full h-auto bg-gradient-to-r from-[#124A84] via-[#0d3560] to-[#0a2d54] text-white overflow-hidden shadow-lg border-b border-white/10 py-12 md:py-16">
+                {/* Background Patterns */}
+                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob"></div>
+                <div className="absolute -bottom-8 -left-8 w-72 h-72 bg-indigo-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+
+                <div className="container mx-auto max-w-5xl px-4 h-full relative z-10 text-center">
+                    <h1 className="text-4xl md:text-5xl font-black mb-4 leading-tight uppercase tracking-tight">
+                        So Sánh <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">Sản Phẩm</span>
+                    </h1>
+                    <p className="text-blue-100 max-w-2xl mx-auto text-lg leading-relaxed font-medium">
+                        So sánh chi tiết thông số kỹ thuật, giá bán và khuyến mãi để chọn chiếc Laptop ưng ý nhất.
+                    </p>
+                </div>
+            </section>
+
             <main className="min-h-screen bg-gray-50 py-12">
                 <div className="container mx-auto px-4 max-w-7xl">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-8">
-                        <div>
-                            <h1 className="text-3xl font-black text-gray-800 mb-2">So Sánh Sản Phẩm</h1>
-                            <p className="text-gray-500">So sánh chi tiết thông số kỹ thuật, giá bán và khuyến mãi.</p>
-                        </div>
-                        <Link href="/laptops" className="hidden md:inline-flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-700 hover:underline">
-                            ← Thêm sản phẩm khác
-                        </Link>
-                    </div>
 
                     {/* Comparison Table Container */}
                     <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">

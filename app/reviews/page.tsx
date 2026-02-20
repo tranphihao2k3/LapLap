@@ -109,26 +109,27 @@ export default function ReviewsPage() {
         <>
             <Header />
             <div className="min-h-screen bg-slate-50">
-                {/* HERO SECTION */}
-                <div className="relative bg-white overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 opacity-50 z-0"></div>
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-blue-100 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-30"></div>
+                {/* Hero Section - Standardized Height & Style */}
+                <section className="relative w-full h-auto bg-gradient-to-r from-[#124A84] via-[#0d3560] to-[#0a2d54] text-white overflow-hidden shadow-lg border-b border-white/10 py-12 md:py-16">
+                    {/* Background Patterns */}
+                    <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob"></div>
+                    <div className="absolute -bottom-8 -left-8 w-72 h-72 bg-indigo-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
 
-                    <div className="max-w-7xl mx-auto px-4 pt-16 pb-12 relative z-10 text-center">
+                    <div className="container mx-auto max-w-5xl px-4 h-full relative z-10 flex flex-col items-center text-center">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6 }}
                         >
-                            <span className="inline-block py-1 px-3 rounded-full bg-blue-100 text-blue-600 text-xs font-black uppercase tracking-widest mb-4">
+                            <span className="inline-block py-1 px-3 rounded-full bg-white/20 backdrop-blur-sm text-blue-100 text-xs font-black uppercase tracking-widest mb-4 border border-white/20">
                                 Khách hàng nói gì?
                             </span>
-                            <h1 className="text-4xl md:text-5xl font-black text-slate-800 mb-6 leading-tight">
-                                Niềm Tin <span className="text-blue-600">Được Khẳng Định</span> <br className="hidden md:block" />
-                                Qua Từng Sản Phẩm
+                            <h1 className="text-4xl md:text-5xl font-black mb-6 leading-tight">
+                                Niềm Tin <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200 uppercase">Được Khẳng Định</span>
                             </h1>
-                            <p className="text-slate-500 max-w-2xl mx-auto text-lg mb-10 leading-relaxed">
-                                Tại <span className="font-bold text-slate-700">Laptop Cần Thơ</span>, chúng tôi không chỉ bán laptop,
+                            <p className="text-blue-100 max-w-2xl mx-auto text-lg mb-10 leading-relaxed font-medium">
+                                Tại <span className="font-bold">LapLap Cần Thơ</span>, chúng tôi không chỉ bán laptop,
                                 mà còn trao gửi sự an tâm. Cảm ơn {stats.count}+ khách hàng đã tin tưởng đồng hành! ❤️
                             </p>
 
@@ -136,23 +137,23 @@ export default function ReviewsPage() {
                                 <Button
                                     onClick={() => setShowForm(true)}
                                     size="lg"
-                                    className="shadow-xl shadow-blue-200"
+                                    className="shadow-xl"
                                     leftIcon={<PenTool size={18} />}
                                 >
                                     Viết đánh giá ngay
                                 </Button>
                                 <Button
                                     href="/laptops"
-                                    variant="outline"
+                                    variant="white"
                                     size="lg"
-                                    className="border-slate-200 text-slate-600 hover:bg-white"
+                                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
                                 >
                                     Xem sản phẩm
                                 </Button>
                             </div>
                         </motion.div>
                     </div>
-                </div>
+                </section>
 
                 {/* OVERVIEW STATS */}
                 <div className="bg-white border-y border-slate-100 sticky top-0 z-30 shadow-sm backdrop-blur-md bg-white/90">

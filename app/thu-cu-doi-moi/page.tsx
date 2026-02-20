@@ -74,8 +74,8 @@ Mong LapLap báo giá sớm ạ!
         <div className="min-h-screen bg-gray-50 font-sans text-gray-800 ">
             <Header />
 
-            {/* Hero Section - Compact & Illustrated */}
-            <section className="relative w-full min-h-[300px] md:h-[320px] bg-gradient-to-r from-indigo-900 via-blue-800 to-blue-900 text-white overflow-hidden shadow-md py-12 md:py-0">
+            {/* Hero Section - Standardized Height & Style */}
+            <section className="relative w-full h-auto bg-gradient-to-r from-[#124A84] via-[#0d3560] to-[#0a2d54] text-white overflow-hidden shadow-lg border-b border-white/10 py-12 md:py-16">
                 {/* Background Patterns */}
                 <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
                 <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>

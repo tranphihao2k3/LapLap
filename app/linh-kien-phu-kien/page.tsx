@@ -96,8 +96,8 @@ export default function ComponentsAndAccessoriesPage() {
         <div className="min-h-screen bg-gray-50 font-sans">
             <Header />
 
-            {/* Hero Section */}
-            <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 text-white py-12 md:py-16 relative overflow-hidden">
+            {/* Hero Section - Standardized Height & Style */}
+            <div className="relative w-full h-auto bg-gradient-to-r from-[#124A84] via-[#0d3560] to-[#0a2d54] text-white overflow-hidden shadow-lg border-b border-white/10 py-12 md:py-16">
                 <div className="absolute inset-0 opacity-20">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl animate-pulse"></div>
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500 rounded-full blur-3xl animate-pulse delay-700"></div>

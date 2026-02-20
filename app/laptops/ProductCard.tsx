@@ -65,7 +65,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     };
 
     return (
-        <div className={`h-full flex flex-col border-2 rounded-2xl bg-white hover:shadow-2xl transition-all duration-300 overflow-hidden group relative ${isNew ? 'border-blue-500 shadow-blue-200 shadow-lg' : 'border-[var(--color-border)]'}`}>
+        <div className={`h-full flex flex-col border-2 rounded-2xl bg-white hover:shadow-2xl transition-all duration-300 overflow-hidden group relative ${isNew ? 'border-primary shadow-primary/20 shadow-lg' : 'border-[var(--color-border)]'}`}>
 
             {/* NEW BADGE */}
             {isNew && (
@@ -76,7 +76,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
             {/* COMPARING BADGE (Optional) */}
             {isSelected && (
-                <div className="absolute top-2 left-2 z-20 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow-md flex items-center gap-1">
+                <div className="absolute top-2 left-2 z-20 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded shadow-md flex items-center gap-1">
                     <Check size={12} /> Đã chọn
                 </div>
             )}
@@ -97,8 +97,8 @@ export default function ProductCard({ product }: ProductCardProps) {
 
                 {/* NAME - Compact for better fit */}
                 <Link href={`/laptops/${product.slug || product._id}`} className="group/title">
-                    <h3 className="font-bold text-sm md:text-base text-[var(--color-text-brand)] text-center line-clamp-2 min-h-[40px] md:min-h-[48px] group-hover/title:text-blue-600 transition-colors">
-                        {product.name}
+                    <h3 className="font-bold text-sm md:text-base text-[var(--color-text-brand)] text-center line-clamp-2 min-h-[40px] md:min-h-[48px] group-hover/title:text-primary transition-colors">
+                        pieces                        {product.name}
                     </h3>
                 </Link>
 
@@ -116,9 +116,9 @@ export default function ProductCard({ product }: ProductCardProps) {
                         ].map((spec, index) => (
                             <div
                                 key={index}
-                                className="flex items-center gap-1 md:gap-1.5 bg-gray-100 md:bg-blue-50 px-2 py-1 md:p-2 rounded md:rounded-lg max-w-full"
+                                className="flex items-center gap-1 md:gap-1.5 bg-gray-100 md:bg-primary/5 px-2 py-1 md:p-2 rounded md:rounded-lg max-w-full"
                             >
-                                <spec.icon className="w-3 h-3 md:w-4 md:h-4 text-gray-500 md:text-[#1e73be] flex-shrink-0" />
+                                <spec.icon className="w-3 h-3 md:w-4 md:h-4 text-gray-500 md:text-primary flex-shrink-0" />
                                 <span className="text-[10px] md:text-xs font-medium md:font-semibold text-gray-700 md:text-gray-800 truncate">
                                     {spec.value}
                                 </span>
@@ -130,7 +130,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 {/* PRICE - Compact */}
                 {/* PRICE & ACTIONS */}
                 <div className="mt-auto pt-3 border-t border-dashed border-gray-100 flex flex-col gap-3">
-                    <div className="text-center text-lg md:text-xl font-black text-blue-600 tracking-tight">
+                    <div className="text-center text-lg md:text-xl font-black text-primary tracking-tight">
                         {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
                     </div>
 
@@ -144,8 +144,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                                 size="sm"
                                 fullWidth
                                 className={`text-xs px-2 h-9 whitespace-nowrap gap-1.5 rounded-full border-gray-200 shadow-sm hover:shadow-md transition-all ${isSelected
-                                    ? 'bg-blue-50 border-blue-500 text-blue-600 font-bold'
-                                    : 'text-gray-600 hover:text-blue-600 hover:border-blue-200 bg-white'
+                                    ? 'bg-primary/5 border-primary text-primary font-bold'
+                                    : 'text-gray-600 hover:text-primary hover:border-primary/30 bg-white'
                                     }`}
                                 leftIcon={isSelected ? <Check size={14} /> : <Scale size={14} />}
                             >
@@ -157,7 +157,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                             variant="primary"
                             size="sm"
                             fullWidth
-                            className="text-xs px-2 h-9 shadow-sm hover:shadow-md rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all"
+                            className="text-xs px-2 h-9 shadow-sm hover:shadow-md rounded-full bg-primary hover:bg-primary-dark text-white font-semibold transition-all"
                         >
                             Chi tiết
                         </Button>
@@ -168,7 +168,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                         variant="primary"
                         size="sm"
                         fullWidth
-                        className="text-sm h-10 shadow-lg shadow-blue-200 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold transition-all transform active:scale-95"
+                        className="text-sm h-10 shadow-lg shadow-primary/20 rounded-full bg-primary hover:bg-primary-dark text-white font-bold transition-all transform active:scale-95"
                         leftIcon={<ShoppingBag size={16} />}
                     >
                         Thêm vào giỏ

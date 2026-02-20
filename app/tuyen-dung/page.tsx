@@ -38,22 +38,18 @@ export default function RecruitmentPage() {
         <>
             <Header />
             <main className="min-h-screen bg-slate-50 font-sans overflow-hidden">
-                {/* HERO SECTION */}
-                <section className="relative h-[400px] flex items-center justify-center overflow-hidden bg-slate-900">
-                    <div className="absolute inset-0 opacity-40">
-                        <img
-                            src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2084&q=80"
-                            alt="Recruitment Hero"
-                            className="w-full h-full object-cover"
-                        />
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent"></div>
+                {/* Hero Section - Standardized Height & Style */}
+                <section className="relative w-full h-auto bg-gradient-to-r from-[#124A84] via-[#0d3560] to-[#0a2d54] text-white overflow-hidden shadow-lg border-b border-white/10 py-12 md:py-16">
+                    {/* Background Patterns */}
+                    <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob"></div>
+                    <div className="absolute -bottom-8 -left-8 w-72 h-72 bg-indigo-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
 
                     <div className="container mx-auto px-4 relative z-10 text-center">
                         <motion.span
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="inline-block px-4 py-1.5 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 text-sm font-semibold tracking-wider mb-4 backdrop-blur-md"
+                            className="inline-block px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-sm text-blue-100 border border-white/20 text-sm font-semibold tracking-wider mb-4"
                         >
                             TUYỂN DỤNG
                         </motion.span>
@@ -61,15 +57,15 @@ export default function RecruitmentPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="text-4xl md:text-6xl font-black text-white mb-6 uppercase tracking-tight"
+                            className="text-4xl md:text-6xl font-black mb-6 uppercase tracking-tight"
                         >
-                            Gia nhập đội ngũ <span className="text-blue-500">LapLap</span>
+                            Gia nhập đội ngũ <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-indigo-300">LapLap</span>
                         </motion.h1>
                         <motion.p
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className="text-slate-300 text-lg md:text-xl max-w-2xl mx-auto"
+                            className="text-blue-100 text-lg md:text-xl max-w-2xl mx-auto font-medium"
                         >
                             Cùng nhau kiến tạo những giá trị công nghệ đích thực và phát triển sự nghiệp của bạn.
                         </motion.p>

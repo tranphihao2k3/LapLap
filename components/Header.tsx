@@ -10,11 +10,7 @@ import { usePathname } from "next/navigation";
 import Button from "./ui/Button";
 import { useCart } from "@/context/CartContext";
 
-const itim = Itim({
-    subsets: ["latin", "vietnamese"],
-    weight: "400",
-    display: "swap",
-});
+
 
 const SEARCH_PLACEHOLDERS = [
     "Tìm kiếm laptop...",
@@ -94,16 +90,22 @@ export default function Header() {
 
     const menuItems = [
         { href: "/laptops", label: "Laptop" },
-        { href: "/linh-kien-phu-kien", label: "Linh kiện & Phụ kiện" },
+        { href: "/test", label: "Test máy" },
+        {
+            label: "Sửa chữa & Vệ sinh",
+            href: "#",
+            children: [
+                { href: "/sua-chua-laptop", label: "Sửa chữa" },
+                { href: "/ve-sinh-laptop", label: "Vệ sinh máy" },
+            ]
+        },
         {
             label: "Dịch vụ",
             href: "#",
             children: [
+                { href: "/linh-kien-phu-kien", label: "Linh kiện & Phụ kiện" },
                 { href: "/thu-cu-doi-moi", label: "Thu cũ đổi mới" },
                 { href: "/nang-cap", label: "Nâng cấp" },
-                { href: "/ve-sinh-laptop", label: "Vệ sinh máy" },
-                { href: "/sua-chua-laptop", label: "Sửa chữa" },
-                { href: "/test", label: "Kiểm tra máy" },
                 { href: "/cai-dat-phan-mem", label: "Driver & Soft" },
             ]
         },
@@ -163,7 +165,7 @@ export default function Header() {
                                 {"Lap Lap Store".split("").map((char, index) => (
                                     <motion.span
                                         key={index}
-                                        className={itim.className + " text-3xl font-black text-gray-800 cursor-pointer inline-block"}
+                                        className={" text-3xl font-black text-gray-800 cursor-pointer inline-block"}
                                         animate={{
                                             color: ["#1f2937", "#1f2937", "#2563eb", "#1f2937", "#1f2937"],
                                         }}
@@ -279,7 +281,7 @@ export default function Header() {
                                                                 />
                                                             </div>
                                                             <div className="flex-1 min-w-0">
-                                                                <h4 className={`${itim.className} text-sm font-bold text-gray-800 line-clamp-1 group-hover:text-blue-600 transition-colors uppercase tracking-tight`}>
+                                                                <h4 className={`text-sm font-bold text-gray-800 line-clamp-1 group-hover:text-blue-600 transition-colors uppercase tracking-tight`}>
                                                                     {product.name}
                                                                 </h4>
                                                                 <div className="flex flex-wrap gap-1 mt-1">
@@ -413,7 +415,7 @@ export default function Header() {
                                 >
                                     <Link
                                         href={item.href}
-                                        className={`${itim.className} relative z-10 block px-4 py-2 text-[15px] font-bold transition-colors duration-300 ${isActive ? 'text-blue-600' : 'text-slate-600 hover:text-slate-900 group-hover/menu:text-blue-600'
+                                        className={`relative z-10 block px-4 py-2 text-[15px] font-bold transition-colors duration-300 ${isActive ? 'text-blue-600' : 'text-slate-600 hover:text-slate-900 group-hover/menu:text-blue-600'
                                             } flex items-center gap-1`}
                                     >
                                         {item.label}
@@ -452,7 +454,7 @@ export default function Header() {
                                                     <Link
                                                         key={childIdx}
                                                         href={child.href}
-                                                        className={`${itim.className} block px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors whitespace-nowrap`}
+                                                        className={`block px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors whitespace-nowrap`}
                                                     >
                                                         {child.label}
                                                     </Link>
@@ -481,7 +483,7 @@ export default function Header() {
                 >
                     {/* Sidebar Header */}
                     <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                        <h2 className={itim.className + " text-xl font-bold text-gray-800"}>
+                        <h2 className={" text-xl font-bold text-gray-800"}>
                             Menu
                         </h2>
                         <button
@@ -520,7 +522,7 @@ export default function Header() {
                                 <li key={index}>
                                     {item.children ? (
                                         <div className="space-y-1">
-                                            <div className={`${itim.className} block px-4 py-2 text-sm font-bold text-gray-400 uppercase tracking-wider`}>
+                                            <div className={`block px-4 py-2 text-sm font-bold text-gray-400 uppercase tracking-wider`}>
                                                 {item.label}
                                             </div>
                                             {item.children.map((child: any, childIdx: number) => (
@@ -528,7 +530,7 @@ export default function Header() {
                                                     key={childIdx}
                                                     href={child.href}
                                                     onClick={() => setIsMobileMenuOpen(false)}
-                                                    className={`${itim.className} block px-4 py-2.5 pl-8 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors`}
+                                                    className={`block px-4 py-2.5 pl-8 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors`}
                                                 >
                                                     {child.label}
                                                 </Link>
@@ -538,7 +540,7 @@ export default function Header() {
                                         <Link
                                             href={item.href}
                                             onClick={() => setIsMobileMenuOpen(false)}
-                                            className={`${itim.className} block px-4 py-2.5 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors`}
+                                            className={`block px-4 py-2.5 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors`}
                                         >
                                             {item.label}
                                         </Link>

@@ -56,13 +56,16 @@ export const metadata: Metadata = {
   },
 };
 
-import { Be_Vietnam_Pro } from "next/font/google";
+import { Montserrat } from "next/font/google";
 
-const beVietnamPro = Be_Vietnam_Pro({
+const montserrat = Montserrat({
   subsets: ["latin", "vietnamese"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
+  variable: "--font-montserrat",
 });
+
+
 
 import { ComparisonProvider } from "@/context/ComparisonContext";
 import ComparisonBar from "@/components/ComparisonBar";
@@ -84,7 +87,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
-      <body className={`${beVietnamPro.className} min-h-screen flex flex-col`}>
+      <body className={`${montserrat.variable} ${montserrat.className} min-h-screen flex flex-col`}>
         <CartProvider>
           <ComparisonProvider>
             {children}

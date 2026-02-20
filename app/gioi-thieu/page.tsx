@@ -63,59 +63,40 @@ export default function AboutPage() {
             <Header />
             <main className="min-h-screen bg-slate-50 font-sans overflow-hidden">
 
-                {/* 1. HERO SECTION */}
-                <section ref={targetRef} className="relative min-h-[500px] md:h-[80vh] md:min-h-[600px] flex items-center overflow-hidden py-20 md:py-0">
-                    <div className="absolute inset-0 bg-gradient-to-r from-slate-900 to-blue-900 z-10 opacity-95"></div>
-                    <div className="absolute inset-0 z-0">
-                        {/* Parallax Background Image */}
-                        <motion.div style={{ y }} className="w-full h-[120%] relative -top-[10%]">
-                            <img
-                                src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-                                alt="Technology Background"
-                                className="w-full h-full object-cover opacity-30 mix-blend-overlay"
-                            />
-                        </motion.div>
-                    </div>
+                {/* Hero Section - Standardized Height & Style */}
+                <section ref={targetRef} className="relative w-full h-auto bg-gradient-to-r from-[#124A84] via-[#0d3560] to-[#0a2d54] text-white overflow-hidden shadow-lg border-b border-white/10 py-12 md:py-20">
+                    {/* Background Patterns */}
+                    <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob"></div>
+                    <div className="absolute -bottom-8 -left-8 w-72 h-72 bg-indigo-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
 
-                    <div className="container mx-auto px-4 md:px-6 max-w-7xl relative z-20">
+                    <div className="container mx-auto px-4 md:px-6 max-w-5xl relative z-20">
                         <motion.div
                             initial="hidden"
                             animate="visible"
                             variants={staggerContainer}
                             className="max-w-4xl mx-auto text-center"
                         >
-                            <motion.span variants={fadeInUp} className="inline-block px-4 py-1.5 rounded-full bg-blue-500/20 text-blue-200 border border-blue-400/30 text-sm font-semibold tracking-wider mb-6 backdrop-blur-md">
-                                VỀ CHÚNG TÔI
+                            <motion.span variants={fadeInUp} className="inline-block px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-blue-100 border border-white/20 text-sm font-semibold tracking-wider mb-6">
+                                GIỚI THIỆU LAPLAP
                             </motion.span>
-                            <motion.h1 variants={fadeInUp} className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white mb-8 leading-tight tracking-tight">
-                                Kiến tạo <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Tương lai</span> <br />
+                            <motion.h1 variants={fadeInUp} className="text-4xl md:text-6xl font-black text-white mb-8 leading-tight tracking-tight">
+                                Kiến tạo <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-indigo-300 uppercase">Tương lai</span> <br />
                                 Công nghệ tại Cần Thơ
                             </motion.h1>
-                            <motion.p variants={fadeInUp} className="text-lg md:text-2xl text-blue-100 mb-10 leading-relaxed max-w-2xl mx-auto font-light">
+                            <motion.p variants={fadeInUp} className="text-lg md:text-xl text-blue-100 mb-10 leading-relaxed max-w-2xl mx-auto font-medium">
                                 "Không chỉ bán Laptop, chúng tôi trao giải pháp và niềm tin cho hành trình thành công của bạn."
                             </motion.p>
                             <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Button href="#story" variant="white" size="lg" className="shadow-lg shadow-blue-900/20 px-8">
+                                <Button href="#story" variant="white" size="lg" className="shadow-lg px-8">
                                     Tìm hiểu thêm
                                 </Button>
-                                <Button href="#contact" variant="outline" size="lg" className="text-white border-white hover:bg-white/10 px-8">
+                                <Button href="#contact" variant="outline" size="lg" className="text-white border-white/20 hover:bg-white/10 px-8">
                                     Liên hệ ngay
                                 </Button>
                             </motion.div>
                         </motion.div>
                     </div>
-
-                    {/* Scroll Indicator */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1, y: [0, 10, 0] }}
-                        transition={{ delay: 2, duration: 2, repeat: Infinity }}
-                        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 text-white/50 hidden md:block"
-                    >
-                        <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center p-1">
-                            <div className="w-1 h-2 bg-white rounded-full"></div>
-                        </div>
-                    </motion.div>
                 </section>
 
                 {/* 2. OUR STORY SECTION */}

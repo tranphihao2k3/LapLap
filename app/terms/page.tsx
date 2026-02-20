@@ -9,11 +9,26 @@ export const metadata = {
 export default function TermsPage() {
     return (
         <>
-            <Header />
+            {/* Hero Section - Standardized Height & Style */}
+            <section className="relative w-full h-auto bg-gradient-to-r from-[#124A84] via-[#0d3560] to-[#0a2d54] text-white overflow-hidden shadow-lg border-b border-white/10 py-12 md:py-16">
+                {/* Background Patterns */}
+                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob"></div>
+                <div className="absolute -bottom-8 -left-8 w-72 h-72 bg-indigo-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+
+                <div className="container mx-auto max-w-5xl px-4 h-full relative z-10 text-center">
+                    <h1 className="text-4xl md:text-5xl font-black mb-4 leading-tight uppercase tracking-tight">
+                        Điều Khoản <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">Sử Dụng</span>
+                    </h1>
+                    <p className="text-blue-100 max-w-2xl mx-auto text-lg leading-relaxed font-medium">
+                        Quy định và hướng dẫn dành cho khách hàng khi giao dịch tại LapLap.
+                    </p>
+                </div>
+            </section>
+
             <main className="min-h-screen bg-gray-50 py-12 md:py-20">
                 <div className="container mx-auto px-4 max-w-4xl">
                     <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
-                        <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-8 border-b pb-4">Điều Khoản Sử Dụng</h1>
 
                         <section className="space-y-6 text-gray-700 leading-relaxed">
                             <p>

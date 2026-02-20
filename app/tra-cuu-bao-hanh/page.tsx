@@ -74,38 +74,45 @@ export default function WarrantyPage() {
         <>
             <Header />
             <main className="min-h-screen bg-gray-50 pb-20">
-                {/* Hero Section */}
-                <div className="bg-gradient-to-r from-blue-700 to-indigo-800 text-white py-16 px-4">
-                    <div className="container mx-auto max-w-4xl text-center">
+                {/* Hero Section - Standardized Height & Style */}
+                <section className="relative w-full h-auto bg-gradient-to-r from-[#124A84] via-[#0d3560] to-[#0a2d54] text-white overflow-hidden shadow-lg border-b border-white/10 py-12 md:py-16">
+                    {/* Background Patterns */}
+                    <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob"></div>
+                    <div className="absolute -bottom-8 -left-8 w-72 h-72 bg-indigo-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+
+                    <div className="container mx-auto px-4 relative z-10 text-center">
                         <ShieldCheck className="w-16 h-16 mx-auto mb-6 text-blue-300" />
-                        <h1 className="text-3xl md:text-4xl font-bold mb-4">Tra Cứu Bảo Hành</h1>
-                        <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
-                            Kiểm tra thông tin bảo hành đơn hàng tại LapLap Cần Thơ hoặc tra cứu trực triếp từ trang chủ của hãng.
+                        <h1 className="text-4xl md:text-5xl font-black mb-4 uppercase tracking-tight">
+                            Tra Cứu <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-indigo-200">Bảo Hành</span>
+                        </h1>
+                        <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto font-medium">
+                            Kiểm tra thông tin bảo hành đơn hàng tại LapLap Cần Thơ hoặc tra cứu trực tiếp từ trang chủ của hãng.
                         </p>
 
                         {/* Tabs */}
-                        <div className="flex justify-center gap-4 mb-8">
+                        <div className="flex justify-center gap-4">
                             <button
                                 onClick={() => setActiveTab('store')}
-                                className={`px-6 py-2 rounded-full font-bold transition-all ${activeTab === 'store'
-                                    ? 'bg-white text-blue-800 shadow-lg'
-                                    : 'bg-blue-800/50 text-blue-100 hover:bg-blue-800'
+                                className={`px-6 py-2 rounded-full font-bold transition-all border ${activeTab === 'store'
+                                    ? 'bg-white text-blue-800 shadow-lg border-white'
+                                    : 'bg-white/10 text-blue-100 hover:bg-white/20 border-white/20'
                                     }`}
                             >
                                 Bảo hành tại Cửa hàng
                             </button>
                             <button
                                 onClick={() => setActiveTab('brand')}
-                                className={`px-6 py-2 rounded-full font-bold transition-all ${activeTab === 'brand'
-                                    ? 'bg-white text-blue-800 shadow-lg'
-                                    : 'bg-blue-800/50 text-blue-100 hover:bg-blue-800'
+                                className={`px-6 py-2 rounded-full font-bold transition-all border ${activeTab === 'brand'
+                                    ? 'bg-white text-blue-800 shadow-lg border-white'
+                                    : 'bg-white/10 text-blue-100 hover:bg-white/20 border-white/20'
                                     }`}
                             >
                                 Bảo hành Chính hãng
                             </button>
                         </div>
                     </div>
-                </div>
+                </section>
 
                 <div className="container mx-auto max-w-4xl px-4 -mt-8">
                     {activeTab === 'store' ? (

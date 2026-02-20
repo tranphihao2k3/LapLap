@@ -2,13 +2,13 @@
 
 :root {
   /* ========== BRAND COLORS ========== */
-  --color-primary: #004e9a;
-  --color-primary-dark: #003366;
-  --color-secondary: #1e4275;
-  --color-secondary-dark: #16345f;
+  --color-primary: #124A84;
+  --color-primary-dark: #0d3560;
+  --color-secondary: #1a5ca1;
+  --color-secondary-dark: #124A84;
   --color-accent: #A2D8EF;
-  --color-border: #1e73be;
-  --color-text-brand: #003b78;
+  --color-border: #124A84;
+  --color-text-brand: #124A84;
 
   /* ========== UI COLORS ========== */
   --color-success: #10b981;
@@ -36,8 +36,15 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-montserrat);
   --font-mono: var(--font-geist-mono);
+  --color-primary: var(--color-primary);
+  --color-primary-dark: var(--color-primary-dark);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-dark: var(--color-secondary-dark);
+  --color-accent: var(--color-accent);
+  --color-brand-border: var(--color-border);
+  --color-brand-text: var(--color-text-brand);
 }
 
 @media (prefers-color-scheme: dark) {

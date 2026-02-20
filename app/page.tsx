@@ -170,17 +170,18 @@ export default function HomePage() {
     <>
       <Header />
       <main className="flex-1">
-        {/* Hero Section - Full Width & Modern */}
-        <section className="relative w-full min-h-[500px] md:h-[600px] bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 text-white overflow-hidden shadow-2xl mb-12">
+        {/* Hero Section - Standardized Style */}
+        <section className="relative w-full h-auto bg-gradient-to-r from-[#124A84] via-[#0d3560] to-[#0a2d54] text-white overflow-hidden shadow-lg border-b border-white/10 py-12 md:py-20 mb-12">
           {/* Animated Background */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500 rounded-full blur-3xl opacity-20 animate-pulse delay-1000"></div>
+            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl opacity-20 animate-blob"></div>
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500 rounded-full blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
           </div>
 
-          <div className="relative z-10 h-full flex items-center py-12 md:py-0">
+          <div className="relative z-10 h-full flex items-center">
             <div className="container mx-auto max-w-5xl px-4 h-full flex flex-col justify-center">
-              <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16 pt-10 md:pt-0">
+              <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
                 {/* Text Content */}
                 <motion.div
                   className="flex-1 text-center lg:text-left z-10"
@@ -188,12 +189,12 @@ export default function HomePage() {
                   animate="visible"
                   variants={stagger}
                 >
-                  <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full mb-6 border border-white/20">
-                    <MapPin className="w-4 h-4 text-cyan-400" />
-                    <span className="text-white font-semibold text-xs uppercase tracking-widest">Cần Thơ</span>
+                  <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full mb-4 border border-white/20">
+                    <MapPin className="w-3.5 h-3.5 text-cyan-400" />
+                    <span className="text-white font-semibold text-[10px] uppercase tracking-widest">Cần Thơ</span>
                   </motion.div>
 
-                  <motion.h1 variants={fadeInUp} className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight tracking-tight">
+                  <motion.h1 variants={fadeInUp} className="text-2xl md:text-4xl font-bold text-white mb-4 leading-tight tracking-tight">
                     Laptop Cũ Cần Thơ
                     <br />
                     <span className="text-cyan-300">
@@ -201,27 +202,27 @@ export default function HomePage() {
                     </span>
                   </motion.h1>
 
-                  <motion.p variants={fadeInUp} className="text-base md:text-lg text-blue-100/90 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
+                  <motion.p variants={fadeInUp} className="text-sm md:text-base text-blue-100/90 mb-6 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
                     Hệ thống mua bán <strong>laptop cũ Cần Thơ</strong> & laptop mới chính hãng giá tốt nhất.
-                    Dịch vụ sửa chữa (sữa laptop), vệ sinh máy tính lấy liền chuyên nghiệp.
-                    <span className="block mt-2 text-cyan-200 font-bold">Giao hàng tức thì • Bảo hành 24/7 uy tín</span>
+                    Dịch vụ sửa chữa, vệ sinh máy lấy liền chuyên nghiệp.
+                    <span className="block mt-2 text-cyan-200 font-bold italic">Giao hàng tức thì • Bảo hành 24/7 uy tín</span>
                   </motion.p>
 
                   <motion.div variants={fadeInUp} className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mb-8">
                     <Button
                       href="/laptops"
                       variant="white"
-                      size="lg"
+                      size="md"
                       rightIcon="→"
-                      className="min-w-[160px] shadow-lg shadow-blue-900/20"
+                      className="min-w-[140px] shadow-lg shadow-black/20"
                     >
                       MUA NGAY
                     </Button>
                     <Button
                       href="/test"
                       variant="glass"
-                      size="lg"
-                      className="min-w-[160px] border-white/30 hover:bg-white/10"
+                      size="md"
+                      className="min-w-[140px] border-white/30 hover:bg-white/10"
                     >
                       TEST MÁY
                     </Button>
@@ -237,12 +238,12 @@ export default function HomePage() {
 
                 {/* Right Image Content - Responsive sizing */}
                 <motion.div
-                  className="flex-1 flex justify-center items-center relative w-full"
+                  className="hidden md:flex flex-1 justify-center items-center relative w-full"
                   initial={{ opacity: 0, scale: 0.9, y: 30 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   transition={{ duration: 1, delay: 0.2 }}
                 >
-                  <div className="relative w-full max-w-[500px] h-[300px] md:h-[500px]">
+                  <div className="relative w-full max-w-[450px] h-[280px] md:h-[400px]">
                     {/* Premium Glow around image */}
                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-blue-400/20 blur-[80px] rounded-[100%] animate-pulse"></div>
 
