@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Download, HardDrive, Battery, Cpu } from "lucide-react";
+import { ArrowLeft, Download, HardDrive, Battery, Cpu, Terminal } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 
 interface SoftwareDownloadProps {
@@ -10,6 +10,14 @@ export default function SoftwareDownload({ onBack }: SoftwareDownloadProps) {
     const softwares = [
         {
             id: 1,
+            name: "File lấy thông tin máy",
+            desc: "Script CMD lấy thông tin chi tiết hệ thống: CPU, RAM, ổ cứng, GPU, pin, mainboard, WiFi...",
+            icon: <Terminal className="w-12 h-12 text-purple-500" />,
+            filename: "Thong_tin_laptop.cmd",
+            size: "~30 KB",
+        },
+        {
+            id: 2,
             name: "BatteryMon",
             desc: "Phần mềm kiểm tra pin laptop, xem dung lượng thực tế, chai pin...",
             icon: <Battery className="w-12 h-12 text-green-500" />,
@@ -17,7 +25,7 @@ export default function SoftwareDownload({ onBack }: SoftwareDownloadProps) {
             size: "~1.2 MB",
         },
         {
-            id: 2,
+            id: 3,
             name: "Hard Disk Sentinel",
             desc: "Phần mềm kiểm tra sức khỏe ổ cứng HDD/SSD, xem nhiệt độ, lỗi bad sector...",
             icon: <HardDrive className="w-12 h-12 text-blue-500" />,
@@ -25,7 +33,7 @@ export default function SoftwareDownload({ onBack }: SoftwareDownloadProps) {
             size: "~3.5 MB",
         },
         {
-            id: 3,
+            id: 4,
             name: "Heaven Benchmark",
             desc: "Phần mềm test hiệu năng đồ họa (GPU) chuyên sâu, đánh giá độ ổn định và FPS.",
             icon: <Cpu className="w-12 h-12 text-red-500" />,
@@ -110,7 +118,7 @@ export default function SoftwareDownload({ onBack }: SoftwareDownloadProps) {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
             >
-                <strong>Lưu ý:</strong> Các phần mềm trên được cung cấp miễn phí để hỗ trợ kiểm tra nhanh. Vui lòng quét virus lại nếu trình duyệt cảnh báo (đôi khi nhận diện nhầm file .exe).
+                <strong>Lưu ý:</strong> Các phần mềm trên được cung cấp miễn phí để hỗ trợ kiểm tra nhanh. Vui lòng quét virus lại nếu trình duyệt cảnh báo (đôi khi nhận diện nhầm file .exe hoặc .cmd).
             </motion.div>
         </motion.div>
     );
