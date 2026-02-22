@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Share2, Copy, ExternalLink, CheckCircle, Plus, Trash2, Search, Rocket, Link as LinkIcon, Facebook, Sparkles, RefreshCw } from 'lucide-react';
+import { Share2, Copy, ExternalLink, CheckCircle, Plus, Trash2, Search, Rocket, Link as LinkIcon, Facebook, Sparkles, RefreshCw, Dices } from 'lucide-react';
 
 import Button from '@/components/ui/Button';
 import Image from 'next/image';
@@ -177,7 +177,7 @@ export default function MarketingPage() {
 
 -------------------------------------------
 🏘️ Địa chỉ: Hưng Lợi, Ninh Kiều, Cần Thơ.
-☎️ Hotline ép giá: 0978.648.720 (Hào)
+☎️ Hotline: 0978.648.720 (Hào)
 #LaptopCanTho #LaptopGamingCanTho #LapLapCanTho`;
         } else if (finalTemplateType === 'office') {
             content = `✨ [XẢ KHO GIÁ SỐC] - LAPTOP VĂN PHÒNG / SINH VIÊN SIÊU LƯỚT ✨
@@ -264,6 +264,16 @@ export default function MarketingPage() {
         const link = `https://laplapcantho.store/laptops/${selectedProduct.slug || selectedProduct._id}`;
         navigator.clipboard.writeText(link);
         toast.success("🔗 Đã copy link sản phẩm!");
+    };
+
+    const selectRandomProduct = () => {
+        if (products.length === 0) return;
+        const randomIndex = Math.floor(Math.random() * products.length);
+        const product = products[randomIndex];
+        setSelectedProduct(product);
+        toast.success(`🎲 Đã chọn ngẫu nhiên: ${product.name}`);
+        // Mở sẵn content ra standard model luôn nếu lỡ đang ở AI
+        if (genType === 'ai') setGenType('standard');
     };
 
     const handleAddGroup = async () => {
@@ -682,10 +692,17 @@ export default function MarketingPage() {
                                     </div>
                                 </button>
 
-                                <div className="flex justify-center">
+                                <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 mt-2">
+                                    <button
+                                        onClick={selectRandomProduct}
+                                        className="text-[10px] font-black uppercase tracking-widest text-emerald-300 hover:text-emerald-200 transition-colors flex items-center justify-center gap-2"
+                                    >
+                                        <Dices size={16} />
+                                        Random Sản Phẩm Khác
+                                    </button>
                                     <button
                                         onClick={resetProgress}
-                                        className="text-[10px] font-black uppercase tracking-widest text-white/80 hover:text-white transition-colors flex items-center gap-2"
+                                        className="text-[10px] font-black uppercase tracking-widest text-white/80 hover:text-white transition-colors flex items-center justify-center gap-2"
                                     >
                                         <RefreshCw size={14} />
                                         Đặt lại từ đầu danh sách
