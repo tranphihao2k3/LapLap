@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Cpu, HardDrive, MemoryStick, Monitor, Battery, CreditCard, Scale, Check, ShoppingBag } from "lucide-react";
+import { Cpu, HardDrive, MemoryStick, Monitor, Battery, CreditCard, Scale, Check, ShoppingBag, Edit } from "lucide-react";
 import Button from "@/components/ui/Button";
+import { useSession } from "next-auth/react";
 import { useComparison } from "@/context/ComparisonContext";
 import { useCart } from "@/context/CartContext";
 
@@ -21,8 +22,11 @@ interface ProductCardProps {
             ram: string;
             ssd: string;
             screen: string;
+            hz?: string;
+            resolution?: string;
             battery: string;
         };
+        description?: string;
         gift?: string;
         categoryId?: {
             name: string;
@@ -34,6 +38,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
     const { addToCompare, removeFromCompare, selectedProducts } = useComparison();
     const { addToCart } = useCart();
+    const { data: session } = useSession();
     const isSelected = selectedProducts.some((p) => p._id === product._id);
 
     // Check if product is new (created within 24 hours)
@@ -74,6 +79,17 @@ export default function ProductCard({ product }: ProductCardProps) {
                 </div>
             )}
 
+            {/* ADMIN EDIT BUTTON */}
+            {session && (
+                <Link
+                    href={`/admin/laptops/${product._id}`}
+                    className="absolute top-2 right-2 z-30 p-2 bg-black/60 hover:bg-black/80 text-white rounded-full backdrop-blur-sm transition-colors shadow-lg"
+                    title="Chỉnh sửa (Admin)"
+                >
+                    <Edit size={14} />
+                </Link>
+            )}
+
             {/* COMPARING BADGE (Optional) */}
             {isSelected && (
                 <div className="absolute top-2 left-2 z-20 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded shadow-md flex items-center gap-1">
@@ -97,29 +113,29 @@ export default function ProductCard({ product }: ProductCardProps) {
 
                 {/* NAME - Compact for better fit */}
                 <Link href={`/laptops/${product.slug || product._id}`} className="group/title">
-                    <h3 className="font-bold text-sm md:text-base text-[var(--color-text-brand)] text-center line-clamp-2 min-h-[40px] md:min-h-[48px] group-hover/title:text-primary transition-colors">
-                        pieces                        {product.name}
+                    <h3 className="font-bold text-sm md:text-base text-[var(--color-text-brand)] text-center line-clamp-2 md:min-h-[48px] group-hover/title:text-primary transition-colors">
+                        {product.name}
                     </h3>
                 </Link>
 
                 {/* SPECS - Grid 2 columns like the image */}
                 {/* SPECS - Tags on mobile, Grid on desktop */}
                 <div className="flex-1">
-                    <div className="flex flex-wrap gap-1.5 md:grid md:grid-cols-2 md:gap-2">
+                    <div className="grid grid-cols-2 gap-1 md:gap-2">
                         {[
                             { icon: Cpu, value: product.specs.cpu },
                             { icon: CreditCard, value: product.specs.gpu },
                             { icon: MemoryStick, value: product.specs.ram },
                             { icon: HardDrive, value: product.specs.ssd },
-                            { icon: Monitor, value: product.specs.screen },
+                            { icon: Monitor, value: [product.specs.screen, product.specs.resolution, product.specs.hz].filter(Boolean).join(' ') || 'N/A' },
                             { icon: Battery, value: product.specs.battery },
                         ].map((spec, index) => (
                             <div
                                 key={index}
-                                className="flex items-center gap-1 md:gap-1.5 bg-gray-100 md:bg-primary/5 px-2 py-1 md:p-2 rounded md:rounded-lg max-w-full"
+                                className="flex items-center gap-1 bg-gray-100 md:bg-primary/5 px-1.5 py-1 md:p-2 rounded md:rounded-lg min-w-0"
                             >
                                 <spec.icon className="w-3 h-3 md:w-4 md:h-4 text-gray-500 md:text-primary flex-shrink-0" />
-                                <span className="text-[10px] md:text-xs font-medium md:font-semibold text-gray-700 md:text-gray-800 truncate">
+                                <span className="text-[9px] sm:text-[10px] md:text-xs font-medium md:font-semibold text-gray-700 md:text-gray-800 truncate" title={spec.value}>
                                     {spec.value}
                                 </span>
                             </div>
@@ -127,15 +143,15 @@ export default function ProductCard({ product }: ProductCardProps) {
                     </div>
                 </div>
 
-                <div className="mt-auto pt-4 border-t border-dashed border-slate-200 flex flex-col gap-3">
-                    <div className="flex items-baseline justify-center gap-1 text-[var(--color-primary)] mb-1">
-                        <span className="text-lg md:text-xl font-bold tracking-tight">
+                <div className="mt-auto pt-3 md:pt-4 border-t border-dashed border-slate-200 flex flex-col gap-2 md:gap-3">
+                    <div className="flex items-baseline justify-center gap-1 text-[var(--color-primary)] mb-0.5 md:mb-1">
+                        <span className="text-base sm:text-lg md:text-xl font-bold tracking-tight">
                             {product.price.toLocaleString('vi-VN')}
                         </span>
-                        <span className="text-xs md:text-sm font-semibold underline decoration-1 underline-offset-4">đ</span>
+                        <span className="text-[10px] md:text-sm font-semibold underline decoration-1 underline-offset-4">đ</span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-1.5 md:gap-2">
                         <div // Wrapper to handle click event properly
                             onClick={handleCompare}
                             className="w-full"
@@ -144,11 +160,11 @@ export default function ProductCard({ product }: ProductCardProps) {
                                 variant="outline"
                                 size="sm"
                                 fullWidth
-                                className={`text-xs px-2 h-9 whitespace-nowrap gap-1.5 rounded-full border-gray-200 shadow-sm hover:shadow-md transition-all ${isSelected
+                                className={`text-[10px] sm:text-xs px-0.5 sm:px-2 h-8 md:h-9 whitespace-nowrap !gap-1 sm:!gap-1.5 rounded-full border-gray-200 shadow-sm hover:shadow-md transition-all ${isSelected
                                     ? 'bg-primary/5 border-primary text-primary font-bold'
                                     : 'text-gray-600 hover:text-primary hover:border-primary/30 bg-white'
                                     }`}
-                                leftIcon={isSelected ? <Check size={14} /> : <Scale size={14} />}
+                                leftIcon={isSelected ? <Check size={12} className="sm:w-[14px] sm:h-[14px]" /> : <Scale size={12} className="sm:w-[14px] sm:h-[14px]" />}
                             >
                                 {isSelected ? "Đã chọn" : "So sánh"}
                             </Button>
@@ -158,7 +174,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                             variant="primary"
                             size="sm"
                             fullWidth
-                            className="text-xs px-2 h-9 shadow-sm hover:shadow-md rounded-full bg-primary hover:bg-primary-dark text-white font-semibold transition-all"
+                            className="text-[10px] sm:text-xs px-0.5 sm:px-2 h-8 md:h-9 shadow-sm hover:shadow-md rounded-full bg-primary hover:bg-primary-dark text-white font-semibold transition-all whitespace-nowrap"
                         >
                             Chi tiết
                         </Button>
@@ -169,8 +185,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                         variant="primary"
                         size="sm"
                         fullWidth
-                        className="text-sm h-10 shadow-lg shadow-primary/20 rounded-full bg-primary hover:bg-primary-dark text-white font-bold transition-all transform active:scale-95"
-                        leftIcon={<ShoppingBag size={16} />}
+                        className="text-[11px] sm:text-sm h-8 md:h-10 shadow-lg shadow-primary/20 rounded-full bg-primary hover:bg-primary-dark text-white font-bold transition-all transform active:scale-95 whitespace-nowrap !gap-1.5 sm:!gap-2"
+                        leftIcon={<ShoppingBag size={14} className="sm:w-4 sm:h-4" />}
                     >
                         Thêm vào giỏ
                     </Button>

@@ -25,7 +25,7 @@ const getProduct = cache(async (slug: string) => {
 
         if (product) {
             // Serialization for passing to client component
-            product._id = product._id.toString();
+            (product as any)._id = product._id.toString();
             if (product.categoryId && typeof product.categoryId === 'object' && '_id' in product.categoryId) {
                 (product.categoryId as any)._id = (product.categoryId as any)._id.toString();
             }
@@ -56,7 +56,7 @@ async function getRelatedProducts(categoryId: string, currentId: string) {
 
         return related.map(p => {
             const serialized = { ...p };
-            serialized._id = p._id.toString();
+            (serialized as any)._id = p._id.toString();
             if (serialized.categoryId && typeof serialized.categoryId === 'object' && '_id' in serialized.categoryId) {
                 (serialized.categoryId as any)._id = (serialized.categoryId as any)._id.toString();
             }

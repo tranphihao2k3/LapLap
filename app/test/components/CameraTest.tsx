@@ -5,8 +5,9 @@ import { useEffect, useRef, useState, useCallback } from "react";
 export default function CameraTest({ onBack }: { onBack: () => void }) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    // ✅ Fix: dùng ref để track stream, tránh closure stale
+    const streamRef = useRef<MediaStream | null>(null);
 
-    // State quản lý
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
     const [selectedDeviceId, setSelectedDeviceId] = useState<string>("");
@@ -14,50 +15,39 @@ export default function CameraTest({ onBack }: { onBack: () => void }) {
     const [snapshot, setSnapshot] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
-    // 1. Lấy danh sách thiết bị khi mới vào trang
-    useEffect(() => {
-        const getDevices = async () => {
-            try {
-                // Phải xin quyền trước mới lấy được tên thiết bị (Label)
-                await navigator.mediaDevices.getUserMedia({ video: true });
-
-                const allDevices = await navigator.mediaDevices.enumerateDevices();
-                const videoDevices = allDevices.filter(device => device.kind === "videoinput");
-
-                setDevices(videoDevices);
-                if (videoDevices.length > 0) {
-                    setSelectedDeviceId(videoDevices[0].deviceId);
-                }
-            } catch (err) {
-                console.error(err);
-                setError("Không thể truy cập danh sách Camera. Vui lòng cấp quyền.");
-            }
-        };
-
-        getDevices();
-
-        // Cleanup: Tắt camera khi rời trang
-        return () => {
-            stopCamera();
-        };
+    // Hàm tắt Camera — dùng ref để luôn có giá trị mới nhất
+    const stopCamera = useCallback(() => {
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => {
+                track.stop();
+            });
+            streamRef.current = null;
+        }
+        // Xoá srcObject khỏi video element
+        if (videoRef.current) {
+            videoRef.current.srcObject = null;
+        }
+        setStream(null);
     }, []);
 
-    // 2. Hàm bật Camera
+    // Hàm bật Camera
     const startCamera = useCallback(async (deviceId: string) => {
         setIsLoading(true);
         setError("");
-        stopCamera(); // Tắt stream cũ nếu có
+
+        // Tắt stream cũ trước
+        stopCamera();
 
         try {
-            const constraints = {
+            const newStream = await navigator.mediaDevices.getUserMedia({
                 video: {
                     deviceId: deviceId ? { exact: deviceId } : undefined,
-                    width: { ideal: 1920 }, // Cố gắng lấy độ phân giải tốt
+                    width: { ideal: 1920 },
                     height: { ideal: 1080 }
                 }
-            };
+            });
 
-            const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+            streamRef.current = newStream; // ✅ Lưu vào ref ngay lập tức
             setStream(newStream);
 
             if (videoRef.current) {
@@ -69,40 +59,73 @@ export default function CameraTest({ onBack }: { onBack: () => void }) {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [stopCamera]);
 
-    // 3. Hàm tắt Camera
-    const stopCamera = () => {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-            setStream(null);
-        }
-    };
+    // Lấy danh sách thiết bị khi mount
+    useEffect(() => {
+        let tempStream: MediaStream | null = null;
 
-    // 4. Theo dõi sự thay đổi deviceId để bật camera lại
+        const getDevices = async () => {
+            try {
+                // Xin quyền trước để lấy được label thiết bị
+                tempStream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+                const allDevices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = allDevices.filter(d => d.kind === "videoinput");
+
+                setDevices(videoDevices);
+                if (videoDevices.length > 0) {
+                    setSelectedDeviceId(videoDevices[0].deviceId);
+                }
+
+                // Tắt stream tạm sau khi lấy danh sách xong
+                // (startCamera sẽ bật lại đúng stream sau)
+                tempStream.getTracks().forEach(t => t.stop());
+                tempStream = null;
+            } catch (err) {
+                console.error(err);
+                setError("Không thể truy cập Camera. Vui lòng cấp quyền.");
+            }
+        };
+
+        getDevices();
+
+        // ✅ Cleanup khi rời trang — stopCamera dùng ref nên luôn đúng
+        return () => {
+            if (tempStream) {
+                tempStream.getTracks().forEach(t => t.stop());
+            }
+            stopCamera();
+        };
+    }, [stopCamera]);
+
+    // Bật camera khi selectedDeviceId thay đổi
     useEffect(() => {
         if (selectedDeviceId) {
             startCamera(selectedDeviceId);
         }
     }, [selectedDeviceId, startCamera]);
 
-    // 5. Chụp ảnh (Snapshot)
+    // Chụp ảnh
     const takeSnapshot = () => {
         if (!videoRef.current || !canvasRef.current) return;
 
         const video = videoRef.current;
         const canvas = canvasRef.current;
 
-        // Đặt kích thước canvas bằng kích thước video thực tế
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
 
         const ctx = canvas.getContext("2d");
         if (ctx) {
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL("image/png");
-            setSnapshot(dataUrl);
+            setSnapshot(canvas.toDataURL("image/png"));
         }
+    };
+
+    const handleBack = () => {
+        stopCamera(); // ✅ Tắt camera trước khi quay lại
+        onBack();
     };
 
     return (
@@ -113,7 +136,7 @@ export default function CameraTest({ onBack }: { onBack: () => void }) {
                     📷 Kiểm tra Camera
                 </h1>
                 <button
-                    onClick={onBack}
+                    onClick={handleBack}
                     className="text-sm px-3 py-1.5 border border-blue-400 text-blue-600 rounded hover:bg-blue-50 transition"
                 >
                     ← Quay lại

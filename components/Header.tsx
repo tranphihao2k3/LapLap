@@ -89,8 +89,9 @@ export default function Header() {
     }, [searchTerm]);
 
     const menuItems = [
+        { href: "/", label: "Trang chủ" },
         { href: "/laptops", label: "Laptop" },
-        { href: "/test", label: "Test máy" },
+        { href: "/test", label: "Công cụ kiểm tra máy" },
         {
             label: "Sửa chữa & Vệ sinh",
             href: "#",

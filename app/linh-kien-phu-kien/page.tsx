@@ -298,9 +298,15 @@ export default function ComponentsAndAccessoriesPage() {
                                         <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
                                             <div>
                                                 <span className="text-xs text-gray-500 block">Giá bán</span>
-                                                <span className="text-xl font-bold text-blue-600">
-                                                    {formatPrice(item.price)}
-                                                </span>
+                                                {item.price > 0 ? (
+                                                    <span className="text-xl font-bold text-blue-600">
+                                                        {formatPrice(item.price)}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-xl font-bold text-orange-500">
+                                                        Liên hệ
+                                                    </span>
+                                                )}
                                             </div>
                                             <Button
                                                 onClick={() => handleBuyNow(item)}

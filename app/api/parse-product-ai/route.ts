@@ -6,7 +6,7 @@ import { connectDB } from "@/lib/mongodb";
 
 export async function POST(request: Request) {
     try {
-        const { text } = await request.json();
+        const { text, model } = await request.json();
 
         if (!text || text.trim() === '') {
             return NextResponse.json(
@@ -45,7 +45,6 @@ export async function POST(request: Request) {
 
         const standardRAMs = ['8GB', '16GB', '32GB', '64GB'];
         const standardSSDs = ['256GB', '512GB', '1TB', '2TB'];
-        const standardScreens = ['14" FHD', '15.6" FHD 144Hz', '16" FHD+ 165Hz', '14" 2.8K OLED'];
         const standardBatteries = ['2-3h', '3-4h', '4-5h', '5-6h']; // Examples
 
         const prompt = `
@@ -60,49 +59,42 @@ Standard RAM: [${standardRAMs.join(', ')}]
 Standard SSD: [${standardSSDs.join(', ')}]
 Standard Battery: [${standardBatteries.join(', ')}]
 
-OUTPUT SCHEMA (JSON ONLY, NO MARKDOWN, NO THINKING):
+OUTPUT SCHEMA (JSON ONLY):
 {
-  "name": "Full product name",
+  "name": "CLEAN product name ONLY (e.g. 'Dell Latitude 9510 2in1'). Strip away promotional text or conditions like 'vỏ nhôm', 'máy đẹp 99%', 'nguyên zin', 'sạc ít lần'.",
   "model": "Model code",
   "brand": "Exact match from Brands list or null",
   "categoryName": "Best match from Categories list or null",
-  "cpu": "CPU spec only (NO core count/thread count)",
-  "gpu": "GPU spec (e.g. RTX 3050 6GB)",
-  "ram": "Standardized RAM (e.g. 16GB) or raw text",
-  "ssd": "Standardized SSD (e.g. 512GB) or raw text",
-  "screen": "Screen spec (e.g. 15.6\\" FHD 144Hz)",
+  "description": "Synthesize a short, engaging description summarizing the laptop. YOU MUST include all the condition/promotional text you stripped from the name here.",
+  "cpu": "CPU spec only (NO core count/thread count, e.g. R7-7435Hs)",
+  "gpu": "GPU spec ONLY brand/model and VRAM size (NO wattage). Example: 'RTX 3050 6GB', 'RTX 4050 6GB'",
+  "ram": "Standardized RAM with GB (e.g. 16GB)",
+  "ssd": "Standardized SSD with GB (e.g. 512GB)",
+  "screen": "Screen size and panel type ONLY (e.g. 15.6 inch IPS). NO sRGB, NO Hz.",
+  "hz": "Refresh rate ONLY (e.g. 144Hz, 60Hz, 165Hz)",
+  "resolution": "Resolution ONLY (e.g. FHD, 2K, QHD, WUXGA)",
   "battery": "Battery usage (e.g. 3-4h)",
-  "price": Number (VND),
-  "warrantyMonths": Number (months),
+  "price": 17500000,
+  "warrantyMonths": 12,
   "gift": "Gifts string"
 }
 
 RULES:
-1. Price: "17.5tr" -> 17500000.
-2. Specs: Prefer "Standard" values if close match (e.g. "16G" -> "16GB").
-3. If spec not in standard list, return RAW text.
-4. CPU: REMOVE core/threads info (e.g. "R7-7435Hs(16Cpus)" -> "R7-7435Hs").
-5. Return ONLY the JSON object.
+1. Price: return integer value (e.g. "17.5tr" -> 17500000). If not found, return null.
+2. Specs: Prefer "Standard" values if close match.
+3. NAME: Must NOT contain condition or promotional descriptions.
 `;
 
-        // Use Interactions API (correct syntax from official docs)
-        const interaction = await client.interactions.create({
-            model: 'gemini-3-flash-preview',
-            input: prompt,
+        const response = await client.models.generateContent({
+            model: model || 'gemini-2.5-flash',
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                temperature: 0.1, // Low temperature for deterministic output
+            }
         });
 
-        // Safely access the response text with proper null checks
-        const outputs = interaction.outputs;
-        if (!outputs || outputs.length === 0) {
-            return NextResponse.json(
-                { success: false, message: 'Không nhận được phản hồi từ AI' },
-                { status: 500 }
-            );
-        }
-
-        const lastOutput = outputs[outputs.length - 1];
-        const responseText = (lastOutput as any)?.text || '';
-
+        const responseText = response.text || '';
         if (!responseText) {
             return NextResponse.json(
                 { success: false, message: 'Không nhận được phản hồi từ AI' },
@@ -118,11 +110,14 @@ RULES:
             brandId?: string;
             categoryName?: string | null;
             categoryId?: string;
+            description?: string | null;
             cpu?: string | null;
             gpu?: string | null;
             ram?: string | null;
             ssd?: string | null;
             screen?: string | null;
+            hz?: string | null;
+            resolution?: string | null;
             battery?: string | null;
             price?: number | null;
             warrantyMonths?: number | null;

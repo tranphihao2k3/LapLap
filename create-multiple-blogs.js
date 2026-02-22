@@ -39,11 +39,11 @@ const blogPosts = [
 - SSD: 256GB
 - Ưu điểm: Phổ biến, dễ tìm phụ kiện
 
-Tất cả các mẫu laptop trên đều có sẵn tại LapLap Cần Thơ. Liên hệ ngay để được tư vấn và test máy miễn phí!`,
+Tất cả các mẫu laptop trên đều có sẵn tại LapLap Cần Thơ. Liên hệ ngay để được tư vấn và v miễn phí!`,
         author: "LapLap Team",
         tags: ["laptop văn phòng", "laptop giá rẻ", "laptop cần thơ"],
         metaTitle: "Top 5 Laptop Văn Phòng Giá Rẻ Tại Cần Thơ 2026 | LapLap",
-        metaDescription: "Tổng hợp 5 mẫu laptop văn phòng giá rẻ, hiệu năng tốt từ 7-12 triệu đồng tại Cần Thơ. Tư vấn miễn phí, test máy tận nơi.",
+        metaDescription: "Tổng hợp 5 mẫu laptop văn phòng giá rẻ, hiệu năng tốt từ 7-12 triệu đồng tại Cần Thơ. Tư vấn miễn phí, vb gh3 tận nơi.",
         status: "published"
     },
     {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronRight, Cpu, Monitor, CheckCircle, Zap, Shield, TrendingUp, Gift, CreditCard, Facebook, MessageCircle, Star, ShoppingBag, Truck, Headphones, BadgeCheck, Search, Info, Home } from 'lucide-react';
+import { ChevronRight, Cpu, Monitor, CheckCircle, Zap, Shield, TrendingUp, Gift, CreditCard, Facebook, MessageCircle, Star, ShoppingBag, Truck, Headphones, BadgeCheck, Search, Info, Home, Share2, Check, RefreshCw } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -23,6 +23,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
     const [selectedImage, setSelectedImage] = useState(0);
     const [imageLoading, setImageLoading] = useState(false);
     const [isInstallmentOpen, setInstallmentOpen] = useState(false);
+    const [isCopied, setIsCopied] = useState(false);
     const { addToCart } = useCart();
     const router = useRouter();
 
@@ -37,6 +38,12 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
             style: 'currency',
             currency: 'VND',
         }).format(price);
+    };
+
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText(window.location.href);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
     };
 
     // Ensure images array has at least one image
@@ -78,54 +85,56 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
             </div>
 
             <main className="max-w-6xl mx-auto px-4 py-4 md:py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 xl:gap-8">
+                <div className="flex flex-col gap-4 lg:grid lg:grid-cols-12 lg:gap-5 xl:gap-8 lg:items-start">
                     {/* LEFT COLUMN: Images (Span 6 - 50%) */}
-                    <div className="lg:col-span-6 space-y-4">
-                        <div className="bg-white rounded-3xl p-3 shadow-xl shadow-slate-200/50 border border-slate-100 relative overflow-hidden group cursor-zoom-in">
-                            {/* Main Display */}
-                            <PhotoProvider>
-                                <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-50">
-                                    <AnimatePresence mode="wait">
-                                        <PhotoView key={selectedImage} src={productImages[selectedImage]}>
-                                            <motion.img
-                                                initial={{ opacity: 0, scale: 1.05 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                exit={{ opacity: 0, scale: 0.95 }}
-                                                transition={{ duration: 0.4 }}
-                                                src={productImages[selectedImage]}
-                                                alt={product.name}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </PhotoView>
-                                    </AnimatePresence>
+                    <div className="contents lg:block lg:col-span-6 lg:space-y-4">
+                        <div className="order-1 w-full flex flex-col gap-4 lg:block lg:space-y-4">
+                            <div className="bg-white rounded-3xl p-3 shadow-xl shadow-slate-200/50 border border-slate-100 relative overflow-hidden group cursor-zoom-in">
+                                {/* Main Display */}
+                                <PhotoProvider>
+                                    <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-50">
+                                        <AnimatePresence mode="wait">
+                                            <PhotoView key={selectedImage} src={productImages[selectedImage]}>
+                                                <motion.img
+                                                    initial={{ opacity: 0, scale: 1.05 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.95 }}
+                                                    transition={{ duration: 0.4 }}
+                                                    src={productImages[selectedImage]}
+                                                    alt={product.name}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </PhotoView>
+                                        </AnimatePresence>
 
-                                    {/* Zoom Hint */}
-                                    <div className="absolute bottom-4 right-4 bg-black/40 backdrop-blur-md text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                        <Search size={18} />
+                                        {/* Zoom Hint */}
+                                        <div className="absolute bottom-4 right-4 bg-black/40 backdrop-blur-md text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                            <Search size={18} />
+                                        </div>
                                     </div>
-                                </div>
-                            </PhotoProvider>
-                        </div>
-
-                        {/* Thumbnails */}
-                        {productImages.length > 1 && (
-                            <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-                                {productImages.map((img, index) => (
-                                    <button
-                                        key={index}
-                                        onClick={() => handleImageChange(index)}
-                                        className={`relative flex-shrink-0 w-24 h-20 rounded-xl overflow-hidden border-2 transition-all ${selectedImage === index
-                                            ? 'border-blue-600 ring-2 ring-blue-100 scale-102'
-                                            : 'border-slate-200 hover:border-blue-300 opacity-70 hover:opacity-100'
-                                            }`}
-                                    >
-                                        <img src={img} alt="" className="w-full h-full object-cover" />
-                                    </button>
-                                ))}
+                                </PhotoProvider>
                             </div>
-                        )}
+
+                            {/* Thumbnails */}
+                            {productImages.length > 1 && (
+                                <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                                    {productImages.map((img, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => handleImageChange(index)}
+                                            className={`relative flex-shrink-0 w-24 h-20 rounded-xl overflow-hidden border-2 transition-all ${selectedImage === index
+                                                ? 'border-blue-600 ring-2 ring-blue-100 scale-102'
+                                                : 'border-slate-200 hover:border-blue-300 opacity-70 hover:opacity-100'
+                                                }`}
+                                        >
+                                            <img src={img} alt="" className="w-full h-full object-cover" />
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                         {/* Warranty & Policies Section */}
-                        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-xl shadow-slate-200/50 border border-slate-100">
+                        <div className="order-5 w-full bg-white rounded-2xl p-4 md:p-6 shadow-xl shadow-slate-200/50 border border-slate-100">
                             <h3 className="text-base font-black text-slate-900 mb-3 flex items-center gap-2">
                                 <span className="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center">
                                     <Shield size={18} />
@@ -153,7 +162,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                         </div>
                         {/* Gifts Card */}
                         {product.gift && (
-                            <div className="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-4 md:p-6 shadow-xl shadow-indigo-500/30 text-white relative overflow-hidden">
+                            <div className="order-6 w-full bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl p-4 md:p-6 shadow-xl shadow-indigo-500/30 text-white relative overflow-hidden">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl"></div>
                                 <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                                     <Gift className="w-6 h-6 text-yellow-300 animate-bounce" />
@@ -170,21 +179,35 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                     </div>
 
                     {/* RIGHT COLUMN: Info & CTAs (Span 6 - 50%) */}
-                    <div className="lg:col-span-6 space-y-4">
+                    <div className="contents lg:block lg:col-span-6 lg:space-y-4">
                         {/* Title & Price Card */}
-                        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-xl shadow-slate-200/50 border border-slate-100">
-                            <div className="flex items-center gap-1 text-blue-600 mb-2">
-                                <Star className="w-4 h-4 fill-current" />
-                                <Star className="w-4 h-4 fill-current" />
-                                <Star className="w-4 h-4 fill-current" />
-                                <Star className="w-4 h-4 fill-current" />
-                                <Star className="w-4 h-4 fill-current" />
-                                <span className="text-xs font-bold ml-2 text-slate-400">5.0 (42 đánh giá)</span>
+                        <div className="order-2 w-full bg-white rounded-2xl p-4 md:p-6 shadow-xl shadow-slate-200/50 border border-slate-100">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-1 text-blue-600">
+                                    <Star className="w-4 h-4 fill-current" />
+                                    <Star className="w-4 h-4 fill-current" />
+                                    <Star className="w-4 h-4 fill-current" />
+                                    <Star className="w-4 h-4 fill-current" />
+                                    <Star className="w-4 h-4 fill-current" />
+                                    <span className="text-xs font-bold ml-2 text-slate-400">5.0 (42)</span>
+                                </div>
+                                <button
+                                    onClick={handleCopyLink}
+                                    className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-blue-600 transition-colors bg-slate-50 hover:bg-blue-50 px-3 py-1.5 rounded-lg border border-slate-100"
+                                >
+                                    {isCopied ? <Check size={14} className="text-green-500" /> : <Share2 size={14} />}
+                                    {isCopied ? <span className="text-green-600 text-[10px] md:text-xs">Đã lưu link</span> : <span className="text-[10px] md:text-xs">Chia sẻ</span>}
+                                </button>
                             </div>
 
-                            <h1 className="text-xl md:text-2xl font-black text-slate-900 leading-tight mb-4">
+                            <h1 className="text-xl md:text-2xl font-black text-slate-900 leading-tight mb-2">
                                 {product.name}
                             </h1>
+                            {product.description && (
+                                <p className="text-sm text-slate-600 mb-4 whitespace-pre-line italic">
+                                    {product.description}
+                                </p>
+                            )}
 
                             <div className="flex flex-wrap gap-2 mb-6">
                                 <span className="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg uppercase">
@@ -292,7 +315,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                             </div>
                         </div>
                         {/* Specs Summary Card */}
-                        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-xl shadow-slate-200/50 border border-slate-100">
+                        <div className="order-3 w-full bg-white rounded-2xl p-4 md:p-6 shadow-xl shadow-slate-200/50 border border-slate-100">
                             <h3 className="text-base font-black text-slate-900 mb-3 flex items-center gap-2">
                                 <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
                                     <Cpu size={18} />
@@ -300,23 +323,52 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                                 Cấu hình chi tiết
                             </h3>
 
-                            <div className="space-y-4">
-                                <SpecRow label="Vi xử lý (CPU)" value={product.specs.cpu} />
-                                <SpecRow label="Card đồ họa (VGA)" value={product.specs.gpu} />
-                                <SpecRow label="Bộ nhớ (RAM)" value={product.specs.ram} />
-                                <SpecRow label="Ổ cứng (SSD)" value={product.specs.ssd} />
-                                <SpecRow label="Màn hình" value={product.specs.screen} />
+                            <div className="space-y-2">
+                                <SpecRow label="Vi xử lý (CPU)" value={product.specs.cpu || 'N/A'} />
+                                <SpecRow label="Card đồ họa (VGA)" value={product.specs.gpu || 'N/A'} />
+                                <SpecRow label="Bộ nhớ (RAM)" value={product.specs.ram || 'N/A'} />
+                                <SpecRow label="Ổ cứng (SSD)" value={product.specs.ssd || 'N/A'} />
+                                <SpecRow label="Màn hình" value={[product.specs.screen, product.specs.resolution, product.specs.hz].filter(Boolean).join(' ') || 'N/A'} />
+                                <SpecRow label="Bảo hành" value={`${product.warrantyMonths || 12} Tháng`} isHighlight />
                             </div>
                         </div>
 
                         {/* DESCRIPTIVE HIGHLIGHTS (Trust Tray) - Moved here to follow Price Info on Mobile */}
-                        <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-2 border border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-2 shadow-inner">
+                        <div className="order-4 w-full bg-gradient-to-br from-slate-50 to-blue-50/50 backdrop-blur-md rounded-[2rem] p-3 border border-slate-200/60 shadow-lg shadow-slate-200/20 grid grid-cols-2 md:grid-cols-4 gap-3 lg:mt-0 relative overflow-hidden">
+                            {/* Decorative background glow */}
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-100/40 via-transparent to-transparent opacity-50 pointer-events-none"></div>
+
                             <HighlightCard icon={BadgeCheck} title="Chính hãng" desc="Cam kết 100%" />
                             <HighlightCard icon={Truck} title="Giao hàng" desc="Toàn quốc" />
-                            <HighlightCard icon={Shield} title="Bảo hành" desc={`${product.warrantyMonths || 12} Tháng`} />
+                            <HighlightCard icon={RefreshCw} title="Lỗi 1 Đổi 1" desc="Dễ dàng" isHighlight />
                             <HighlightCard icon={Headphones} title="Hỗ trợ" desc="24/7 Online" />
                         </div>
 
+                    </div>
+                </div>
+
+                {/* PRODUCT CONTENT / DESCRIPTION BLOCK */}
+                <div className="mt-8 bg-white rounded-3xl p-6 md:p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
+                    <h2 className="text-xl md:text-2xl font-black text-slate-900 mb-6 flex items-center gap-3">
+                        <span className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center shadow-inner">
+                            <Info size={24} />
+                        </span>
+                        Thông tin Nội dung sản phẩm
+                    </h2>
+                    <div className="text-slate-700 leading-relaxed text-[15px] md:text-base">
+                        {product.description ? (
+                            <div className="whitespace-pre-line space-y-4">
+                                {product.description}
+                                {/* Temporary placeholder for rich text - normally we'd render HTML here */}
+                                <div className="mt-6 pt-6 border-t border-slate-100 flex flex-col items-center justify-center opacity-70">
+                                    <p className="italic text-sm text-slate-400">Các thông tin chi tiết bằng hình ảnh và đánh giá sâu hơn đang được cập nhật...</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                                <p className="text-slate-400 font-medium tracking-wide">Đang cập nhật nội dung chi tiết cho sản phẩm này...</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -350,22 +402,53 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
     );
 }
 
-function HighlightCard({ icon: Icon, title, desc }: { icon: any, title: string, desc: string }) {
+function HighlightCard({ icon: Icon, title, desc, isHighlight = false }: { icon: any, title: string, desc: string, isHighlight?: boolean }) {
+    if (isHighlight) {
+        return (
+            <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 p-3.5 rounded-2xl border border-blue-400/50 flex flex-col items-center text-center group hover:shadow-xl hover:shadow-blue-500/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden z-10">
+                <div className="absolute -top-4 -right-4 w-16 h-16 bg-white/20 rounded-full blur-xl group-hover:bg-white/30 transition-all duration-500"></div>
+                <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-indigo-400/30 rounded-full blur-md"></div>
+
+                <div className="w-11 h-11 bg-white/20 text-white rounded-xl flex items-center justify-center mb-2.5 group-hover:scale-110 group-hover:bg-white/30 transition-all duration-500 shadow-[0_0_15px_rgba(255,255,255,0.2)] backdrop-blur-md border border-white/20 relative z-10">
+                    <Icon size={22} className="drop-shadow-sm" />
+                </div>
+                <div className="text-[10px] font-black text-blue-100 uppercase tracking-widest mb-1 relative z-10 drop-shadow-sm">{title}</div>
+                <div className="text-[14px] font-black text-white leading-tight relative z-10 drop-shadow-md">{desc}</div>
+            </div>
+        );
+    }
+
     return (
-        <div className="bg-white p-3 rounded-2xl border border-slate-100 flex flex-col items-center text-center group hover:bg-blue-50 transition-all duration-300">
-            <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-2 group-hover:scale-110 group-hover:bg-white transition-all shadow-sm">
+        <div className="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm shadow-slate-200/50 flex flex-col items-center text-center group hover:bg-gradient-to-br hover:from-white hover:to-blue-50/80 hover:border-blue-200 hover:shadow-md hover:shadow-blue-900/5 hover:-translate-y-1 transition-all duration-300 relative z-10">
+            <div className="w-10 h-10 bg-slate-50 border border-slate-100 group-hover:border-transparent text-slate-500 group-hover:bg-blue-600 group-hover:text-white rounded-xl flex items-center justify-center mb-2.5 transition-all duration-500 group-hover:shadow-[0_8px_16px_-6px_rgba(37,99,235,0.4)]">
                 <Icon size={20} />
             </div>
-            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">{title}</div>
+            <div className="text-[9px] font-black text-slate-400 group-hover:text-blue-500/80 uppercase tracking-widest mb-1 transition-colors duration-300">{title}</div>
             <div className="text-[13px] font-black text-slate-800 leading-tight">{desc}</div>
         </div>
     );
 }
 
-function SpecRow({ label, value }: { label: string, value: string }) {
+function SpecRow({ label, value, isHighlight = false }: { label: string, value: string, isHighlight?: boolean }) {
+    if (isHighlight) {
+        return (
+            <div className="flex justify-between items-center gap-4 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-md border border-blue-400 group overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3"></div>
+                <span className="text-[15px] text-blue-50 font-bold whitespace-nowrap relative z-10 flex items-center gap-2">
+                    <Shield size={18} className="text-yellow-400 fill-current opacity-90" />
+                    {label}
+                </span>
+                <span className="text-[15px] text-white font-black text-right relative z-10">{value}</span>
+            </div>
+        );
+    }
+
     return (
-        <div className="flex justify-between items-start gap-4 py-2 border-b border-slate-50 last:border-0 group">
-            <span className="text-sm text-slate-400 font-medium whitespace-nowrap">{label}</span>
+        <div className="flex justify-between items-start gap-4 py-2.5 px-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-colors group">
+            <span className="text-sm text-slate-500 font-medium whitespace-nowrap flex items-center gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-200 group-hover:bg-blue-400 transition-colors ring-4 ring-slate-100 group-hover:ring-blue-100"></span>
+                {label}
+            </span>
             <span className="text-sm text-slate-900 font-bold text-right group-hover:text-blue-600 transition-colors">{value}</span>
         </div>
     );

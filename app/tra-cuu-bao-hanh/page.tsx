@@ -35,7 +35,7 @@ export default function WarrantyPage() {
     const [loading, setLoading] = useState(false);
     const [results, setResults] = useState<WarrantyOrder[] | null>(null);
     const [searched, setSearched] = useState(false);
-    const [activeTab, setActiveTab] = useState<'store' | 'brand'>('store');
+    const [activeTab, setActiveTab] = useState<'store' | 'brand' | 'retailer'>('store');
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -70,6 +70,93 @@ export default function WarrantyPage() {
         { name: "LG", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/LG_symbol.svg/3840px-LG_symbol.svg.png", url: "https://www.lg.com/vn/ho-tro", color: "bg-pink-50" },
     ];
 
+    const retailers = [
+        {
+            name: "CellphoneS",
+            logo: "https://cdn.cellphones.com.vn/media/logo/cellphones-logo.png",
+            url: "https://cellphones.com.vn/bao-hanh.html",
+            color: "bg-orange-50",
+            desc: "Tra cứu bảo hành CellphoneS"
+        },
+        {
+            name: "Thế Giới Di Động",
+            logo: "https://cdn.tgdd.vn/2021/06/GameApp/tgdd-icon-200x200.png",
+            url: "https://www.thegioididong.com/tin-tuc/tra-cuu-bao-hanh",
+            color: "bg-yellow-50",
+            desc: "Tra cứu bảo hành TGDD"
+        },
+        {
+            name: "FPT Shop",
+            logo: "https://fptshop.com.vn/favicon.ico",
+            url: "https://fptshop.com.vn/bao-hanh",
+            color: "bg-orange-50",
+            desc: "Tra cứu bảo hành FPT Shop"
+        },
+        {
+            name: "Nguyễn Kim",
+            logo: "https://www.nguyenkim.com/images/companies/1/logo%20NK.png",
+            url: "https://www.nguyenkim.com/tra-cuu-bao-hanh/",
+            color: "bg-red-50",
+            desc: "Tra cứu bảo hành Nguyễn Kim"
+        },
+        {
+            name: "Di Động Việt",
+            logo: "https://www.didongviet.vn/fcontent/images/logo-didongviet.png",
+            url: "https://www.didongviet.vn/theo-doi-don-hang.html",
+            color: "bg-blue-50",
+            desc: "Tra cứu đơn hàng Di Động Việt"
+        },
+        {
+            name: "Vĩnh Sơn",
+            logo: "https://vinhson.net/wp-content/uploads/2022/01/IMG_1055-2-e1642127548148.png",
+            url: "https://vinhson.net/chinh-sach-bao-hanh/",
+            color: "bg-green-50",
+            desc: "Chính sách bảo hành Vĩnh Sơn"
+        },
+        {
+            name: "Clickbuy",
+            logo: "https://clickbuy.com.vn/uploads/logo/logo_clickbuy.png",
+            url: "https://clickbuy.com.vn/chinh-sach-bao-hanh.html",
+            color: "bg-cyan-50",
+            desc: "Tra cứu bảo hành Clickbuy"
+        },
+        {
+            name: "Bạch Long Mobile",
+            logo: "https://bachlongmobile.com/wp-content/uploads/2022/08/logo-bach-long-mobile.png",
+            url: "https://bachlongmobile.com/chinh-sach-bao-hanh/",
+            color: "bg-blue-50",
+            desc: "Chính sách bảo hành Bạch Long"
+        },
+        {
+            name: "Hnam Mobile",
+            logo: "https://hnam.vn/wp-content/uploads/2021/03/hnam-logo.png",
+            url: "https://hnam.vn/chinh-sach-bao-hanh/",
+            color: "bg-red-50",
+            desc: "Chính sách bảo hành Hnam"
+        },
+        {
+            name: "TopZone",
+            logo: "https://topzone.vn/favicon.ico",
+            url: "https://topzone.vn/chinh-sach-bao-hanh",
+            color: "bg-gray-50",
+            desc: "Tra cứu bảo hành TopZone (Apple)"
+        },
+        {
+            name: "Phong Vũ",
+            logo: "https://phongnhastore.vn/wp-content/uploads/2021/12/Logo-Phong-Vu.png",
+            url: "https://www.phongvu.vn/chinh-sach-bao-hanh",
+            color: "bg-blue-50",
+            desc: "Chính sách bảo hành Phong Vũ"
+        },
+        {
+            name: "MediaMart",
+            logo: "https://mediamart.vn/images/logo.png",
+            url: "https://mediamart.vn/chinh-sach-bao-hanh",
+            color: "bg-green-50",
+            desc: "Tra cứu bảo hành MediaMart"
+        },
+    ];
+
     return (
         <>
             <Header />
@@ -91,24 +178,33 @@ export default function WarrantyPage() {
                         </p>
 
                         {/* Tabs */}
-                        <div className="flex justify-center gap-4">
+                        <div className="flex flex-wrap justify-center gap-3">
                             <button
                                 onClick={() => setActiveTab('store')}
-                                className={`px-6 py-2 rounded-full font-bold transition-all border ${activeTab === 'store'
+                                className={`px-5 py-2 rounded-full font-bold transition-all border text-sm ${activeTab === 'store'
                                     ? 'bg-white text-blue-800 shadow-lg border-white'
                                     : 'bg-white/10 text-blue-100 hover:bg-white/20 border-white/20'
                                     }`}
                             >
-                                Bảo hành tại Cửa hàng
+                                🏪 Bảo hành tại Cửa hàng
                             </button>
                             <button
                                 onClick={() => setActiveTab('brand')}
-                                className={`px-6 py-2 rounded-full font-bold transition-all border ${activeTab === 'brand'
+                                className={`px-5 py-2 rounded-full font-bold transition-all border text-sm ${activeTab === 'brand'
                                     ? 'bg-white text-blue-800 shadow-lg border-white'
                                     : 'bg-white/10 text-blue-100 hover:bg-white/20 border-white/20'
                                     }`}
                             >
-                                Bảo hành Chính hãng
+                                🏭 Bảo hành Chính hãng
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('retailer')}
+                                className={`px-5 py-2 rounded-full font-bold transition-all border text-sm ${activeTab === 'retailer'
+                                    ? 'bg-white text-blue-800 shadow-lg border-white'
+                                    : 'bg-white/10 text-blue-100 hover:bg-white/20 border-white/20'
+                                    }`}
+                            >
+                                🛒 Chuỗi bán lẻ
                             </button>
                         </div>
                     </div>
@@ -244,7 +340,7 @@ export default function WarrantyPage() {
                                 </div>
                             )}
                         </div>
-                    ) : (
+                    ) : activeTab === 'brand' ? (
                         <div className="bg-white rounded-2xl shadow-xl p-6 md:p-10">
                             <h2 className="text-xl font-bold text-gray-800 mb-6 text-center">Chọn thương hiệu máy tính của bạn</h2>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
@@ -257,7 +353,6 @@ export default function WarrantyPage() {
                                         className="group p-6 border border-gray-100 rounded-xl hover:shadow-lg hover:border-blue-200 transition-all flex flex-col items-center gap-4 bg-gray-50 hover:bg-white"
                                     >
                                         <div className="w-16 h-16 relative flex items-center justify-center">
-                                            {/* In a real app, use actual logos. Using text fallback for now if images missing */}
                                             <div className={`w-full h-full rounded-full flex items-center justify-center p-4 ${brand.color}`}>
                                                 <Image
                                                     src={brand.logo}
@@ -284,6 +379,49 @@ export default function WarrantyPage() {
                                     <li>Bạn sẽ được chuyển đến trang hỗ trợ chính thức của hãng sản xuất.</li>
                                     <li>Bạn cần chuẩn bị <strong>Serial Number (S/N)</strong> hoặc <strong>Service Tag</strong> (thường nằm ở mặt dưới laptop) để tra cứu.</li>
                                     <li>Kết quả tra cứu trên web hãng là bảo hành của nhà sản xuất, độc lập với bảo hành tại cửa hàng.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-10">
+                            <h2 className="text-xl font-bold text-gray-800 mb-2 text-center">Tra cứu bảo hành chuỗi bán lẻ</h2>
+                            <p className="text-gray-500 text-center text-sm mb-8">Chọn nơi bạn đã mua máy để tra cứu bảo hành nhanh nhất</p>
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                {retailers.map((r) => (
+                                    <Link
+                                        key={r.name}
+                                        href={r.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="group p-5 border border-gray-100 rounded-xl hover:shadow-lg hover:border-blue-200 transition-all flex flex-col items-center gap-3 bg-gray-50 hover:bg-white"
+                                    >
+                                        <div className={`w-14 h-14 relative rounded-xl overflow-hidden flex items-center justify-center ${r.color} border border-gray-100`}>
+                                            <img
+                                                src={r.logo}
+                                                alt={r.name}
+                                                className="object-contain w-full h-full p-2"
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).style.display = 'none';
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="text-center">
+                                            <h3 className="font-bold text-sm text-gray-800 group-hover:text-blue-600 transition-colors">{r.name}</h3>
+                                            <div className="text-[10px] text-gray-400 flex items-center gap-1 justify-center mt-1 group-hover:text-blue-400">
+                                                Tra cứu <ExternalLink size={9} />
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                            <div className="mt-8 p-4 bg-amber-50 rounded-xl text-sm text-amber-800 border border-amber-100">
+                                <h4 className="font-bold mb-2 flex items-center gap-2">
+                                    <AlertCircle size={16} /> Lưu ý khi tra cứu:
+                                </h4>
+                                <ul className="list-disc pl-5 space-y-1">
+                                    <li>Chuẩn bị <strong>số điện thoại</strong> đặt hàng hoặc <strong>mã đơn hàng</strong> để tra cứu nhanh.</li>
+                                    <li>Bảo hành của chuỗi bán lẻ là <strong>bảo hành dịch vụ</strong>, khác với bảo hành nhà sản xuất.</li>
+                                    <li>Một số đơn vị yêu cầu đăng nhập tài khoản để xem thông tin bảo hành.</li>
                                 </ul>
                             </div>
                         </div>

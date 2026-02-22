@@ -70,8 +70,27 @@ function LaptopsContent() {
     }, [searchParams]);
 
     // Pagination
-    const [currentPage, setCurrentPage] = useState(1);
+    const pageFromUrl = parseInt(searchParams.get('page') || '1', 10);
+    const [currentPage, setCurrentPage] = useState(pageFromUrl);
     const itemsPerPage = 12;
+
+    // Sync page query from URL
+    useEffect(() => {
+        const urlPage = parseInt(searchParams.get('page') || '1', 10);
+        if (urlPage !== currentPage) {
+            setCurrentPage(urlPage);
+        }
+    }, [searchParams]);
+
+    const handlePageChange = (newPage: number) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (newPage > 1) {
+            params.set('page', newPage.toString());
+        } else {
+            params.delete('page');
+        }
+        router.push(`/laptops?${params.toString()}`, { scroll: true });
+    };
 
     // Filters
     const [filters, setFilters] = useState({
@@ -79,9 +98,12 @@ function LaptopsContent() {
         brands: [] as string[],
         cpus: [] as string[],
         ssds: [] as string[],
+        rams: [] as string[],
         gpus: [] as string[],
         priceRanges: [] as string[],
         screens: [] as string[],
+        hzs: [] as string[],
+        resolutions: [] as string[],
         weights: [] as string[],
         statuses: [] as string[],
     });
@@ -89,42 +111,36 @@ function LaptopsContent() {
     // Dropdown states
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-    // Fetch data
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalProducts, setTotalProducts] = useState(0);
+
+    const [filterOptions, setFilterOptions] = useState({
+        cpus: [] as string[],
+        ssds: [] as string[],
+        gpus: [] as string[],
+        rams: [] as string[],
+        screens: [] as string[],
+        hzs: [] as string[],
+        resolutions: [] as string[],
+    });
+
+    // Fetch static filter options (brands, categories, and distinct specs)
     useEffect(() => {
-        fetchData();
+        const fetchOptions = async () => {
+            try {
+                const res = await fetch('/api/products/filter-options');
+                const result = await res.json();
+                if (result.success) {
+                    setFilterOptions(result.data);
+                    setCategories(result.data.categories || []);
+                    setBrands(result.data.brands || []);
+                }
+            } catch (error) {
+                console.error('Error fetching filter options:', error);
+            }
+        };
+        fetchOptions();
     }, []);
-
-    const fetchData = async () => {
-        try {
-            const [productsRes, brandsRes, categoriesRes] = await Promise.all([
-                fetch('/api/admin/laptops'),
-                fetch('/api/admin/brands'),
-                fetch('/api/admin/categories'),
-            ]);
-
-            const productsData = await productsRes.json();
-            const brandsData = await brandsRes.json();
-            const categoriesData = await categoriesRes.json();
-
-            if (productsData.success) setProducts(productsData.data);
-            if (brandsData.success) setBrands(brandsData.data);
-            if (categoriesData.success) setCategories(categoriesData.data);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Extract filter options
-    const filterOptions = useMemo(() => {
-        const cpus = [...new Set(products.map(p => p.specs.cpu).filter(Boolean))];
-        const ssds = [...new Set(products.map(p => p.specs.ssd).filter(Boolean))];
-        const gpus = [...new Set(products.map(p => p.specs.gpu).filter(Boolean))];
-        const screens = [...new Set(products.map(p => p.specs.screen).filter(Boolean))];
-
-        return { cpus, ssds, gpus, screens };
-    }, [products]);
 
     // Price ranges
     const priceRanges = [
@@ -143,83 +159,63 @@ function LaptopsContent() {
         { label: 'Trên 2kg (Gaming)', value: 'heavy' },
     ];
 
-    // Filter products
-    const filteredProducts = useMemo(() => {
-        return products.filter(product => {
-            // Search filter
-            if (searchQuery) {
-                const query = searchQuery.toLowerCase();
-                const matchesSearch =
-                    product.name.toLowerCase().includes(query) ||
-                    product.model.toLowerCase().includes(query) ||
-                    product.specs.cpu.toLowerCase().includes(query) ||
-                    product.specs.gpu.toLowerCase().includes(query);
+    // Fetch paginated products based on filters
+    useEffect(() => {
+        const fetchProducts = async () => {
+            setLoading(true);
+            try {
+                const activePriceRanges = filters.priceRanges.map(label => priceRanges.find(r => r.label === label)).filter(Boolean);
 
-                if (!matchesSearch) return false;
-            }
-
-            // Category filter
-            if (filters.categories.length > 0 && !filters.categories.includes(product.categoryId._id)) {
-                return false;
-            }
-
-            // Brand filter
-            if (filters.brands.length > 0 && !filters.brands.includes(product.brandId._id)) {
-                return false;
-            }
-
-            // CPU filter
-            if (filters.cpus.length > 0 && !filters.cpus.includes(product.specs.cpu)) {
-                return false;
-            }
-
-            // SSD filter
-            if (filters.ssds.length > 0 && !filters.ssds.includes(product.specs.ssd)) {
-                return false;
-            }
-
-            // GPU filter
-            if (filters.gpus.length > 0 && !filters.gpus.includes(product.specs.gpu)) {
-                return false;
-            }
-
-            // Price filter
-            if (filters.priceRanges.length > 0) {
-                const matchesPrice = filters.priceRanges.some(rangeLabel => {
-                    const range = priceRanges.find(r => r.label === rangeLabel);
-                    if (!range) return false;
-                    return product.price >= range.min && product.price <= range.max;
+                const res = await fetch('/api/products/filter', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        page: currentPage,
+                        limit: itemsPerPage,
+                        search: searchQuery,
+                        categories: filters.categories,
+                        brands: filters.brands,
+                        cpus: filters.cpus,
+                        ssds: filters.ssds,
+                        rams: filters.rams,
+                        gpus: filters.gpus,
+                        screens: filters.screens,
+                        hzs: filters.hzs,
+                        resolutions: filters.resolutions,
+                        statuses: filters.statuses,
+                        priceRanges: activePriceRanges
+                    })
                 });
-                if (!matchesPrice) return false;
+
+                const result = await res.json();
+                if (result.success) {
+                    setProducts(result.data);
+                    setTotalPages(result.totalPages);
+                    setTotalProducts(result.total);
+                }
+            } catch (error) {
+                console.error("Error fetching paginated products:", error);
+            } finally {
+                setLoading(false);
             }
+        };
 
-            // Screen filter
-            if (filters.screens.length > 0 && !filters.screens.includes(product.specs.screen)) {
-                return false;
-            }
+        const timeoutId = setTimeout(() => {
+            fetchProducts();
+        }, 300); // 300ms debounce
 
-            // Status filter
-            if (filters.statuses.length > 0 && !filters.statuses.includes(product.status)) {
-                return false;
-            }
-
-            return true;
-        });
-    }, [products, filters, priceRanges, searchQuery]);
-
-    // Paginate products
-    const paginatedProducts = useMemo(() => {
-        const start = (currentPage - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
-        return filteredProducts.slice(start, end);
-    }, [filteredProducts, currentPage, itemsPerPage]);
-
-    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+        return () => clearTimeout(timeoutId);
+    }, [searchQuery, filters, currentPage]);
 
     // Reset to page 1 when filters change
     useEffect(() => {
-        setCurrentPage(1);
-    }, [filters]);
+        if (currentPage !== 1) {
+            const params = new URLSearchParams(searchParams.toString());
+            params.delete('page');
+            router.replace(`/laptops?${params.toString()}`, { scroll: false });
+            setCurrentPage(1);
+        }
+    }, [filters, searchQuery]);
 
     // Toggle filter
     const toggleFilter = (filterKey: keyof typeof filters, value: string) => {
@@ -238,9 +234,12 @@ function LaptopsContent() {
             brands: [],
             cpus: [],
             ssds: [],
+            rams: [],
             gpus: [],
             priceRanges: [],
             screens: [],
+            hzs: [],
+            resolutions: [],
             weights: [],
             statuses: [],
         });
@@ -316,7 +315,7 @@ function LaptopsContent() {
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 border-b border-gray-200 pb-4 gap-4">
                         <div className="flex flex-col gap-1">
                             <p className="text-gray-600">
-                                Hiển thị <span className="font-bold text-gray-900">{filteredProducts.length}</span> sản phẩm
+                                Hiển thị <span className="font-bold text-gray-900">{totalProducts}</span> sản phẩm
                                 {activeFiltersCount > 0 && ` (${activeFiltersCount} bộ lọc đang áp dụng)`}
                             </p>
                             {searchQuery && (
@@ -483,6 +482,36 @@ function LaptopsContent() {
                                 )}
                             </div>
 
+                            {/* RAM Filter */}
+                            <div className="relative">
+                                <button
+                                    onClick={() => toggleDropdown('rams')}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${filters.rams.length > 0
+                                        ? 'bg-[#004e9a] text-white'
+                                        : 'bg-[#004e9a] text-white hover:bg-[#003b78]'
+                                        }`}
+                                >
+                                    RAM
+                                    {filters.rams.length > 0 && ` (${filters.rams.length})`}
+                                    <ChevronDown size={16} />
+                                </button>
+                                {openDropdown === 'rams' && (
+                                    <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px] max-h-[300px] overflow-y-auto">
+                                        {filterOptions.rams.map(ram => (
+                                            <label key={ram} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={filters.rams.includes(ram)}
+                                                    onChange={() => toggleFilter('rams', ram)}
+                                                    className="w-4 h-4"
+                                                />
+                                                <span className="text-sm">{ram}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
                             {/* SSD Filter */}
                             <div className="relative">
                                 <button
@@ -603,6 +632,66 @@ function LaptopsContent() {
                                 )}
                             </div>
 
+                            {/* Hz Filter */}
+                            <div className="relative">
+                                <button
+                                    onClick={() => toggleDropdown('hzs')}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${filters.hzs.length > 0
+                                        ? 'bg-[#004e9a] text-white'
+                                        : 'bg-[#004e9a] text-white hover:bg-[#003b78]'
+                                        }`}
+                                >
+                                    Tần số quét
+                                    {filters.hzs.length > 0 && ` (${filters.hzs.length})`}
+                                    <ChevronDown size={16} />
+                                </button>
+                                {openDropdown === 'hzs' && (
+                                    <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[160px] max-h-[300px] overflow-y-auto">
+                                        {filterOptions.hzs.map(hz => (
+                                            <label key={hz} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={filters.hzs.includes(hz)}
+                                                    onChange={() => toggleFilter('hzs', hz)}
+                                                    className="w-4 h-4"
+                                                />
+                                                <span className="text-sm">{hz}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Resolution Filter */}
+                            <div className="relative">
+                                <button
+                                    onClick={() => toggleDropdown('resolutions')}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${filters.resolutions.length > 0
+                                        ? 'bg-[#004e9a] text-white'
+                                        : 'bg-[#004e9a] text-white hover:bg-[#003b78]'
+                                        }`}
+                                >
+                                    Độ phân giải
+                                    {filters.resolutions.length > 0 && ` (${filters.resolutions.length})`}
+                                    <ChevronDown size={16} />
+                                </button>
+                                {openDropdown === 'resolutions' && (
+                                    <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[180px] max-h-[300px] overflow-y-auto">
+                                        {filterOptions.resolutions.map(res => (
+                                            <label key={res} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={filters.resolutions.includes(res)}
+                                                    onChange={() => toggleFilter('resolutions', res)}
+                                                    className="w-4 h-4"
+                                                />
+                                                <span className="text-sm">{res}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
                             {/* Status Filter */}
                             <div className="relative">
                                 <Button
@@ -648,13 +737,13 @@ function LaptopsContent() {
                         <>
                             {/* Products Grid */}
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 lg:gap-6 mb-8">
-                                {paginatedProducts.map(product => (
+                                {products.map(product => (
                                     <ProductCard key={product._id} product={product} />
                                 ))}
                             </div>
 
                             {/* No Results */}
-                            {filteredProducts.length === 0 && (
+                            {products.length === 0 && (
                                 <div className="text-center py-20">
                                     <p className="text-gray-600 text-lg">Không tìm thấy sản phẩm nào phù hợp với bộ lọc.</p>
                                     <Button
@@ -669,15 +758,15 @@ function LaptopsContent() {
                             )}
 
                             {/* Pagination */}
-                            {filteredProducts.length > 0 && totalPages > 1 && (
+                            {products.length > 0 && totalPages > 1 && (
                                 <div className="flex flex-col items-center gap-4">
                                     <p className="text-gray-600">
                                         Hiển thị {(currentPage - 1) * itemsPerPage + 1}-
-                                        {Math.min(currentPage * itemsPerPage, filteredProducts.length)} của {filteredProducts.length} sản phẩm
+                                        {Math.min(currentPage * itemsPerPage, totalProducts)} của {totalProducts} sản phẩm
                                     </p>
                                     <div className="flex items-center gap-2">
                                         <Button
-                                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                                             disabled={currentPage === 1}
                                             variant="outline"
                                             size="sm"
@@ -701,7 +790,7 @@ function LaptopsContent() {
                                             return (
                                                 <Button
                                                     key={pageNum}
-                                                    onClick={() => setCurrentPage(pageNum)}
+                                                    onClick={() => handlePageChange(pageNum)}
                                                     variant={currentPage === pageNum ? 'primary' : 'outline'}
                                                     size="sm"
                                                     className={currentPage === pageNum ? 'bg-[#004e9a]' : ''}
@@ -712,7 +801,7 @@ function LaptopsContent() {
                                         })}
 
                                         <Button
-                                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                            onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                                             disabled={currentPage === totalPages}
                                             variant="outline"
                                             size="sm"

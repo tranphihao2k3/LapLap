@@ -190,7 +190,7 @@ const Footer = () => {
                                 </div>
                                 <div>
                                     <p className="font-semibold text-white text-sm md:text-base">Địa chỉ</p>
-                                    <p className="text-gray-400 text-sm md:text-base">....</p>
+                                    <p className="text-gray-400 text-sm md:text-base">Cần Thơ</p>
                                 </div>
                             </motion.div>
 

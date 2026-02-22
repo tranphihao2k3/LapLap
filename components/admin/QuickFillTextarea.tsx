@@ -14,6 +14,13 @@ export default function QuickFillTextarea({ onParsed }: QuickFillTextareaProps) 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
     const [isExpanded, setIsExpanded] = useState(true);
+    const [selectedModel, setSelectedModel] = useState('gemini-3-flash-preview');
+
+    const models = [
+        'gemini-3-flash-preview',
+        'gemini-2.5-flash-lite',
+        'gemini-2.5-flash'
+    ];
 
     const handleParse = async () => {
         if (!text.trim()) {
@@ -41,7 +48,7 @@ export default function QuickFillTextarea({ onParsed }: QuickFillTextareaProps) 
             const response = await fetch('/api/parse-product-ai', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text }),
+                body: JSON.stringify({ text, model: selectedModel }),
             });
 
             const result = await response.json();
@@ -108,6 +115,19 @@ export default function QuickFillTextarea({ onParsed }: QuickFillTextareaProps) 
             <p className="text-sm text-gray-600 mb-3">
                 Paste mô tả sản phẩm từ Facebook, Zalo, v.v. và AI sẽ tự động điền thông tin vào form
             </p>
+
+            {/* Model Selection */}
+            <div className="mb-3">
+                <label className="block text-sm font-medium text-purple-700/80 mb-1">Chọn AI Model</label>
+                <select
+                    value={selectedModel}
+                    onChange={(e) => setSelectedModel(e.target.value)}
+                    className="w-full px-3 py-2 border border-purple-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white"
+                    disabled={loading}
+                >
+                    {models.map(m => <option key={m} value={m}>{m}</option>)}
+                </select>
+            </div>
 
             <textarea
                 value={text}

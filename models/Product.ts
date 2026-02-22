@@ -42,6 +42,8 @@ const ProductSchema = new Schema(
             ram: String,
             ssd: String,
             screen: String,
+            hz: String,
+            resolution: String,
             battery: String,
             weight: String, // e.g. "1.3 kg"
         },
@@ -50,6 +52,7 @@ const ProductSchema = new Schema(
             items: [String],
         },
         gift: String, // Qua tang kem (text area)
+        description: String, // Dòng mô tả sản phẩm
         warrantyMonths: Number, // So thang bao hanh (1, 2, 3, 6, 12, 24...)
         status: {
             type: String,
@@ -68,5 +71,8 @@ const ProductSchema = new Schema(
     { timestamps: true }
 );
 
-export const Product =
-    models.Product || mongoose.model("Product", ProductSchema);
+if (mongoose.models.Product) {
+    delete mongoose.models.Product;
+}
+
+export const Product = mongoose.model("Product", ProductSchema);

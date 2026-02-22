@@ -54,6 +54,18 @@ export async function POST(request: Request) {
                 .replace(/\s+/g, '-');
         }
 
+        // Ensure unique slug
+        if (slug) {
+            let existingProduct = await Product.findOne({ slug });
+            let counter = 1;
+            const originalSlug = slug;
+            while (existingProduct) {
+                slug = `${originalSlug}-${counter}`;
+                existingProduct = await Product.findOne({ slug });
+                counter++;
+            }
+        }
+
         const newLaptop = await Product.create({
             ...body,
             slug

@@ -40,10 +40,7 @@ export async function POST(request: Request) {
             cloudinary.uploader.upload_stream(
                 {
                     folder: 'laptop-products',
-                    resource_type: 'image',
-                    transformation: [
-                        { quality: 'auto', fetch_format: 'auto' }
-                    ]
+                    resource_type: 'image'
                 },
                 (error, result) => {
                     if (error) reject(error);

@@ -29,9 +29,12 @@ import {
 
 export default function AdminLayoutContent({ children }: { children: ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [hoverExpanded, setHoverExpanded] = useState(false);
     const pathname = usePathname();
     const { data: session } = useSession();
+
+    // Sidebar is collapsed unless hovered
+    const sidebarCollapsed = !hoverExpanded;
 
     const menuItems = [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
@@ -81,7 +84,10 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
 
             {/* Sidebar */}
             {/* Sidebar */}
-            <aside className={`
+            <aside
+                onMouseEnter={() => setHoverExpanded(true)}
+                onMouseLeave={() => setHoverExpanded(false)}
+                className={`
                 fixed top-0 left-0 h-full bg-[#111827] text-gray-300 z-50
                 transform transition-all duration-300 ease-in-out border-r border-[#1f2937]
                 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
@@ -115,26 +121,6 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
                         </button>
                     </div>
                 </div>
-
-                {/* Desktop Collapse Toggle */}
-                <button
-                    onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                    className={`
-                        hidden lg:flex items-center justify-center
-                        absolute -right-3 top-20 w-6 h-6 
-                        bg-[#374151] hover:bg-blue-600 border border-[#1f2937]
-                        rounded-full text-gray-400 hover:text-white
-                        transition-all duration-200 shadow-sm
-                        z-50
-                    `}
-                    title={sidebarCollapsed ? 'Mở rộng' : 'Thu gọn'}
-                >
-                    {sidebarCollapsed ? (
-                        <PanelLeftOpen className="w-3 h-3" />
-                    ) : (
-                        <PanelLeftClose className="w-3 h-3" />
-                    )}
-                </button>
 
                 {/* Navigation */}
                 <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-1 dark-scrollbar">

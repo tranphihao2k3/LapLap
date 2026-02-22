@@ -77,6 +77,12 @@ export const COMMON_GPUS = [
     // AMD Radeon
     'RX 6500M',
     'RX 7600S',
+    // Apple VGA
+    "Apple VGA",
+
+
+
+
 ];
 
 export const COMMON_RAM_SIZES = [
@@ -95,25 +101,46 @@ export const COMMON_SSD_SIZES = [
 
 export const COMMON_SCREENS = [
     // 13-14 inch
-    '13.3" FHD',
-    '14" FHD',
-    '14" 2.8K OLED',
-    '14.5" 2.8K 120Hz',
+    '13.3"',
+    '14"',
+    '14.5"',
 
     // 15 inch
-    '15.6" FHD 60Hz',
-    '15.6" FHD 144Hz',
-    '15.6" FHD 165Hz',
-    '15.6" QHD 165Hz',
+    '15.6"',
 
     // 16 inch
-    '16" FHD+ 144Hz',
-    '16" FHD+ 165Hz',
-    '16" QHD+ 240Hz',
+    '16"',
 
     // 17+ inch
-    '17.3" FHD 144Hz',
-    '18" QHD+ 240Hz',
+    '17.3"',
+    '18"',
+];
+
+export const COMMON_HZ = [
+    '60Hz',
+    '90Hz',
+    '120Hz',
+    '144Hz',
+    '165Hz',
+    '240Hz',
+    '300Hz',
+    '360Hz'
+];
+
+export const COMMON_RESOLUTIONS = [
+    'HD',
+    'HD+',
+    'FHD',
+    'FHD+',
+    'WUXGA',
+    '2K',
+    '2.5K',
+    '2.8K',
+    '3K',
+    '4K',
+    'UHD',
+    'OLED',
+    'Liquid Retina'
 ];
 
 export const COMMON_BATTERIES = [

@@ -71,6 +71,7 @@ import { ComparisonProvider } from "@/context/ComparisonContext";
 import ComparisonBar from "@/components/ComparisonBar";
 import { CartProvider } from "@/context/CartContext";
 import CartDrawer from "@/components/CartDrawer";
+import SessionProviderWrapper from "@/components/SessionProviderWrapper";
 
 import MobileBottomMenu from "@/components/MobileBottomMenu";
 
@@ -88,16 +89,18 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className={`${montserrat.variable} ${montserrat.className} min-h-screen flex flex-col`}>
-        <CartProvider>
-          <ComparisonProvider>
-            {children}
-            <div className="md:hidden h-20"></div> {/* Spacer for Mobile Bottom Menu */}
-            <ComparisonBar />
-          </ComparisonProvider>
-          <CartDrawer />
-          <MobileBottomMenu />
-        </CartProvider>
-        <FloatingContact />
+        <SessionProviderWrapper>
+          <CartProvider>
+            <ComparisonProvider>
+              {children}
+              <div className="md:hidden h-20"></div> {/* Spacer for Mobile Bottom Menu */}
+              <ComparisonBar />
+            </ComparisonProvider>
+            <CartDrawer />
+            <MobileBottomMenu />
+          </CartProvider>
+          <FloatingContact />
+        </SessionProviderWrapper>
         <FacebookMessenger />
         <SpeedInsights />
         <Analytics />

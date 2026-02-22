@@ -24,6 +24,8 @@ export interface Product {
         ram: string;
         ssd: string;
         screen: string;
+        hz?: string;
+        resolution?: string;
         battery: string;
     };
     warranty?: {
@@ -31,6 +33,7 @@ export interface Product {
         items: string[];
     };
     gift?: string;
+    description?: string;
     warrantyMonths?: number;
     policies?: {
         technicalSupport: boolean;
