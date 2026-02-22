@@ -12,10 +12,10 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   metadataBase: new URL("https://laplapcantho.store"),
   title: {
-    default: "LapLap - Laptop Cần Thơ | Laptop Cũ & Mới Chính Hãng Giá Tốt",
-    template: "%s | LapLap Cần Thơ"
+    default: "LapLap - Laptop Cần Thơ | Mua Bán Laptop Chính Hãng Giá Tốt",
+    template: "%s",  // Child pages tự đặt title đầy đủ, không ghép thêm
   },
-  description: "LapLap Cần Thơ - Mua bán laptop cũ mới giá tốt uy tín. Sửa chữa (sữa laptop), vệ sinh laptop lấy liền. Bảo hành dài hạn, hậu mãi tận tâm.",
+  description: "LapLap - Chuyên laptop tại Cần Thơ. Laptop mới, laptop cũ chính hãng, giá tốt nhất. Giao hàng tận nơi, bảo hành uy tín. Test laptop miễn phí online.",
   keywords: [
     "laptop cần thơ",
     "laptop cũ cần thơ",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "LapLap Cần Thơ" }],
   alternates: {
-    canonical: './',
+    canonical: 'https://laplapcantho.store',
   },
   robots: {
     index: true,
@@ -42,6 +42,8 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
+      'max-snippet': -1,
+      'max-image-preview': 'large',
     },
   },
   icons: {
@@ -51,8 +53,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "vi_VN",
     siteName: "LapLap - Laptop Cần Thơ",
-    title: "LapLap - Laptop Cần Thơ | Laptop Cũ & Mới Chính Hãng",
-    description: "Chuyên mua bán laptop cũ, mới tại Cần Thơ. Sửa chữa (sữa laptop) uy tín, giá tốt. Giao hàng tận nơi.",
+    title: "LapLap - Laptop Cần Thơ | Mua Bán Laptop Chính Hãng Giá Tốt",
+    description: "LapLap - Chuyên laptop tại Cần Thơ. Laptop mới, laptop cũ chính hãng, giá tốt nhất. Giao hàng tận nơi, bảo hành uy tín. Test laptop miễn phí online.",
   },
 };
 
