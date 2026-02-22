@@ -117,7 +117,7 @@ export default function MarketingPage() {
         }
     };
 
-    const generateContent = (product: Product, templateType = 'default') => {
+    const generateContent = (product: Product, templateType = 'default', shouldReturn = false) => {
         const link = `https://laplapcantho.store/laptops/${product.slug || product._id}`;
         const price = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price);
         const originalPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price * 1.15);
@@ -257,6 +257,7 @@ export default function MarketingPage() {
         }
 
         setPostContent(content);
+        if (shouldReturn) return content;
     };
 
     const copyLinkOnly = () => {
@@ -266,14 +267,43 @@ export default function MarketingPage() {
         toast.success("🔗 Đã copy link sản phẩm!");
     };
 
-    const selectRandomProduct = () => {
-        if (products.length === 0) return;
+    const handleRandomAndPost = () => {
+        if (products.length === 0) {
+            toast.error("Không có sản phẩm nào!");
+            return;
+        }
+        if (groups.length === 0) {
+            toast.error("Chưa có nhóm nào trong danh sách!");
+            return;
+        }
+
         const randomIndex = Math.floor(Math.random() * products.length);
         const product = products[randomIndex];
         setSelectedProduct(product);
-        toast.success(`🎲 Đã chọn ngẫu nhiên: ${product.name}`);
-        // Mở sẵn content ra standard model luôn nếu lỡ đang ở AI
         if (genType === 'ai') setGenType('standard');
+
+        // Generate content directly
+        const content = generateContent(product, 'default', true);
+
+        if (content) {
+            navigator.clipboard.writeText(content);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+            toast.success(`🎲 Random: ${product.name}\n✅ Đã Copy nội dung!`);
+        }
+
+        // Open next group
+        const group = groups[currentGroupIndex];
+        window.open(group.url, '_blank');
+
+        const nextIndex = (currentGroupIndex + 1) % groups.length;
+        setCurrentGroupIndex(nextIndex);
+
+        if (nextIndex === 0) {
+            toast.success(`🎉 Đã mở: ${group.name}. Quay lại nhóm đầu tiên.`);
+        } else {
+            toast(`Đã mở ${group.name}. Nhóm tiếp theo: ${groups[nextIndex].name}`, { icon: '👉' });
+        }
     };
 
     const handleAddGroup = async () => {
@@ -645,79 +675,64 @@ export default function MarketingPage() {
                             )}
                         </div>
 
-                        {/* Control Panel */}
-                        <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 rounded-[2.5rem] p-8 md:p-10 text-white shadow-2xl shadow-blue-200 relative overflow-hidden group/control">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl transition-all group-hover/control:bg-white/20"></div>
+                        {/* Control Panel Compact */}
+                        <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 rounded-[2rem] p-6 text-white shadow-xl shadow-blue-200/50 relative overflow-hidden group/control mt-4 border border-blue-400/20">
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl transition-all group-hover/control:bg-white/20"></div>
 
-                            <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-6 relative z-10">
-                                <div className="text-center md:text-left">
-                                    <h3 className="font-black text-xl md:text-2xl tracking-tight flex items-center justify-center md:justify-start gap-3">
-                                        Hệ thống Queue Posting
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></div>
-                                            <span className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-100">Online</span>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4 relative z-10">
+                                <div>
+                                    <h3 className="font-black text-lg tracking-tight flex items-center gap-2">
+                                        Queue Posting
+                                        <div className="flex items-center gap-1.5 bg-black/20 px-2 py-0.5 rounded-full">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div>
+                                            <span className="text-[9px] uppercase font-black tracking-widest text-emerald-200">Online</span>
                                         </div>
                                     </h3>
-                                    <p className="text-white/90 text-sm mt-2 font-medium">Bấm mở nhóm &rarr; Ctrl+V &rarr; Đăng bài &rarr; Quay lại đây</p>
+                                    <p className="text-white/80 text-[11px] mt-1 font-medium">Bấm mở nhóm &rarr; Ctrl+V &rarr; Đăng bài</p>
                                 </div>
-                                <button
-                                    onClick={() => setAutoCopy(!autoCopy)}
-                                    className={`flex items-center gap-3 px-5 py-3 rounded-2xl backdrop-blur-md border transition-all ${autoCopy
-                                        ? 'bg-white/30 border-white/40 text-white shadow-lg shadow-white/20'
-                                        : 'bg-white/10 border-white/20 text-white/70 hover:bg-white/15'
-                                        }`}
-                                >
-                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${autoCopy
-                                        ? 'bg-white border-white'
-                                        : 'bg-transparent border-white/50'
-                                        }`}>
-                                        {autoCopy && (
-                                            <div className="w-2 h-2 rounded-full bg-blue-600"></div>
-                                        )}
-                                    </div>
-                                    <span className="text-[10px] font-black uppercase tracking-widest">Tự động Copy</span>
-                                </button>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={() => setAutoCopy(!autoCopy)}
+                                        className={`flex items-center gap-2 px-3 py-2 rounded-xl backdrop-blur-md border transition-all ${autoCopy
+                                            ? 'bg-white/30 border-white/40 text-white shadow-md shadow-white/10'
+                                            : 'bg-white/10 border-white/10 text-white/70 hover:bg-white/20'
+                                            }`}
+                                    >
+                                        <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all ${autoCopy ? 'bg-white border-white' : 'bg-transparent border-white/40'}`}>
+                                            {autoCopy && <div className="w-1.5 h-1.5 rounded-full bg-blue-600"></div>}
+                                        </div>
+                                        <span className="text-[10px] font-black uppercase tracking-widest">Tự Động Copy</span>
+                                    </button>
+                                </div>
                             </div>
 
-                            <div className="flex flex-col gap-6 relative z-10">
-                                <button
-                                    onClick={openNextGroup}
-                                    disabled={groups.length === 0 || !postContent}
-                                    className="w-full py-6 md:py-8 rounded-3xl bg-white text-blue-600 font-black text-sm uppercase tracking-[0.2em] transition-all active:scale-[0.98] shadow-2xl shadow-white/20 hover:shadow-white/30 disabled:opacity-50 disabled:cursor-not-allowed group/btn overflow-hidden relative hover:bg-blue-50"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-all duration-1000"></div>
-                                    <div className="flex items-center justify-center gap-4 relative z-10">
-                                        <Rocket size={24} className="group-hover/btn:-translate-y-1 group-hover/btn:translate-x-1 transition-transform" />
-                                        MỞ NHÓM TIẾP THEO ({currentGroupIndex + 1} / {groups.length})
-                                    </div>
-                                </button>
-
-                                <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6 mt-2">
+                            <div className="flex flex-col gap-4 relative z-10">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <button
-                                        onClick={selectRandomProduct}
-                                        className="text-[10px] font-black uppercase tracking-widest text-emerald-300 hover:text-emerald-200 transition-colors flex items-center justify-center gap-2"
+                                        onClick={openNextGroup}
+                                        disabled={groups.length === 0 || !postContent}
+                                        className="py-3.5 rounded-2xl bg-white text-blue-600 font-black text-xs uppercase tracking-widest transition-all active:scale-[0.98] shadow-lg hover:shadow-xl hover:bg-blue-50 disabled:opacity-50 flex items-center justify-center gap-2"
                                     >
-                                        <Dices size={16} />
-                                        Random Sản Phẩm Khác
+                                        <Rocket size={16} /> MỞ NHÓM TIẾP THEO ({currentGroupIndex + 1}/{groups.length})
                                     </button>
+
+                                    <button
+                                        onClick={handleRandomAndPost}
+                                        disabled={groups.length === 0 || products.length === 0}
+                                        className="py-3.5 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 text-white font-black text-xs uppercase tracking-widest transition-all active:scale-[0.98] hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                        title="Tự đổi ngẫu nhiên sang 1 sản phẩm khác, copy lại bài rồi mở nhóm tiếp theo luôn!"
+                                    >
+                                        <Dices size={16} /> RANDOM MÁY + MỞ NHÓM
+                                    </button>
+                                </div>
+
+                                <div className="flex justify-center mt-1">
                                     <button
                                         onClick={resetProgress}
-                                        className="text-[10px] font-black uppercase tracking-widest text-white/80 hover:text-white transition-colors flex items-center justify-center gap-2"
+                                        className="text-[10px] font-bold tracking-widest text-white/60 hover:text-white transition-colors flex items-center gap-1.5"
                                     >
-                                        <RefreshCw size={14} />
-                                        Đặt lại từ đầu danh sách
+                                        <RefreshCw size={12} /> Quay lại danh sách ban đầu
                                     </button>
-                                </div>
-                            </div>
-
-                            <div className="mt-10 bg-white/20 backdrop-blur-md border border-white/30 p-5 rounded-3xl relative z-10">
-                                <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-2xl bg-white/30 flex items-center justify-center shrink-0">
-                                        <Sparkles className="text-white w-5 h-5" />
-                                    </div>
-                                    <div className="text-xs uppercase font-black tracking-widest leading-loose text-white/90">
-                                        <strong className="text-white">Mẹo Tip:</strong> Sau khi hệ thống mở Tab Facebook mới, bạn chỉ cần nhấn tổ hợp phím <kbd className="bg-white/30 px-1.5 py-0.5 rounded text-white font-mono">Ctrl + V</kbd> và bấm <strong className="text-white">Post</strong>.
-                                    </div>
                                 </div>
                             </div>
                         </div>
