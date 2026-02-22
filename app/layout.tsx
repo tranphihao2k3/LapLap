@@ -8,6 +8,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import FacebookMessenger from "@/components/FacebookMessenger";
 import type { Metadata } from "next";
+import JsonLd from "@/components/JsonLd";
+import { buildOrganizationJsonLd, buildWebSiteJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://laplapcantho.store"),
@@ -104,6 +106,10 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className={`${montserrat.variable} ${montserrat.className} min-h-screen flex flex-col`}>
+        {/* JSON-LD: Structured Data cho toàn site */}
+        <JsonLd id="organization-jsonld" data={buildOrganizationJsonLd()} />
+        <JsonLd id="website-jsonld" data={buildWebSiteJsonLd()} />
+
         <SessionProviderWrapper>
           <CartProvider>
             <ComparisonProvider>

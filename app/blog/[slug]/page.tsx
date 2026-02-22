@@ -9,6 +9,9 @@ import { Calendar, User, Eye, ArrowLeft } from 'lucide-react';
 import { connectDB } from '@/lib/mongodb';
 import { Blog } from '@/models/Blog';
 import BlogDetailClient from './BlogDetailClient';
+import JsonLd from '@/components/JsonLd';
+import { buildBlogPostingJsonLd, buildBreadcrumbJsonLd } from '@/lib/seo';
+
 
 interface PageProps {
     params: Promise<{ slug: string }>;
@@ -99,35 +102,31 @@ export default async function BlogDetailPage({ params }: PageProps) {
             year: 'numeric', month: 'long', day: 'numeric',
         });
 
-    // JSON-LD structured data cho Google
-    const jsonLd = {
-        '@context': 'https://schema.org',
-        '@type': 'BlogPosting',
-        headline: blog.title,
-        description: blog.excerpt,
-        image: blog.featuredImage || 'https://laplapcantho.store/favicon.ico',
-        author: { '@type': 'Person', name: blog.author || 'LapLap Team' },
-        publisher: {
-            '@type': 'Organization',
-            name: 'LapLap - Laptop Cần Thơ',
-            logo: { '@type': 'ImageObject', url: 'https://laplapcantho.store/favicon.ico' },
-        },
-        datePublished: blog.publishedAt || blog.createdAt,
-        dateModified: blog.updatedAt,
-        mainEntityOfPage: {
-            '@type': 'WebPage',
-            '@id': `https://laplapcantho.store/blog/${blog.slug}`,
-        },
-        keywords: blog.tags?.join(', '),
-    };
+    // JSON-LD structured data từ lib/seo (chuẩn schema.org)
+    const blogJsonLd = buildBlogPostingJsonLd({
+        title: blog.title,
+        excerpt: blog.excerpt,
+        content: blog.content,
+        featuredImage: blog.featuredImage,
+        author: blog.author,
+        publishedAt: blog.publishedAt,
+        createdAt: blog.createdAt,
+        updatedAt: blog.updatedAt,
+        tags: blog.tags,
+        slug: blog.slug,
+    });
+
+    const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+        { name: 'Trang chủ', url: '/' },
+        { name: 'Blog', url: '/blog' },
+        { name: blog.title, url: `/blog/${blog.slug}` },
+    ]);
 
     return (
         <>
             {/* JSON-LD structured data */}
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            <JsonLd id="blog-jsonld" data={blogJsonLd} />
+            <JsonLd id="breadcrumb-blog-jsonld" data={breadcrumbJsonLd} />
 
             <Header />
             <main className="flex-1 container mx-auto p-4">

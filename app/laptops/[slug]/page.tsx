@@ -4,8 +4,9 @@ import { connectDB } from '@/lib/mongodb';
 import { Product as ProductModel } from '@/models/Product';
 import ProductDetailClient from './ProductDetailClient';
 import mongoose from 'mongoose';
-
 import { cache } from 'react';
+import JsonLd from '@/components/JsonLd';
+import { buildProductJsonLd, buildBreadcrumbJsonLd } from '@/lib/seo';
 
 // Helper to fetch product data - cached to deduplicate requests between generateMetadata and page
 const getProduct = cache(async (slug: string) => {
@@ -135,6 +136,37 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         relatedProducts = await getRelatedProducts((product.categoryId as any)._id.toString(), product._id.toString());
     }
 
-    // Cast to any to avoid strict type checking issues with Mongoose lean objects vs Interfaces
-    return <ProductDetailClient product={product as any} relatedProducts={relatedProducts as any} />;
+    // Build JSON-LD data
+    const categoryName = product.categoryId && typeof product.categoryId === 'object' && 'name' in product.categoryId
+        ? (product.categoryId as any).name
+        : 'Laptop';
+
+    const productJsonLd = buildProductJsonLd({
+        name: (product as any).name,
+        description: `Laptop ${(product as any).name} tại LapLap Cần Thơ`,
+        price: (product as any).price,
+        originalPrice: (product as any).originalPrice,
+        image: (product as any).image,
+        images: (product as any).images,
+        slug: (product as any).slug || slug,
+        _id: (product as any)._id.toString(),
+        specs: (product as any).specs,
+        brandId: (product as any).brandId,
+        condition: (product as any).condition,
+    });
+
+    const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+        { name: 'Trang chủ', url: '/' },
+        { name: 'Laptop', url: '/laptops' },
+        { name: (product as any).name, url: `/laptops/${(product as any).slug || slug}` },
+    ]);
+
+    return (
+        <>
+            <JsonLd id="product-jsonld" data={productJsonLd} />
+            <JsonLd id="breadcrumb-product-jsonld" data={breadcrumbJsonLd} />
+            {/* Cast to any to avoid strict type checking issues with Mongoose lean objects vs Interfaces */}
+            <ProductDetailClient product={product as any} relatedProducts={relatedProducts as any} />
+        </>
+    );
 }

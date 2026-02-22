@@ -1,22 +1,30 @@
-"use client";
-
-import { useEffect } from 'react';
+/**
+ * components/JsonLd.tsx
+ * ─────────────────────────────────────────────────────────
+ * Server Component: inject JSON-LD structured data trực tiếp vào HTML.
+ * Google Crawler đọc được ngay mà không cần JavaScript.
+ *
+ * Sử dụng:
+ *   import JsonLd from '@/components/JsonLd';
+ *   import { buildProductJsonLd } from '@/lib/seo';
+ *
+ *   <JsonLd data={buildProductJsonLd(product)} />
+ */
 
 interface JsonLdProps {
-    data: any;
+    /** JSON-LD object từ các builder trong lib/seo.ts */
+    data: Record<string, unknown> | Record<string, unknown>[];
+    /** Optional ID để nhận dạng script tag */
+    id?: string;
 }
 
-export default function JsonLd({ data }: JsonLdProps) {
-    useEffect(() => {
-        const script = document.createElement('script');
-        script.type = 'application/ld+json';
-        script.text = JSON.stringify(data);
-        document.head.appendChild(script);
-
-        return () => {
-            document.head.removeChild(script);
-        };
-    }, [data]);
-
-    return null;
+// Server Component - không cần 'use client'
+export default function JsonLd({ data, id }: JsonLdProps) {
+    return (
+        <script
+            id={id}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+        />
+    );
 }
