@@ -54,7 +54,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
     // Structured Data for SEO
     useEffect(() => {
         const baseUrl = 'https://laplapcantho.store';
-        const productUrl = `${baseUrl}/laptops/${product.slug || product._id}`;
+        const productUrl = `${baseUrl}/laptops/${product._id}`;
         const productImage = productImages[0]?.startsWith('http')
             ? productImages[0]
             : `${baseUrl}${productImages[0]}`;
@@ -83,12 +83,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                     '@type': 'Organization',
                     name: 'LapLap - Laptop Cần Thơ'
                 }
-            },
-            aggregateRating: product.averageRating > 0 ? {
-                '@type': 'AggregateRating',
-                ratingValue: product.averageRating,
-                reviewCount: product.reviewCount || 0
-            } : undefined
+            }
         };
 
         // Breadcrumb Schema

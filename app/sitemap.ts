@@ -37,7 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         productEntries = products
             .filter((p) => p.slug) // Only include products with slug
             .map((product) => ({
-                url: `${baseUrl}/laptops/${product.slug}`,
+                url: `${baseUrl}/laptops/${product._id}`,
                 lastModified: new Date(product.updatedAt),
                 changeFrequency: "weekly" as const,
                 priority: 0.8,

@@ -23,7 +23,7 @@ export async function POST(request: Request) {
         const client = new GoogleGenAI({ apiKey });
 
         const price = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price);
-        const link = `https://laplapcantho.store/laptops/${product.slug || product._id}`;
+        const link = `https://laplapcantho.store/laptops/${product._id}`;
 
         let stylePrompt = '';
         if (style === 'urgency') {

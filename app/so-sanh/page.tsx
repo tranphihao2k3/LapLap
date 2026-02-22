@@ -111,7 +111,7 @@ export default function ComparisonPage() {
                             {selectedProducts.map((product) => (
                                 <div key={product._id} className="space-y-2">
                                     <Link
-                                        href={`/laptops/${product.slug || product._id}`}
+                                        href={`/laptops/${product._id}`}
                                         className="block w-full py-3 bg-blue-600 text-white text-[10px] font-black rounded-xl text-center shadow-lg shadow-blue-500/30 uppercase tracking-tighter"
                                     >
                                         Mua {product.name.split(' ')[0]}
@@ -155,7 +155,7 @@ export default function ComparisonPage() {
                                                     />
                                                 </div>
 
-                                                <Link href={`/laptops/${product.slug || product._id}`} className="block">
+                                                <Link href={`/laptops/${product._id}`} className="block">
                                                     <h3 className="font-bold text-gray-800 text-lg mb-2 line-clamp-2 hover:text-blue-600 transition-colors min-h-[56px]">
                                                         {product.name}
                                                     </h3>
@@ -169,7 +169,7 @@ export default function ComparisonPage() {
                                                 </div>
 
                                                 <Link
-                                                    href={`/laptops/${product.slug || product._id}`}
+                                                    href={`/laptops/${product._id}`}
                                                     className="block w-full py-2.5 bg-blue-600 text-white font-bold rounded-lg text-center shadow-lg shadow-blue-500/30 hover:bg-blue-700 hover:-translate-y-0.5 transition-all uppercase"
                                                 >
                                                     MUA NGAY

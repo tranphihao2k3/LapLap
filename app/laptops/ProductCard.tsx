@@ -63,7 +63,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                 name: product.name,
                 image: product.image || (product.images && product.images[0]) || '/placeholder-laptop.png',
                 price: product.price,
-                slug: product.slug,
                 specs: product.specs
             });
         }
@@ -113,7 +112,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             <div className="p-3 md:p-4 flex flex-col gap-2 md:gap-3 flex-1">
 
                 {/* NAME - Compact for better fit */}
-                <Link href={`/laptops/${product.slug || product._id}`} className="group/title">
+                <Link href={`/laptops/${product._id}`} className="group/title">
                     <h3 className="font-bold text-sm md:text-base text-[var(--color-text-brand)] text-center line-clamp-2 md:min-h-[48px] group-hover/title:text-primary transition-colors">
                         {product.name}
                     </h3>
@@ -171,7 +170,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                             </Button>
                         </div>
                         <Button
-                            href={`/laptops/${product.slug || product._id}`}
+                            href={`/laptops/${product._id}`}
                             variant="primary"
                             size="sm"
                             fullWidth

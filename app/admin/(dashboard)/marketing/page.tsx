@@ -114,29 +114,112 @@ export default function MarketingPage() {
         }
     };
 
-    const generateContent = (product: Product) => {
-        const link = `https://laplapcantho.store/laptops/${product.slug || product._id}`;
+    const generateContent = (product: Product, templateType = 'default') => {
+        const link = `https://laplapcantho.store/laptops/${product._id}`;
         const price = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price);
         const originalPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price * 1.15);
+        const nameUpper = product.name.toUpperCase();
 
-        const content = `🌟 [XẢ KHO GIÁ SỐC] - ${product.name.toUpperCase()} 🌟
+        // Helper block for specs
+        const cpuSpec = product.specs.cpu || 'Cực mạnh, cân mọi tác vụ';
+        const ramSpec = product.specs.ram || '8GB/16GB đa nhiệm mượt mà';
+        const ssdSpec = product.specs.ssd || 'Tốc độ cao, khởi động 5s';
+        const screenSpec = product.specs.screen || 'Full HD/IPS sắc nét';
+
+        let content = '';
+
+        if (templateType === 'gaming') {
+            content = `� SIÊU PHẨM GAMING ĐỔ BỘ - CHIẾN GAME XUYÊN MÀN ĐÊM 🔥
+🎮 Mẫu máy: ${nameUpper}
+💰 Rước ngay chỉ: ${price} (Tiết kiệm ngay hàng triệu đồng so với giá cũ ${originalPrice}!)
+
+-------------------------------------------
+💥 Cấu hình "QUÁI VẬT" thách thức mọi tựa game AAA:
+✅ CPU: ${cpuSpec}
+✅ RAM: ${ramSpec} (Thoải mái leo rank không giật lag)
+✅ Ổ CỨNG: ${ssdSpec} (Load game chớp mắt)
+✅ Màn hình: ${screenSpec} (Tần số quét cao, bắt chọn khoảnh khắc)
+
+🎁 QUÀ TẶNG "TẬN RĂNG" KHI MUA TẠI LAPLAP CẦN THƠ:
+🎒 Balo Gaming, Chuột xịn, Lót chuột bao la.
+⚙️ Hỗ trợ cài trọn bộ Game HOT & phần mềm FREE 100%.
+🚚 Giao máy hỏa tốc - Trả góp 0% duyệt 10 phút!
+
+🎯 GẶP LÀ CHỐT - CLICK XEM ẢNH THỰC TẾ:
+👉 Chi tiết tại: ${link}
+
+-------------------------------------------
+🏘️ Địa chỉ: Hưng Lợi, Ninh Kiều, Cần Thơ.
+☎️ Hotline ép giá: 0978.648.720 (Hào)
+#LaptopCanTho #LaptopGamingCanTho #LapLapCanTho`;
+        } else if (templateType === 'office') {
+            content = `✨ [XẢ KHO GIÁ SỐC] - LAPTOP VĂN PHÒNG / SINH VIÊN SIÊU LƯỚT ✨
+💼 Thuận tiện mang đi học, đi làm - Thiết kế mỏng nhẹ sang trọng!
+🏷️ Mã máy: ${nameUpper}
+💥 Giá sinh viên: ${price} (Thị trường đang bán ${originalPrice})
+
+-------------------------------------------
+🚀 Máy chạy mượt mà, cấu hình vượt tầm giá:
+✅ CPU: ${cpuSpec}
+✅ RAM: ${ramSpec} (Mở 20 tab Chrome vô tư)
+✅ SSD: ${ssdSpec} (Lưu trữ bét nhè tài liệu)
+✅ Màn hình: ${screenSpec} (Bảo vệ mắt cực tốt)
+
+🎁 ĐẶC QUYỀN SINH VIÊN CHI CÓ TẠI LAPLAP CẦN THƠ:
+🎉 Tặng Full Combo: Balo, Chuột không dây, Lót chuột, Túi chống sốc
+⚙️ Cài đặt Win, Word, Excel, PowerPoint Miễn Phí Trọn Đời.
+🚚 Ship tận cửa hàng - Lên hồ sơ trả góp duyệt nhanh 10p.
+
+⚡ CHỈ CÒN ĐÚNG VÀI MÁY - NHANH TAY NHÉ:
+👉 Xem chi tiết & chốt ngay: ${link}
+
+-------------------------------------------
+🏘️ Địa chỉ: Hưng Lợi, Ninh Kiều, Cần Thơ.
+☎️ Gọi ngay kẻo lỡ: 0978.648.720 (Hào)
+#LaptopSinhVien #LaptopVanPhongGiaRe #LaptopCanTho #LapLapCanTho`;
+        } else if (templateType === 'graphics') {
+            content = `🎨 CỖ MÁY ĐỒ HỌA CHUYÊN NGHIỆP - RENDER ĐẮP VỠ MỌI DEADLINE 🎨
+🔥 Tên máy: ${nameUpper} 
+💸 Giá ưu đãi cực tốt: ${price} (Tiết kiệm đáng kể so với máy mới ${originalPrice})
+
+-------------------------------------------
+💪 Cấu hình làm Đồ họa / Kỹ thuật chân ái:
+✅ CPU: ${cpuSpec} (Hiệu suất đa nhân cực khỏe)
+✅ RAM: ${ramSpec} (Preview mượt mà không delay)
+✅ SSD: ${ssdSpec} (Lưu xuất file nặng phút mốt)
+✅ Màn hình: ${screenSpec} (Chuẩn màu, không sai lệch thiết kế)
+
+🎁 ĐÃ MUA LÀ PHẢI CÓ QUÀ TẠI LAPLAP CẦN THƠ:
+🎒 Balo xịn, Chuột phím, Lót chuột
+⚙️ Cài đặt Photoshop, AI, Premiere, AutoCAD... FREE vĩnh viễn!
+🚚 Giao hàng tận nơi - Quẹt thẻ / Trả góp tẹt ga.
+
+⚡ THÊM NGAY CON QUÁI VẬT NÀY VÀO GÓC LÀM VIỆC:
+👉 Link ngắm nghía: ${link}
+
+-------------------------------------------
+🏘️ Địa chỉ: Hưng Lợi, Ninh Kiều, Cần Thơ.
+☎️ Alo tư vấn: 0978.648.720 (Hào)
+#LaptopDoHoa #LaptopThietKeCanTho #LapLapCanTho`;
+        } else {
+            content = `🌟 [XẢ KHO GIÁ SỐC] - ${nameUpper} 🌟
 💥 Giá hôm nay: ${price} (Tiết kiệm ngay hàng triệu đồng!)
 📉 Giá thị trường: ${originalPrice}
 
 -------------------------------------------
-� Cấu hình "QUÁI VẬT" trong tầm giá:
-✅ CPU: ${product.specs.cpu || 'Cực mạnh, cân mọi tác vụ'}
-✅ RAM: ${product.specs.ram || '8GB/16GB đa nhiệm mượt mà'}
-✅ SSD: ${product.specs.ssd || 'Tốc độ cao, khởi động 5s'}
-✅ Màn hình: ${product.specs.screen || 'Full HD/IPS sắc nét'}
+💪 Cấu hình "QUÁI VẬT" trong tầm giá:
+✅ CPU: ${cpuSpec}
+✅ RAM: ${ramSpec}
+✅ SSD: ${ssdSpec}
+✅ Màn hình: ${screenSpec}
 
 🎁 ƯU ĐÃI ĐỘC QUYỀN CHỈ CÓ TẠI LAPLAP CẦN THƠ:
-� Combo quà: Balo, Chuột, Lót chuột, Túi chống sốc...
+🎉 Combo quà: Balo, Chuột, Lót chuột, Túi chống sốc...
 ⚙️ Hỗ trợ cài đặt phần mềm & vệ sinh máy TRỌN ĐỜI.
 🚚 Ship COD toàn quốc - Kiểm tra hàng mới thanh toán.
 💳 Trả góp 0% - Duyệt hồ sơ chỉ trong 10 phút.
 
-� SỐ LƯỢNG CÓ HẠN - CHỐT ĐƠN NGAY TẠI:
+🚨 SỐ LƯỢNG CÓ HẠN - CHỐT ĐƠN NGAY TẠI:
 👉 Click xem ảnh & đặt hàng: ${link}
 👉 Xem thêm quà tặng tại: ${link}
 
@@ -144,6 +227,8 @@ export default function MarketingPage() {
 🏘️ Địa chỉ: Hưng Lợi, Ninh Kiều, Cần Thơ.
 ☎️ Hotline/Zalo: 0978.648.720 (Hào)
 #LaptopCanTho #LaptopGiaRe #LapLapCanTho #${product.name.replace(/\s+/g, '')}`;
+        }
+
         setPostContent(content);
     };
 
@@ -403,6 +488,32 @@ export default function MarketingPage() {
                             </div>
                         )}
 
+                        {genType === 'standard' && (
+                            <div className="mb-6 flex flex-wrap gap-2 animate-in fade-in slide-in-from-top-4 duration-500">
+                                <button
+                                    disabled={!selectedProduct}
+                                    onClick={() => generateContent(selectedProduct!, 'office')}
+                                    className="px-4 py-2.5 bg-sky-50 text-sky-700 border border-sky-100 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-sky-100 disabled:opacity-50 transition-all active:scale-95"
+                                >
+                                    Văn phòng / Sinh viên 💼
+                                </button>
+                                <button
+                                    disabled={!selectedProduct}
+                                    onClick={() => generateContent(selectedProduct!, 'gaming')}
+                                    className="px-4 py-2.5 bg-red-50 text-red-700 border border-red-100 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-red-100 disabled:opacity-50 transition-all active:scale-95"
+                                >
+                                    Gaming 🔥
+                                </button>
+                                <button
+                                    disabled={!selectedProduct}
+                                    onClick={() => generateContent(selectedProduct!, 'graphics')}
+                                    className="px-4 py-2.5 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-indigo-100 disabled:opacity-50 transition-all active:scale-95"
+                                >
+                                    Đồ họa 🎨
+                                </button>
+                            </div>
+                        )}
+
                         <div className="relative group/textarea">
                             <textarea
                                 value={postContent}
@@ -515,13 +626,13 @@ export default function MarketingPage() {
                                 <button
                                     onClick={() => setAutoCopy(!autoCopy)}
                                     className={`flex items-center gap-3 px-5 py-3 rounded-2xl backdrop-blur-md border transition-all ${autoCopy
-                                            ? 'bg-white/30 border-white/40 text-white shadow-lg shadow-white/20'
-                                            : 'bg-white/10 border-white/20 text-white/70 hover:bg-white/15'
+                                        ? 'bg-white/30 border-white/40 text-white shadow-lg shadow-white/20'
+                                        : 'bg-white/10 border-white/20 text-white/70 hover:bg-white/15'
                                         }`}
                                 >
                                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${autoCopy
-                                            ? 'bg-white border-white'
-                                            : 'bg-transparent border-white/50'
+                                        ? 'bg-white border-white'
+                                        : 'bg-transparent border-white/50'
                                         }`}>
                                         {autoCopy && (
                                             <div className="w-2 h-2 rounded-full bg-blue-600"></div>
@@ -569,6 +680,6 @@ export default function MarketingPage() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
