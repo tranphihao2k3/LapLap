@@ -23,6 +23,8 @@ interface Product {
         ram: string;
         ssd: string;
         screen: string;
+        resolution?: string;
+        hz?: string;
     };
 }
 
@@ -125,7 +127,10 @@ export default function MarketingPage() {
         const cpuSpec = product.specs.cpu || 'Cực mạnh, cân mọi tác vụ';
         const ramSpec = product.specs.ram || '8GB/16GB đa nhiệm mượt mà';
         const ssdSpec = product.specs.ssd || 'Tốc độ cao, khởi động 5s';
-        const screenSpec = product.specs.screen || 'Full HD/IPS sắc nét';
+
+        const resolutionPart = product.specs.resolution ? ` - ${product.specs.resolution}` : '';
+        const hzPart = product.specs.hz ? ` - ${product.specs.hz}` : '';
+        const screenSpec = `${product.specs.screen || 'Full HD/IPS sắc nét'}${resolutionPart}${hzPart}`;
 
         let content = '';
         let finalTemplateType = templateType;
