@@ -118,7 +118,7 @@ export default function MarketingPage() {
     };
 
     const generateContent = (product: Product, templateType = 'default') => {
-        const link = `https://laplapcantho.store/laptops/${product._id}`;
+        const link = `https://laplapcantho.store/laptops/${product.slug || product._id}`;
         const price = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price);
         const originalPrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price * 1.15);
         const nameUpper = product.name.toUpperCase();
