@@ -55,6 +55,19 @@ export const metadata: Metadata = {
     siteName: "LapLap - Laptop Cần Thơ",
     title: "LapLap - Laptop Cần Thơ | Mua Bán Laptop Chính Hãng Giá Tốt",
     description: "LapLap - Chuyên laptop tại Cần Thơ. Laptop mới, laptop cũ chính hãng, giá tốt nhất. Giao hàng tận nơi, bảo hành uy tín. Test laptop miễn phí online.",
+    images: [
+      {
+        url: "https://laplapcantho.store/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "LapLap - Laptop Cần Thơ",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "LapLap - Laptop Cần Thơ | Mua Bán Laptop Chính Hãng Giá Tốt",
+    description: "LapLap - Chuyên laptop tại Cần Thơ. Laptop mới, laptop cũ chính hãng, giá tốt nhất.",
   },
 };
 

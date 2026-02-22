@@ -136,7 +136,12 @@ export default function LaptopFormPage() {
             images: formData.images.filter(img => img.trim() !== ''),
             warranty: {
                 ...formData.warranty,
-                items: formData.warranty.items.filter(item => item.trim() !== ''),
+                items: formData.warranty.items.filter(item => item.trim() !== '').map(item => {
+                    if (item.includes('Bảo hành') && item.includes('tháng') && item.includes('chính hãng')) {
+                        return item.replace(/Bảo hành \d+ tháng/, `Bảo hành ${formData.warrantyMonths} tháng`);
+                    }
+                    return item;
+                }),
             },
         };
 

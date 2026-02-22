@@ -14,7 +14,8 @@ interface Product {
     _id: string;
     name: string;
     price: number;
-    image: string;
+    image?: string;
+    images?: string[];
     slug: string;
     specs: {
         cpu: string;
@@ -25,9 +26,11 @@ interface Product {
 }
 
 interface Group {
-    id: string;
+    _id: string;
     name: string;
     url: string;
+    order?: number;
+    isActive?: boolean;
 }
 
 export default function MarketingPage() {
@@ -78,18 +81,20 @@ export default function MarketingPage() {
 
     useEffect(() => {
         fetchProducts();
-        // Load groups from localStorage
-        const savedGroups = localStorage.getItem('marketing_groups');
-        if (savedGroups) {
-            setGroups(JSON.parse(savedGroups));
-        } else {
-            // Add some default groups if none
-            setGroups([
-                { id: '1', name: 'Chợ Laptop Cũ Cần Thơ', url: 'https://www.facebook.com/groups/cholaptopcantho' },
-                { id: '2', name: 'Mua Bán Laptop Cũ Giá Rẻ', url: 'https://www.facebook.com/groups/muabanlaptopcugiare' }
-            ]);
-        }
+        fetchGroups();
     }, []);
+
+    const fetchGroups = async () => {
+        try {
+            const res = await fetch('/api/admin/facebook-groups');
+            const data = await res.json();
+            if (data.success) {
+                setGroups(data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching groups:', error);
+        }
+    };
 
     useEffect(() => {
         if (selectedProduct && genType === 'standard') {
@@ -149,23 +154,19 @@ export default function MarketingPage() {
         toast.success("🔗 Đã copy link sản phẩm!");
     };
 
-    const handleAddGroup = () => {
-        if (!newGroupUrl) return;
-
-        // Check if group already exists
-        if (groups.some(g => g.url === newGroupUrl)) {
-            toast.error("Nhóm này đã có trong danh sách!");
+    const handleAddGroup = async () => {
+        if (!newGroupUrl) {
+            toast.error("Vui lòng nhập link nhóm Facebook!");
             return;
         }
 
-        // Simple extraction of group name from URL (could be improved)
+        // Simple extraction of group name from URL
         let name = 'Facebook Group';
 
         try {
             const urlObj = new URL(newGroupUrl);
             const pathParts = urlObj.pathname.split('/').filter(p => p);
             if (pathParts.length > 0) {
-                // Usually /groups/group-name or /groups/12345
                 const groupIndex = pathParts.indexOf('groups');
                 if (groupIndex !== -1 && pathParts[groupIndex + 1]) {
                     const groupPart = pathParts[groupIndex + 1];
@@ -176,26 +177,49 @@ export default function MarketingPage() {
             // Invalid URL
         }
 
-        const newGroup = {
-            id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            name: name,
-            url: newGroupUrl,
-        };
+        try {
+            const res = await fetch('/api/admin/facebook-groups', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, url: newGroupUrl }),
+            });
 
-        const updatedGroups = [...groups, newGroup];
-        setGroups(updatedGroups);
-        localStorage.setItem('marketing_groups', JSON.stringify(updatedGroups));
-        setNewGroupUrl('');
-        toast.success("Đã thêm nhóm mới!");
+            const data = await res.json();
+            if (data.success) {
+                setNewGroupUrl('');
+                fetchGroups();
+                toast.success("Đã thêm nhóm mới!");
+            } else {
+                toast.error(data.error || "Không thể thêm nhóm!");
+            }
+        } catch (error) {
+            console.error('Error adding group:', error);
+            toast.error("Lỗi khi thêm nhóm!");
+        }
     };
 
-    const handleRemoveGroup = (id: string) => {
-        const updatedGroups = groups.filter(g => g.id !== id);
-        setGroups(updatedGroups);
-        localStorage.setItem('marketing_groups', JSON.stringify(updatedGroups));
-        // Adjust index if needed
-        if (currentGroupIndex >= updatedGroups.length) {
-            setCurrentGroupIndex(Math.max(0, updatedGroups.length - 1));
+    const handleRemoveGroup = async (id: string) => {
+        if (!confirm('Bạn có chắc muốn xóa nhóm này?')) return;
+
+        try {
+            const res = await fetch(`/api/admin/facebook-groups/${id}`, {
+                method: 'DELETE',
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                fetchGroups();
+                // Adjust index if needed
+                if (currentGroupIndex >= groups.length - 1) {
+                    setCurrentGroupIndex(Math.max(0, groups.length - 2));
+                }
+                toast.success("Đã xóa nhóm!");
+            } else {
+                toast.error(data.error || "Không thể xóa nhóm!");
+            }
+        } catch (error) {
+            console.error('Error removing group:', error);
+            toast.error("Lỗi khi xóa nhóm!");
         }
     };
 
@@ -207,10 +231,13 @@ export default function MarketingPage() {
     };
 
     const openNextGroup = () => {
-        if (groups.length === 0) return;
+        if (groups.length === 0) {
+            toast.error("Chưa có nhóm nào trong danh sách!");
+            return;
+        }
 
         // Auto copy content if enabled
-        if (autoCopy) {
+        if (autoCopy && postContent) {
             copyToClipboard();
         }
 
@@ -286,10 +313,22 @@ export default function MarketingPage() {
                                 >
                                     <div className="w-14 h-14 relative flex-shrink-0 bg-white rounded-xl border border-slate-100 p-1 shadow-sm overflow-hidden transition-transform group-hover:scale-105">
                                         <Image
-                                            src={product.image && product.image.trim() !== '' ? product.image : PLACEHOLDER_IMAGE}
+                                            src={
+                                                (product.image && product.image.trim() !== '')
+                                                    ? product.image
+                                                    : (product.images && product.images.length > 0 && product.images[0] && product.images[0].trim() !== '')
+                                                        ? product.images[0]
+                                                        : PLACEHOLDER_IMAGE
+                                            }
                                             alt={product.name}
                                             fill
                                             className="object-contain"
+                                            onError={(e) => {
+                                                const target = e.target as HTMLImageElement;
+                                                if (target.src !== PLACEHOLDER_IMAGE) {
+                                                    target.src = PLACEHOLDER_IMAGE;
+                                                }
+                                            }}
                                         />
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -404,12 +443,13 @@ export default function MarketingPage() {
                                 type="text"
                                 value={newGroupUrl}
                                 onChange={(e) => setNewGroupUrl(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handleAddGroup()}
                                 placeholder="Dán link nhóm Facebook..."
-                                className="flex-1 px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all font-medium text-sm"
+                                className="flex-1 px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all font-medium text-sm"
                             />
                             <button
                                 onClick={handleAddGroup}
-                                className="bg-slate-900 text-white px-8 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all active:scale-95 shadow-lg shadow-slate-200"
+                                className="bg-blue-600 text-white px-8 py-3.5 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all active:scale-95 shadow-lg shadow-blue-200 hover:shadow-blue-300"
                             >
                                 Thêm
                             </button>
@@ -423,21 +463,29 @@ export default function MarketingPage() {
                                     {groups.map((group, index) => {
                                         const isNext = index === currentGroupIndex;
                                         return (
-                                            <div key={group.id} className={`flex items-center justify-between p-4 rounded-2xl transition-all ${isNext ? 'bg-white border-2 border-blue-600 shadow-xl shadow-blue-100 -translate-y-1' : 'bg-white/60 border border-slate-100 opacity-60'}`}>
-                                                <div className="flex items-center gap-4 min-w-0">
-                                                    <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 font-black text-xs transition-colors ${isNext ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-500'}`}>
+                                            <div key={group._id} className={`flex items-center justify-between p-4 rounded-2xl transition-all ${isNext ? 'bg-white border-2 border-blue-600 shadow-xl shadow-blue-100 -translate-y-1' : 'bg-white border border-slate-200 hover:border-slate-300'}`}>
+                                                <div className="flex items-center gap-4 min-w-0 flex-1">
+                                                    <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 font-black text-xs transition-colors ${isNext ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-blue-100 text-blue-600'}`}>
                                                         {index + 1}
                                                     </div>
-                                                    <div className="min-w-0">
-                                                        <div className={`font-black text-xs uppercase tracking-tight truncate ${isNext ? 'text-slate-900' : 'text-slate-500'}`}>{group.name}</div>
-                                                        <div className="text-[10px] text-slate-400 truncate mt-0.5">{group.url}</div>
+                                                    <div className="min-w-0 flex-1">
+                                                        <div className={`font-black text-xs uppercase tracking-tight truncate ${isNext ? 'text-slate-900' : 'text-slate-700'}`}>{group.name}</div>
+                                                        <div className="text-[10px] text-slate-500 truncate mt-0.5">{group.url}</div>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-2">
-                                                    {isNext && <span className="text-[8px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 animate-pulse uppercase tracking-widest">Tiếp theo</span>}
+                                                    {isNext && (
+                                                        <button
+                                                            onClick={openNextGroup}
+                                                            disabled={!postContent}
+                                                            className="px-4 py-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-blue-700 transition-all active:scale-95 shadow-md shadow-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        >
+                                                            Tiếp theo
+                                                        </button>
+                                                    )}
                                                     <button
-                                                        onClick={() => handleRemoveGroup(group.id)}
-                                                        className="p-2 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+                                                        onClick={() => handleRemoveGroup(group._id)}
+                                                        className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
                                                     >
                                                         <Trash2 size={16} />
                                                     </button>
@@ -450,36 +498,46 @@ export default function MarketingPage() {
                         </div>
 
                         {/* Control Panel */}
-                        <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2.5rem] p-8 md:p-10 text-white shadow-2xl shadow-slate-300 relative overflow-hidden group/control">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl transition-all group-hover/control:bg-blue-500/20"></div>
+                        <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 rounded-[2.5rem] p-8 md:p-10 text-white shadow-2xl shadow-blue-200 relative overflow-hidden group/control">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl transition-all group-hover/control:bg-white/20"></div>
 
                             <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-6 relative z-10">
                                 <div className="text-center md:text-left">
                                     <h3 className="font-black text-xl md:text-2xl tracking-tight flex items-center justify-center md:justify-start gap-3">
                                         Hệ thống Queue Posting
                                         <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                                            <span className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-400">Online</span>
+                                            <div className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></div>
+                                            <span className="text-[10px] uppercase font-black tracking-[0.2em] text-emerald-100">Online</span>
                                         </div>
                                     </h3>
-                                    <p className="text-slate-400 text-sm mt-2 font-medium">Bấm mở nhóm &rarr; Ctrl+V &rarr; Đăng bài &rarr; Quay lại đây</p>
+                                    <p className="text-white/90 text-sm mt-2 font-medium">Bấm mở nhóm &rarr; Ctrl+V &rarr; Đăng bài &rarr; Quay lại đây</p>
                                 </div>
-                                <div className="flex items-center gap-4 bg-white/5 p-3 px-5 rounded-2xl backdrop-blur-md border border-white/10">
-                                    <label className="flex items-center cursor-pointer">
-                                        <input type="checkbox" checked={autoCopy} onChange={(e) => setAutoCopy(e.target.checked)} className="sr-only peer" />
-                                        <div className="w-10 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-slate-400 after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500 peer-checked:after:bg-white"></div>
-                                        <span className="ml-3 text-[10px] font-black uppercase tracking-widest text-slate-300">Tự động Copy</span>
-                                    </label>
-                                </div>
+                                <button
+                                    onClick={() => setAutoCopy(!autoCopy)}
+                                    className={`flex items-center gap-3 px-5 py-3 rounded-2xl backdrop-blur-md border transition-all ${autoCopy
+                                            ? 'bg-white/30 border-white/40 text-white shadow-lg shadow-white/20'
+                                            : 'bg-white/10 border-white/20 text-white/70 hover:bg-white/15'
+                                        }`}
+                                >
+                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${autoCopy
+                                            ? 'bg-white border-white'
+                                            : 'bg-transparent border-white/50'
+                                        }`}>
+                                        {autoCopy && (
+                                            <div className="w-2 h-2 rounded-full bg-blue-600"></div>
+                                        )}
+                                    </div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Tự động Copy</span>
+                                </button>
                             </div>
 
                             <div className="flex flex-col gap-6 relative z-10">
                                 <button
                                     onClick={openNextGroup}
                                     disabled={groups.length === 0 || !postContent}
-                                    className="w-full py-6 md:py-8 rounded-3xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm uppercase tracking-[0.2em] transition-all active:scale-[0.98] shadow-2xl shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed group/btn overflow-hidden relative"
+                                    className="w-full py-6 md:py-8 rounded-3xl bg-white text-blue-600 font-black text-sm uppercase tracking-[0.2em] transition-all active:scale-[0.98] shadow-2xl shadow-white/20 hover:shadow-white/30 disabled:opacity-50 disabled:cursor-not-allowed group/btn overflow-hidden relative hover:bg-blue-50"
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-all duration-1000"></div>
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-all duration-1000"></div>
                                     <div className="flex items-center justify-center gap-4 relative z-10">
                                         <Rocket size={24} className="group-hover/btn:-translate-y-1 group-hover/btn:translate-x-1 transition-transform" />
                                         MỞ NHÓM TIẾP THEO ({currentGroupIndex + 1} / {groups.length})
@@ -489,7 +547,7 @@ export default function MarketingPage() {
                                 <div className="flex justify-center">
                                     <button
                                         onClick={resetProgress}
-                                        className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-blue-400 transition-colors flex items-center gap-2"
+                                        className="text-[10px] font-black uppercase tracking-widest text-white/80 hover:text-white transition-colors flex items-center gap-2"
                                     >
                                         <RefreshCw size={14} />
                                         Đặt lại từ đầu danh sách
@@ -497,13 +555,13 @@ export default function MarketingPage() {
                                 </div>
                             </div>
 
-                            <div className="mt-10 bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl relative z-10">
+                            <div className="mt-10 bg-white/20 backdrop-blur-md border border-white/30 p-5 rounded-3xl relative z-10">
                                 <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-2xl bg-blue-500/20 flex items-center justify-center shrink-0">
-                                        <Sparkles className="text-blue-400 w-5 h-5" />
+                                    <div className="w-10 h-10 rounded-2xl bg-white/30 flex items-center justify-center shrink-0">
+                                        <Sparkles className="text-white w-5 h-5" />
                                     </div>
-                                    <div className="text-xs uppercase font-black tracking-widest leading-loose text-slate-400">
-                                        <strong className="text-blue-400">Mẹo Tip:</strong> Sau khi hệ thống mở Tab Facebook mới, bạn chỉ cần nhấn tổ hợp phím <kbd className="bg-slate-700 px-1.5 py-0.5 rounded text-white font-mono">Ctrl + V</kbd> và bấm <strong className="text-white">Post</strong>.
+                                    <div className="text-xs uppercase font-black tracking-widest leading-loose text-white/90">
+                                        <strong className="text-white">Mẹo Tip:</strong> Sau khi hệ thống mở Tab Facebook mới, bạn chỉ cần nhấn tổ hợp phím <kbd className="bg-white/30 px-1.5 py-0.5 rounded text-white font-mono">Ctrl + V</kbd> và bấm <strong className="text-white">Post</strong>.
                                     </div>
                                 </div>
                             </div>

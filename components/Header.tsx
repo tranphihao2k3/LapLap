@@ -7,6 +7,7 @@ import { MapPin, Menu, X, Facebook, Search, ShoppingBag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { createPortal } from "react-dom";
 import Button from "./ui/Button";
 import { useCart } from "@/context/CartContext";
 
@@ -147,7 +148,7 @@ export default function Header() {
 
 
     return (
-        <header className={`w-full sticky top-0 z-50 shadow-md bg-white transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+        <header className={`w-full sticky top-0 z-50 shadow-md bg-white transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'} ${isMobileMenuOpen ? 'z-[9998]' : ''}`}>
             {/* Logo */}
             <div className="bg-white">
                 <div className="container mx-auto max-w-7xl px-4 py-3 flex flex-wrap md:flex-row justify-between items-center gap-y-4 md:gap-6">
@@ -470,88 +471,110 @@ export default function Header() {
                 </div>
             </nav>
 
-            {/* Mobile Sidebar */}
-            <div
-                className={`fixed inset-0 bg-black/50 z-[100] lg:hidden transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-                    }`}
-                onClick={() => setIsMobileMenuOpen(false)}
-            >
-                <div
-                    className={`fixed top-0 right-0 h-full h-screen w-[280px] bg-white z-[101] shadow-2xl transform transition-transform duration-300 overflow-y-auto ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-                        }`}
-                    onClick={(e) => e.stopPropagation()}
-                    style={{ backgroundColor: '#ffffff' }}
-                >
-                    {/* Sidebar Header */}
-                    <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                        <h2 className={" text-xl font-bold text-gray-800"}>
-                            Menu
-                        </h2>
-                        <button
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                        >
-                            <X className="w-5 h-5 text-gray-700" />
-                        </button>
-                    </div>
-
-                    {/* Location */}
-                    <div className="px-4 py-2 bg-blue-50 border-b border-gray-200">
-                        <div className="flex items-center gap-2 text-sm text-gray-700">
-                            <MapPin className="w-4 h-4 text-blue-600" />
-                            <span className="font-medium">Cần Thơ</span>
+            {/* Mobile Sidebar - Using Portal to ensure it's above everything */}
+            {typeof window !== 'undefined' && isMobileMenuOpen && document.body ? createPortal(
+                <>
+                    {/* Overlay */}
+                    <div
+                        className="fixed inset-0 bg-black/50 lg:hidden transition-opacity duration-300"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        style={{ 
+                            zIndex: 99999,
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            width: '100%',
+                            height: '100%'
+                        }}
+                    />
+                    {/* Sidebar Menu */}
+                    <div
+                        className="fixed top-0 right-0 h-full h-screen w-[280px] bg-white shadow-2xl transform transition-transform duration-300 overflow-y-auto translate-x-0"
+                        onClick={(e) => e.stopPropagation()}
+                        style={{ 
+                            backgroundColor: '#ffffff', 
+                            zIndex: 100000,
+                            position: 'fixed',
+                            top: 0,
+                            right: 0,
+                            height: '100vh',
+                            width: '280px'
+                        }}
+                    >
+                        {/* Sidebar Header */}
+                        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                            <h2 className={" text-xl font-bold text-gray-800"}>
+                                Menu
+                            </h2>
+                            <button
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                            >
+                                <X className="w-5 h-5 text-gray-700" />
+                            </button>
                         </div>
-                    </div>
 
-                    {/* Mobile Fanpage Button */}
-                    <div className="px-4 py-2">
-                        <a
-                            href="https://facebook.com/profile.php?id=61582947329036"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[#1877F2] text-white rounded-xl shadow-md font-bold active:scale-95 transition-transform text-sm"
-                        >
-                            <Facebook className="w-4 h-4 animate-pulse" />
-                            <span>Ghé thăm Fanpage</span>
-                        </a>
-                    </div>
+                        {/* Location */}
+                        <div className="px-4 py-2 bg-blue-50 border-b border-gray-200">
+                            <div className="flex items-center gap-2 text-sm text-gray-700">
+                                <MapPin className="w-4 h-4 text-blue-600" />
+                                <span className="font-medium">Cần Thơ</span>
+                            </div>
+                        </div>
 
-                    {/* Menu Items */}
-                    <nav className="px-4 py-2">
-                        <ul className="space-y-1">
-                            {menuItems.map((item: any, index) => (
-                                <li key={index}>
-                                    {item.children ? (
-                                        <div className="space-y-1">
-                                            <div className={`block px-4 py-2 text-sm font-bold text-gray-400 uppercase tracking-wider`}>
-                                                {item.label}
+                        {/* Mobile Fanpage Button */}
+                        <div className="px-4 py-2">
+                            <a
+                                href="https://facebook.com/profile.php?id=61582947329036"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[#1877F2] text-white rounded-xl shadow-md font-bold active:scale-95 transition-transform text-sm"
+                            >
+                                <Facebook className="w-4 h-4 animate-pulse" />
+                                <span>Ghé thăm Fanpage</span>
+                            </a>
+                        </div>
+
+                        {/* Menu Items */}
+                        <nav className="px-4 py-2">
+                            <ul className="space-y-1">
+                                {menuItems.map((item: any, index) => (
+                                    <li key={index}>
+                                        {item.children ? (
+                                            <div className="space-y-1">
+                                                <div className={`block px-4 py-2 text-sm font-bold text-gray-400 uppercase tracking-wider`}>
+                                                    {item.label}
+                                                </div>
+                                                {item.children.map((child: any, childIdx: number) => (
+                                                    <Link
+                                                        key={childIdx}
+                                                        href={child.href}
+                                                        onClick={() => setIsMobileMenuOpen(false)}
+                                                        className={`block px-4 py-2.5 pl-8 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors`}
+                                                    >
+                                                        {child.label}
+                                                    </Link>
+                                                ))}
                                             </div>
-                                            {item.children.map((child: any, childIdx: number) => (
-                                                <Link
-                                                    key={childIdx}
-                                                    href={child.href}
-                                                    onClick={() => setIsMobileMenuOpen(false)}
-                                                    className={`block px-4 py-2.5 pl-8 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors`}
-                                                >
-                                                    {child.label}
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <Link
-                                            href={item.href}
-                                            onClick={() => setIsMobileMenuOpen(false)}
-                                            className={`block px-4 py-2.5 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors`}
-                                        >
-                                            {item.label}
-                                        </Link>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-                    </nav>
-                </div>
-            </div>
+                                        ) : (
+                                            <Link
+                                                href={item.href}
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                className={`block px-4 py-2.5 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors`}
+                                            >
+                                                {item.label}
+                                            </Link>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
+                    </div>
+                </>,
+                document.body
+            ) : null}
         </header>
     );
 }

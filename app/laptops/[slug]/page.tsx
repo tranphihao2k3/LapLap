@@ -83,8 +83,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         };
     }
 
-    const title = `${product.name} | Trả góp 0%, Giá Ưu Đãi`;
-    const description = `Mua Laptop ${product.name} giá rẻ tại Cần Thơ. Chip ${product.specs?.cpu || ''}, RAM ${product.specs?.ram || ''}, SSD ${product.specs?.ssd || ''}. Hỗ trợ trả góp 0%, bảo hành uy tín.`;
+    const formattedPrice = product.price.toLocaleString('vi-VN');
+    const title = `${product.name} | Giá ${formattedPrice} VNĐ | LapLap Cần Thơ`;
+    const description = `Mua Laptop ${product.name} giá rẻ tại Cần Thơ chỉ ${formattedPrice}đ. CPU ${product.specs?.cpu || ''}, RAM ${product.specs?.ram || ''}, SSD ${product.specs?.ssd || ''}. Bảo hành uy tín, hỗ trợ trả góp 0%. Đặt mua ngay!`;
+
 
     let imageUrl = product.image || (product.images && product.images[0]) || '/placeholder-laptop.png';
     // Ensure absolute URL for Open Graph

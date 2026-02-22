@@ -12,6 +12,8 @@ import { motion, Variants, useInView, animate } from "framer-motion";
 import Button from "@/components/ui/Button";
 import Slider from "react-slick";
 import TechLoader from '@/components/ui/TechLoader';
+import JsonLd from '@/components/JsonLd';
+
 
 
 interface LaptopSpec {
@@ -56,35 +58,77 @@ export default function HomePage() {
 
   useEffect(() => {
     fetchData();
-
-    // Add structured data for local SEO
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      "name": "LapLap - Laptop Cần Thơ",
-      "description": "Chuyên mua bán laptop cũ, mới chính hãng tại Cần Thơ. Dịch vụ sửa chữa (sữa laptop), vệ sinh laptop lấy liền uy tín.",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Cần Thơ",
-        "addressRegion": "Cần Thơ",
-        "addressCountry": "VN"
-      },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": "10.0452",
-        "longitude": "105.7469"
-      },
-      "url": "https://laplapcantho.store",
-      "priceRange": "$$",
-      "areaServed": "Cần Thơ"
-    });
-    document.head.appendChild(script);
-    return () => {
-      document.head.removeChild(script);
-    };
   }, []);
+
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "LapLap - Laptop Cần Thơ",
+    "url": "https://laplapcantho.store",
+    "logo": "https://laplapcantho.store/logo.png",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+84-978-648-720",
+      "contactType": "customer service",
+      "areaServed": "VN",
+      "availableLanguage": "Vietnamese"
+    },
+    "sameAs": [
+      "https://www.facebook.com/laplapcantho",
+      "https://zalo.me/0978648720"
+    ]
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "url": "https://laplapcantho.store",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://laplapcantho.store/laptops?search={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  };
+
+  const localBusinessSchema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "LapLap - Laptop Cần Thơ",
+    "description": "Chuyên mua bán laptop cũ, mới chính hãng tại Cần Thơ. Dịch vụ sửa chữa, vệ sinh laptop lấy liền uy tín.",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Cần Thơ",
+      "addressRegion": "Cần Thơ",
+      "addressCountry": "VN",
+      "streetAddress": "Ninh Kiều, Cần Thơ"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "10.0452",
+      "longitude": "105.7469"
+    },
+    "url": "https://laplapcantho.store",
+    "telephone": "0978648720",
+    "priceRange": "$$",
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "opens": "08:00",
+        "closes": "21:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "Sunday",
+        "opens": "08:00",
+        "closes": "18:00"
+      }
+    ]
+  };
+
 
   const fetchData = async () => {
     try {
@@ -168,7 +212,11 @@ export default function HomePage() {
 
   return (
     <>
+      <JsonLd data={organizationSchema} />
+      <JsonLd data={websiteSchema} />
+      <JsonLd data={localBusinessSchema} />
       <Header />
+
       <main className="flex-1">
         {/* Hero Section - Standardized Style */}
         <section className="relative w-full h-auto bg-gradient-to-r from-[#124A84] via-[#0d3560] to-[#0a2d54] text-white overflow-hidden shadow-lg border-b border-white/10 py-12 md:py-20 mb-12">

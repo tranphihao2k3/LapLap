@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronRight, Cpu, Monitor, CheckCircle, Zap, Shield, TrendingUp, Gift, CreditCard, Facebook, MessageCircle, Star, ShoppingBag, Truck, Headphones, BadgeCheck, Search, Info, Home, Share2, Check, RefreshCw } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -50,6 +50,102 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
     const productImages = product.images && product.images.length > 0
         ? product.images
         : [product.image || 'https://placehold.co/600x450/e5e7eb/64748b?text=No+Image'];
+
+    // Structured Data for SEO
+    useEffect(() => {
+        const baseUrl = 'https://laplapcantho.store';
+        const productUrl = `${baseUrl}/laptops/${product.slug || product._id}`;
+        const productImage = productImages[0]?.startsWith('http')
+            ? productImages[0]
+            : `${baseUrl}${productImages[0]}`;
+
+        // Product Schema
+        const productSchema = {
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: product.name,
+            description: product.description || `Laptop ${product.name} tại Cần Thơ`,
+            image: productImages.map(img => img.startsWith('http') ? img : `${baseUrl}${img}`),
+            brand: {
+                '@type': 'Brand',
+                name: (product.brandId as any)?.name || 'Unknown'
+            },
+            category: (product.categoryId as any)?.name || 'Laptop',
+            offers: {
+                '@type': 'Offer',
+                url: productUrl,
+                priceCurrency: 'VND',
+                price: product.price,
+                availability: product.status === 'active'
+                    ? 'https://schema.org/InStock'
+                    : 'https://schema.org/OutOfStock',
+                seller: {
+                    '@type': 'Organization',
+                    name: 'LapLap - Laptop Cần Thơ'
+                }
+            },
+            aggregateRating: product.averageRating > 0 ? {
+                '@type': 'AggregateRating',
+                ratingValue: product.averageRating,
+                reviewCount: product.reviewCount || 0
+            } : undefined
+        };
+
+        // Breadcrumb Schema
+        const breadcrumbSchema = {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+                {
+                    '@type': 'ListItem',
+                    position: 1,
+                    name: 'Trang chủ',
+                    item: baseUrl
+                },
+                {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: 'Laptop',
+                    item: `${baseUrl}/laptops`
+                },
+                {
+                    '@type': 'ListItem',
+                    position: 3,
+                    name: product.name,
+                    item: productUrl
+                }
+            ]
+        };
+
+        // Inject Product Schema
+        const productScript = document.createElement('script');
+        productScript.type = 'application/ld+json';
+        productScript.id = 'product-schema';
+        productScript.text = JSON.stringify(productSchema);
+
+        // Inject Breadcrumb Schema
+        const breadcrumbScript = document.createElement('script');
+        breadcrumbScript.type = 'application/ld+json';
+        breadcrumbScript.id = 'breadcrumb-schema';
+        breadcrumbScript.text = JSON.stringify(breadcrumbSchema);
+
+        // Remove existing schemas if any
+        const existingProduct = document.getElementById('product-schema');
+        const existingBreadcrumb = document.getElementById('breadcrumb-schema');
+        if (existingProduct) existingProduct.remove();
+        if (existingBreadcrumb) existingBreadcrumb.remove();
+
+        // Add new schemas
+        document.head.appendChild(productScript);
+        document.head.appendChild(breadcrumbScript);
+
+        return () => {
+            const productEl = document.getElementById('product-schema');
+            const breadcrumbEl = document.getElementById('breadcrumb-schema');
+            if (productEl) document.head.removeChild(productEl);
+            if (breadcrumbEl) document.head.removeChild(breadcrumbEl);
+        };
+    }, [product, productImages]);
 
     return (
         <div className="min-h-screen bg-[#F8FAFC]">
@@ -150,12 +246,18 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
 
                                 {product.warranty?.items && product.warranty.items.length > 0 && (
                                     <div className="pt-2 space-y-2">
-                                        {product.warranty.items.map((item, idx) => (
-                                            <div key={idx} className="flex items-start gap-2 text-sm text-slate-600">
-                                                <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
-                                                <span className="font-medium">{item}</span>
-                                            </div>
-                                        ))}
+                                        {product.warranty.items.map((item, idx) => {
+                                            let displayItem = item;
+                                            if (displayItem.includes('Bảo hành') && displayItem.includes('tháng')) {
+                                                displayItem = displayItem.replace(/Bảo hành \d+ tháng/, `Bảo hành ${product.warrantyMonths || 12} tháng`);
+                                            }
+                                            return (
+                                                <div key={idx} className="flex items-start gap-2 text-sm text-slate-600">
+                                                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
+                                                    <span className="font-medium">{displayItem}</span>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>

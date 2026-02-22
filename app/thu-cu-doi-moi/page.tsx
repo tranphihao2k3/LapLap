@@ -7,9 +7,60 @@ import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Button from '@/components/ui/Button';
+import JsonLd from '@/components/JsonLd';
+
 
 export default function TradeInPage() {
+    const serviceSchema = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": "Thu cũ đổi mới laptop",
+        "provider": {
+            "@type": "LocalBusiness",
+            "name": "LapLap Cần Thơ",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Cần Thơ",
+                "addressCountry": "VN"
+            }
+        },
+        "areaServed": "Cần Thơ",
+        "description": "Dịch vụ thu cũ đổi mới laptop tại Cần Thơ. Định giá cao, trợ giá lên đời lên đến 2 triệu đồng."
+    };
+
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Thủ tục thu cũ đổi mới tại LapLap như thế nào?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Bạn chỉ cần mang máy đến cửa hàng hoặc điền thông tin vào form định giá. Kỹ thuật viên sẽ kiểm tra và báo giá trong 15 phút. Sau đó bạn có thể đổi sang máy mới và chỉ cần bù phần chênh lệch."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "LapLap có thu mua máy bị hỏng hoặc bể màn hình không?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Có, chúng tôi thu mua đa dạng các dòng laptop kể cả máy hư hỏng linh kiện hoặc ngoại hình xấu với mức giá hợp lý dựa trên giá trị linh kiện còn lại."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Mức trợ giá lên đời là bao nhiêu?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Tùy vào giá trị máy đổi, LapLap hỗ trợ thêm mức trợ giá từ 500.000đ lên đến 2.000.000đ dành riêng cho khách hàng thu cũ đổi mới."
+                }
+            }
+        ]
+    };
+
     const [formData, setFormData] = useState({
+
         model: '',
         cpu: '',
         ram: '',
@@ -72,7 +123,10 @@ Mong LapLap báo giá sớm ạ!
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans text-gray-800 ">
+            <JsonLd data={serviceSchema} />
+            <JsonLd data={faqSchema} />
             <Header />
+
 
             {/* Hero Section - Standardized Height & Style */}
             <section className="relative w-full h-auto bg-gradient-to-r from-[#124A84] via-[#0d3560] to-[#0a2d54] text-white overflow-hidden shadow-lg border-b border-white/10 py-12 md:py-16">

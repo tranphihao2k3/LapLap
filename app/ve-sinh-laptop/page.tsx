@@ -14,10 +14,63 @@ import CleaningBenefits from "./components/CleaningBenefits";
 import { motion } from "framer-motion";
 import BookingForm from "@/components/BookingForm";
 
+import JsonLd from "@/components/JsonLd";
+
 export default function CleaningServicePage() {
+    const serviceSchema = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": "Vệ sinh laptop",
+        "provider": {
+            "@type": "LocalBusiness",
+            "name": "LapLap Cần Thơ",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Cần Thơ",
+                "addressCountry": "VN"
+            }
+        },
+        "areaServed": "Cần Thơ",
+        "description": "Dịch vụ vệ sinh laptop chuyên nghiệp tại Cần Thơ. Sử dụng keo tản nhiệt cao cấp MX4/MX6, lấy liền sau 30 phút."
+    };
+
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Tại sao cần vệ sinh laptop định kỳ?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Vệ sinh định kỳ giúp laptop tản nhiệt tốt hơn, tránh tình trạng nóng máy, giật lag và kéo dài tuổi thọ linh kiện."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Vệ sinh laptop mất bao lâu?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Quy trình vệ sinh chuyên nghiệp tại LapLap thường mất từ 30 đến 45 phút, khách hàng có thể đợi lấy ngay."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "LapLap sử dụng keo tản nhiệt loại nào?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Chúng tôi sử dụng các dòng keo tản nhiệt cao cấp như Arctic MX-4 hoặc MX-6 để đảm bảo hiệu quả làm mát tốt nhất."
+                }
+            }
+        ]
+    };
+
     return (
         <>
+            <JsonLd data={serviceSchema} />
+            <JsonLd data={faqSchema} />
             <Header />
+
 
             {/* Hero Section - Standardized Height & Style */}
             <section className="relative w-full h-auto bg-gradient-to-r from-[#124A84] via-[#0d3560] to-[#0a2d54] text-white overflow-hidden shadow-lg border-b border-white/10 py-12 md:py-16">

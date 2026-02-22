@@ -11,10 +11,65 @@ import { motion } from "framer-motion";
 import { Wrench, Settings, Search, CheckCircle, Zap } from "lucide-react";
 
 
+import JsonLd from "@/components/JsonLd";
+
+
 export default function RepairServicePage() {
+    const serviceSchema = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": "Sửa chữa laptop",
+        "provider": {
+            "@type": "LocalBusiness",
+            "name": "LapLap Cần Thơ",
+            "image": "https://laplapcantho.store/logo.png",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Cần Thơ",
+                "addressCountry": "VN"
+            }
+        },
+        "areaServed": "Cần Thơ",
+        "description": "Dịch vụ sửa chữa laptop uy tín, chuyên nghiệp tại Cần Thơ. Chẩn đoán miễn phí, sửa lấy liền."
+    };
+
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Quy trình sửa chữa laptop tại LapLap như thế nào?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Quy trình gồm 4 bước: 1. Tiếp nhận & kiểm tra, 2. Báo giá rõ ràng, 3. Sửa chữa chuyên nghiệp, 4. Bàn giao & bảo hành."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Có được kiểm tra máy miễn phí không?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Có, LapLap hỗ trợ kiểm tra và chẩn đoán lỗi laptop hoàn toàn miễn phí cho khách hàng."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Sửa laptop có lấy liền được không?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Với các lỗi nhẹ như thay linh kiện, vệ sinh, cài phần mềm, khách hàng có thể đợi lấy máy ngay trong vòng 30-60 phút."
+                }
+            }
+        ]
+    };
+
     return (
         <>
+            <JsonLd data={serviceSchema} />
+            <JsonLd data={faqSchema} />
             <Header />
+
 
             {/* Hero Section - Improved Spacing & Colors */}
             <section className="relative w-full h-auto bg-gradient-to-r from-[#124A84] via-[#0d3560] to-[#0a2d54] text-white overflow-hidden shadow-lg border-b border-blue-400/30 py-12 md:py-20">

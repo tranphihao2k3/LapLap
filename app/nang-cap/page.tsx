@@ -10,6 +10,8 @@ import {
     Settings, ShieldCheck, Wrench, Smartphone, X
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
+import JsonLd from '@/components/JsonLd';
+
 
 /* ================= TYPES ================= */
 
@@ -38,7 +40,56 @@ interface Component {
 }
 
 export default function UpgradePage() {
+    const serviceSchema = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": "Nâng cấp laptop",
+        "provider": {
+            "@type": "LocalBusiness",
+            "name": "LapLap Cần Thơ",
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Cần Thơ",
+                "addressCountry": "VN"
+            }
+        },
+        "areaServed": "Cần Thơ",
+        "description": "Dịch vụ nâng cấp RAM, SSD laptop chuyên nghiệp tại Cần Thơ. AI hỗ trợ tra cứu khả năng nâng cấp chính xác."
+    };
+
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Làm sao biết laptop của tôi nâng cấp được RAM hay SSD gì?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Bạn chỉ cần nhập tên máy vào ô tìm kiếm trên trang Nâng Cấp của LapLap, công nghệ AI của chúng tôi sẽ tra cứu và hiển thị chi tiết loại RAM, SSD và dung lượng tối đa mà máy bạn hỗ trợ."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Nâng cấp RAM và SSD có mất dữ liệu không?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Nâng cấp RAM hoàn toàn không ảnh hưởng đến dữ liệu. Khi nâng cấp SSD, LapLap hỗ trợ sao lưu dữ liệu cũ sang ổ mới miễn phí, đảm bảo 100% dữ liệu của khách hàng."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Thời gian nâng cấp laptop mất bao lâu?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Quá trình nâng cấp linh kiện tại LapLap diễn ra nhanh chóng, thường chỉ mất từ 15 đến 30 phút, khách hàng có thể đợi lấy máy ngay."
+                }
+            }
+        ]
+    };
+
     const [modelInput, setModelInput] = useState('');
+
     const [loading, setLoading] = useState(false);
     const [specs, setSpecs] = useState<LaptopSpecs | null>(null);
     const [error, setError] = useState('');
@@ -180,7 +231,10 @@ Mong shop tư vấn thêm ạ!
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-800">
+            <JsonLd data={serviceSchema} />
+            <JsonLd data={faqSchema} />
             <Header />
+
 
             {/* Hero Section - Standardized Height & Style */}
             <div className="relative w-full h-auto bg-gradient-to-r from-[#124A84] via-[#0d3560] to-[#0a2d54] text-white overflow-hidden shadow-lg border-b border-white/10 py-12 md:py-16">
