@@ -19,6 +19,7 @@ interface Product {
     slug: string;
     specs: {
         cpu: string;
+        gpu?: string;
         ram: string;
         ssd: string;
         screen: string;
@@ -127,8 +128,29 @@ export default function MarketingPage() {
         const screenSpec = product.specs.screen || 'Full HD/IPS sắc nét';
 
         let content = '';
+        let finalTemplateType = templateType;
 
-        if (templateType === 'gaming') {
+        if (finalTemplateType === 'default') {
+            const nameLower = product.name.toLowerCase();
+            const gpuLower = (product.specs.gpu || '').toLowerCase();
+            const cpuLower = (product.specs.cpu || '').toLowerCase();
+
+            const isGaming = ['gaming', 'legion', 'nitro', 'victus', 'tuf', 'rog', 'alienware', 'predator'].some(kw => nameLower.includes(kw)) ||
+                ['rtx', 'gtx', 'radeon rx'].some(kw => gpuLower.includes(kw));
+
+            const isGraphics = ['precision', 'zbook', 'thinkpad p', 'studio', 'creator'].some(kw => nameLower.includes(kw)) ||
+                ['quadro', 'rtx a', 'pro'].some(kw => gpuLower.includes(kw));
+
+            if (isGaming) {
+                finalTemplateType = 'gaming';
+            } else if (isGraphics) {
+                finalTemplateType = 'graphics';
+            } else {
+                finalTemplateType = 'office';
+            }
+        }
+
+        if (finalTemplateType === 'gaming') {
             content = `� SIÊU PHẨM GAMING ĐỔ BỘ - CHIẾN GAME XUYÊN MÀN ĐÊM 🔥
 🎮 Mẫu máy: ${nameUpper}
 💰 Rước ngay chỉ: ${price} (Tiết kiệm ngay hàng triệu đồng so với giá cũ ${originalPrice}!)
@@ -152,7 +174,7 @@ export default function MarketingPage() {
 🏘️ Địa chỉ: Hưng Lợi, Ninh Kiều, Cần Thơ.
 ☎️ Hotline ép giá: 0978.648.720 (Hào)
 #LaptopCanTho #LaptopGamingCanTho #LapLapCanTho`;
-        } else if (templateType === 'office') {
+        } else if (finalTemplateType === 'office') {
             content = `✨ [XẢ KHO GIÁ SỐC] - LAPTOP VĂN PHÒNG / SINH VIÊN SIÊU LƯỚT ✨
 💼 Thuận tiện mang đi học, đi làm - Thiết kế mỏng nhẹ sang trọng!
 🏷️ Mã máy: ${nameUpper}
@@ -177,7 +199,7 @@ export default function MarketingPage() {
 🏘️ Địa chỉ: Hưng Lợi, Ninh Kiều, Cần Thơ.
 ☎️ Gọi ngay kẻo lỡ: 0978.648.720 (Hào)
 #LaptopSinhVien #LaptopVanPhongGiaRe #LaptopCanTho #LapLapCanTho`;
-        } else if (templateType === 'graphics') {
+        } else if (finalTemplateType === 'graphics') {
             content = `🎨 CỖ MÁY ĐỒ HỌA CHUYÊN NGHIỆP - RENDER ĐẮP VỠ MỌI DEADLINE 🎨
 🔥 Tên máy: ${nameUpper} 
 💸 Giá ưu đãi cực tốt: ${price} (Tiết kiệm đáng kể so với máy mới ${originalPrice})
