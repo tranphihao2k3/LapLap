@@ -1,155 +1,81 @@
-'use client';
+// ✅ Server Component — không có 'use client'
+// generateMetadata chạy trên server, Googlebot đọc được đúng title/description mỗi bài
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { Metadata } from 'next';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Calendar, User, Eye, Tag, ArrowLeft, Share2 } from 'lucide-react';
+import { Calendar, User, Eye, ArrowLeft } from 'lucide-react';
+import { connectDB } from '@/lib/mongodb';
+import { Blog } from '@/models/Blog';
+import BlogDetailClient from './BlogDetailClient';
 
-interface Blog {
-    _id: string;
-    title: string;
-    slug: string;
-    excerpt: string;
-    content: string;
-    featuredImage: string;
-    author: string;
-    tags: string[];
-    metaTitle: string;
-    metaDescription: string;
-    status: string;
-    publishedAt: string;
-    viewCount: number;
-    createdAt: string;
-    updatedAt: string;
+interface PageProps {
+    params: Promise<{ slug: string }>;
 }
 
-export default function BlogDetailPage() {
-    const params = useParams();
-    const slug = params.slug as string;
-    const [blog, setBlog] = useState<Blog | null>(null);
-    const [relatedBlogs, setRelatedBlogs] = useState<Blog[]>([]);
-    const [loading, setLoading] = useState(true);
+// ────────────────────────────────────────────────────────────────────────────
+// generateMetadata: chạy trên server, Google đọc được title & description riêng
+// ────────────────────────────────────────────────────────────────────────────
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { slug } = await params;
 
-    useEffect(() => {
-        if (slug) {
-            fetchBlog();
+    try {
+        await connectDB();
+        const blog = await Blog.findOne({ slug, status: 'published' }).lean() as any;
+
+        if (!blog) {
+            return {
+                title: 'Bài viết không tồn tại | LapLap Cần Thơ',
+                description: 'Bài viết bạn tìm kiếm không tồn tại hoặc đã bị xóa.',
+            };
         }
-    }, [slug]);
 
-    const fetchBlog = async () => {
-        try {
-            // Fetch current blog
-            const res = await fetch(`/api/blog/${slug}`);
-            const data = await res.json();
-
-            if (data.success) {
-                setBlog(data.data);
-
-                // Fetch related blogs
-                const allBlogsRes = await fetch('/api/admin/blog?status=published');
-                const allBlogsData = await allBlogsRes.json();
-
-                if (allBlogsData.success) {
-                    // Find blogs with similar tags
-                    const related = allBlogsData.data
-                        .filter((b: Blog) =>
-                            b._id !== data.data._id &&
-                            b.tags.some((tag: string) => data.data.tags.includes(tag))
-                        )
-                        .slice(0, 3);
-                    setRelatedBlogs(related);
-                }
-
-                // Add structured data for article
-                const script = document.createElement('script');
-                script.type = 'application/ld+json';
-                script.text = JSON.stringify({
-                    "@context": "https://schema.org",
-                    "@type": "BlogPosting",
-                    "headline": data.data.title,
-                    "description": data.data.excerpt,
-                    "image": data.data.featuredImage || "https://laplapcantho.store/favicon.ico",
-                    "author": {
-                        "@type": "Person",
-                        "name": data.data.author
-                    },
-                    "publisher": {
-                        "@type": "Organization",
-                        "name": "LapLap - Laptop Cần Thơ",
-                        "logo": {
-                            "@type": "ImageObject",
-                            "url": "https://laplapcantho.store/favicon.ico"
-                        }
-                    },
-                    "datePublished": data.data.publishedAt || data.data.createdAt,
-                    "dateModified": data.data.updatedAt,
-                    "mainEntityOfPage": {
-                        "@type": "WebPage",
-                        "@id": `https://laplapcantho.store/blog/${data.data.slug}`
-                    }
-                });
-                document.head.appendChild(script);
-
-                // Update page title and meta description
-                document.title = data.data.metaTitle || data.data.title;
-
-                let metaDesc = document.querySelector('meta[name="description"]');
-                if (!metaDesc) {
-                    metaDesc = document.createElement('meta');
-                    metaDesc.setAttribute('name', 'description');
-                    document.head.appendChild(metaDesc);
-                }
-                metaDesc.setAttribute('content', data.data.metaDescription || data.data.excerpt);
-            }
-        } catch (error) {
-            console.error('Error fetching blog:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('vi-VN', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        });
-    };
-
-    const handleShare = async () => {
-        if (navigator.share && blog) {
-            try {
-                await navigator.share({
-                    title: blog.title,
-                    text: blog.excerpt,
-                    url: window.location.href,
-                });
-            } catch (error) {
-                console.log('Error sharing:', error);
-            }
-        } else {
-            // Fallback: copy to clipboard
-            navigator.clipboard.writeText(window.location.href);
-            alert('Đã copy link bài viết!');
-        }
-    };
-
-    if (loading) {
-        return (
-            <>
-                <Header />
-                <main className="flex-1 container mx-auto p-4">
-                    <div className="text-center py-20">
-                        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
-                        <p className="text-gray-600 mt-4 text-lg">Đang tải bài viết...</p>
-                    </div>
-                </main>
-                <Footer />
-            </>
-        );
+        return {
+            title: blog.metaTitle || `${blog.title} | LapLap Cần Thơ`,
+            description: blog.metaDescription || blog.excerpt,
+            keywords: blog.tags?.join(', '),
+            openGraph: {
+                title: blog.metaTitle || blog.title,
+                description: blog.metaDescription || blog.excerpt,
+                type: 'article',
+                url: `https://laplapcantho.store/blog/${slug}`,
+                images: blog.featuredImage ? [{ url: blog.featuredImage }] : [],
+                publishedTime: blog.publishedAt || blog.createdAt,
+                modifiedTime: blog.updatedAt,
+                authors: [blog.author || 'LapLap Team'],
+            },
+            twitter: {
+                card: 'summary_large_image',
+                title: blog.metaTitle || blog.title,
+                description: blog.metaDescription || blog.excerpt,
+            },
+            alternates: {
+                canonical: `https://laplapcantho.store/blog/${slug}`,
+            },
+        };
+    } catch {
+        return {
+            title: 'Blog | LapLap Cần Thơ',
+            description: 'Blog chia sẻ kiến thức về laptop tại LapLap Cần Thơ.',
+        };
     }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Server page component
+// ────────────────────────────────────────────────────────────────────────────
+export default async function BlogDetailPage({ params }: PageProps) {
+    const { slug } = await params;
+
+    await connectDB();
+
+    // Tăng view count & lấy dữ liệu
+    const blog = await Blog.findOneAndUpdate(
+        { slug, status: 'published' },
+        { $inc: { viewCount: 1 } },
+        { new: true }
+    ).lean() as any;
 
     if (!blog) {
         return (
@@ -168,8 +94,41 @@ export default function BlogDetailPage() {
         );
     }
 
+    const formatDate = (dateString: string) =>
+        new Date(dateString).toLocaleDateString('vi-VN', {
+            year: 'numeric', month: 'long', day: 'numeric',
+        });
+
+    // JSON-LD structured data cho Google
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: blog.title,
+        description: blog.excerpt,
+        image: blog.featuredImage || 'https://laplapcantho.store/favicon.ico',
+        author: { '@type': 'Person', name: blog.author || 'LapLap Team' },
+        publisher: {
+            '@type': 'Organization',
+            name: 'LapLap - Laptop Cần Thơ',
+            logo: { '@type': 'ImageObject', url: 'https://laplapcantho.store/favicon.ico' },
+        },
+        datePublished: blog.publishedAt || blog.createdAt,
+        dateModified: blog.updatedAt,
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': `https://laplapcantho.store/blog/${blog.slug}`,
+        },
+        keywords: blog.tags?.join(', '),
+    };
+
     return (
         <>
+            {/* JSON-LD structured data */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+
             <Header />
             <main className="flex-1 container mx-auto p-4">
                 {/* Back Button */}
@@ -193,7 +152,7 @@ export default function BlogDetailPage() {
                         </div>
                     )}
 
-                    {/* Title */}
+                    {/* Title — h1 duy nhất, Google đọc từ server */}
                     <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
                         {blog.title}
                     </h1>
@@ -202,7 +161,7 @@ export default function BlogDetailPage() {
                     <div className="flex flex-wrap gap-6 text-gray-600 mb-6 pb-6 border-b border-gray-200">
                         <div className="flex items-center gap-2">
                             <User className="w-5 h-5" />
-                            <span>{blog.author}</span>
+                            <span>{blog.author || 'LapLap Team'}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Calendar className="w-5 h-5" />
@@ -212,19 +171,22 @@ export default function BlogDetailPage() {
                             <Eye className="w-5 h-5" />
                             <span>{blog.viewCount} lượt xem</span>
                         </div>
-                        <button
-                            onClick={handleShare}
-                            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors ml-auto"
-                        >
-                            <Share2 className="w-5 h-5" />
-                            <span>Chia sẻ</span>
-                        </button>
+
+                        {/* Share button — client component */}
+                        <BlogDetailClient blog={{
+                            _id: blog._id.toString(),
+                            title: blog.title,
+                            slug: blog.slug,
+                            excerpt: blog.excerpt,
+                            content: blog.content,
+                            tags: blog.tags || [],
+                        }} />
                     </div>
 
                     {/* Tags */}
-                    {blog.tags.length > 0 && (
+                    {blog.tags?.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-8">
-                            {blog.tags.map(tag => (
+                            {blog.tags.map((tag: string) => (
                                 <span
                                     key={tag}
                                     className="px-4 py-2 bg-blue-100 text-blue-600 rounded-full text-sm font-medium"
@@ -233,51 +195,6 @@ export default function BlogDetailPage() {
                                 </span>
                             ))}
                         </div>
-                    )}
-
-                    {/* Content */}
-                    <div className="prose prose-lg max-w-none mb-12">
-                        <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                            {blog.content}
-                        </div>
-                    </div>
-
-                    {/* Related Posts */}
-                    {relatedBlogs.length > 0 && (
-                        <section className="mt-16 pt-8 border-t border-gray-200">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-6">Bài viết liên quan</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {relatedBlogs.map(relatedBlog => (
-                                    <Link
-                                        key={relatedBlog._id}
-                                        href={`/blog/${relatedBlog.slug}`}
-                                        className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all overflow-hidden"
-                                    >
-                                        {relatedBlog.featuredImage ? (
-                                            <div className="relative h-40 bg-gradient-to-br from-blue-100 to-purple-100 overflow-hidden">
-                                                <img
-                                                    src={relatedBlog.featuredImage}
-                                                    alt={relatedBlog.title}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div className="h-40 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
-                                                <Tag className="w-12 h-12 text-blue-300" />
-                                            </div>
-                                        )}
-                                        <div className="p-4">
-                                            <h3 className="font-bold text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-2">
-                                                {relatedBlog.title}
-                                            </h3>
-                                            <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-                                                {relatedBlog.excerpt}
-                                            </p>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        </section>
                     )}
                 </article>
             </main>
