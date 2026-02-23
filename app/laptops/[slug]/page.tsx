@@ -6,7 +6,7 @@ import ProductDetailClient from './ProductDetailClient';
 import mongoose from 'mongoose';
 import { cache } from 'react';
 import JsonLd from '@/components/JsonLd';
-import { buildProductJsonLd, buildBreadcrumbJsonLd } from '@/lib/seo';
+import { buildProductJsonLd, buildBreadcrumbJsonLd, buildFaqJsonLd } from '@/lib/seo';
 
 // Helper to fetch product data - cached to deduplicate requests between generateMetadata and page
 const getProduct = cache(async (slug: string) => {
@@ -161,10 +161,31 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         { name: (product as any).name, url: `/laptops/${(product as any).slug || slug}` },
     ]);
 
+    // Build FAQ Schema for GEO
+    const faqJsonLd = buildFaqJsonLd([
+        {
+            question: `Laptop ${product.name} có tốt không?`,
+            answer: `${product.name} là dòng laptop ${categoryName} chất lượng cao. Với cấu hình CPU ${product.specs?.cpu}, RAM ${product.specs?.ram}, sản phẩm đáp ứng tốt các nhu cầu từ công việc văn phòng đến giải trí chuyên nghiệp.`
+        },
+        {
+            question: `Thông số kỹ thuật chi tiết của ${product.name}?`,
+            answer: `Máy trang bị chip ${product.specs?.cpu}, bộ nhớ RAM ${product.specs?.ram}, ổ cứng ${product.specs?.ssd} và màn hình ${product.specs?.screen}. Đây là cấu hình tối ưu trong tầm giá.`
+        },
+        {
+            question: `Mua laptop ${product.name} ở đâu uy tín tại Cần Thơ?`,
+            answer: `Bạn có thể mua trực tiếp tại LapLap - Laptop Cần Thơ. Chúng tôi cam kết máy chính hãng, bảo hành ${product.warrantyMonths || 12} tháng và hỗ trợ kỹ thuật trọn đời.`
+        },
+        {
+            question: `LapLap có hỗ trợ trả góp cho ${product.name} không?`,
+            answer: `Có, LapLap hỗ trợ trả góp 0% qua thẻ tín dụng hoặc hỗ trợ hồ sơ qua công ty tài chính, duyệt nhanh chỉ trong 5 phút.`
+        }
+    ]);
+
     return (
         <>
             <JsonLd id="product-jsonld" data={productJsonLd} />
             <JsonLd id="breadcrumb-product-jsonld" data={breadcrumbJsonLd} />
+            <JsonLd id="faq-product-jsonld" data={faqJsonLd} />
             {/* Cast to any to avoid strict type checking issues with Mongoose lean objects vs Interfaces */}
             <ProductDetailClient product={product as any} relatedProducts={relatedProducts as any} />
         </>

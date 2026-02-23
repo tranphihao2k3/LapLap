@@ -478,7 +478,7 @@ export default function Header() {
                     <div
                         className="fixed inset-0 bg-black/50 lg:hidden transition-opacity duration-300"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        style={{ 
+                        style={{
                             zIndex: 99999,
                             position: 'fixed',
                             top: 0,
@@ -493,8 +493,8 @@ export default function Header() {
                     <div
                         className="fixed top-0 right-0 h-full h-screen w-[280px] bg-white shadow-2xl transform transition-transform duration-300 overflow-y-auto translate-x-0"
                         onClick={(e) => e.stopPropagation()}
-                        style={{ 
-                            backgroundColor: '#ffffff', 
+                        style={{
+                            backgroundColor: '#ffffff',
                             zIndex: 100000,
                             position: 'fixed',
                             top: 0,

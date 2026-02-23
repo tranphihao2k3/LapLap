@@ -73,13 +73,13 @@ export const metadata: Metadata = {
   },
 };
 
-import { Montserrat } from "next/font/google";
+import { Be_Vietnam_Pro } from "next/font/google";
 
-const montserrat = Montserrat({
+const beVietnamPro = Be_Vietnam_Pro({
   subsets: ["latin", "vietnamese"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
-  variable: "--font-montserrat",
+  variable: "--font-be-vietnam-pro",
 });
 
 
@@ -105,7 +105,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
-      <body className={`${montserrat.variable} ${montserrat.className} min-h-screen flex flex-col`}>
+      <body className={`${beVietnamPro.variable} ${beVietnamPro.className} min-h-screen flex flex-col`}>
         {/* JSON-LD: Structured Data cho toàn site */}
         <JsonLd id="organization-jsonld" data={buildOrganizationJsonLd()} />
         <JsonLd id="website-jsonld" data={buildWebSiteJsonLd()} />

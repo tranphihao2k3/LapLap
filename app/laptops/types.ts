@@ -18,6 +18,7 @@ export interface Product {
     image: string;
     images: string[];
     price: number;
+    originalPrice?: number;
     specs: {
         cpu: string;
         gpu: string;

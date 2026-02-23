@@ -1,0 +1,198 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import { Cpu, HardDrive, MemoryStick, Monitor, Battery, CreditCard, Scale, Check, ShoppingBag, Edit } from "lucide-react";
+import Button from "@/components/ui/Button";
+import { useSession } from "next-auth/react";
+import { useComparison } from "@/context/ComparisonContext";
+import { useCart } from "@/context/CartContext";
+
+interface ProductCardProps {
+    product: {
+        _id: string;
+        name: string;
+        image: string;
+        images?: string[];
+        slug?: string;
+        price: number;
+        specs: {
+            cpu: string;
+            gpu: string;
+            ram: string;
+            ssd: string;
+            screen: string;
+            hz?: string;
+            resolution?: string;
+            battery: string;
+        };
+        description?: string;
+        gift?: string;
+        categoryId?: {
+            name: string;
+        };
+        createdAt?: string;
+    };
+}
+
+export default function ProductCard({ product }: ProductCardProps) {
+    const { addToCompare, removeFromCompare, selectedProducts } = useComparison();
+    const { addToCart } = useCart();
+    const { data: session } = useSession();
+    const isSelected = selectedProducts.some((p) => p._id === product._id);
+
+    // Check if product is new (created within 24 hours)
+    const isNew = product.createdAt ? (new Date(product.createdAt).getTime() > Date.now() - 24 * 60 * 60 * 1000) : false;
+
+    const handleAddToCart = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        addToCart(product);
+    };
+
+    const handleCompare = (e: React.MouseEvent) => {
+        e.preventDefault(); // Prevent navigating to detail page if user clicks button
+        e.stopPropagation();
+
+        if (isSelected) {
+            removeFromCompare(product._id);
+        } else {
+            // Ensure product object matches ProductSummary type
+            addToCompare({
+                _id: product._id,
+                name: product.name,
+                image: product.image || (product.images && product.images[0]) || '/placeholder-laptop.png',
+                price: product.price,
+                slug: product.slug,
+                specs: product.specs
+            });
+        }
+    };
+
+    return (
+        <div className={`h-full flex flex-col border-2 rounded-2xl bg-white hover:shadow-2xl transition-all duration-300 overflow-hidden group relative ${isNew ? 'border-primary shadow-primary/20 shadow-lg' : 'border-[var(--color-border)]'}`}>
+
+            {/* NEW BADGE */}
+            {isNew && (
+                <div className="absolute top-2 right-2 z-20 bg-gradient-to-r from-red-500 to-pink-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-md">
+                    MỚI
+                </div>
+            )}
+
+            {/* ADMIN EDIT BUTTON */}
+            {session && (
+                <Link
+                    href={`/admin/laptops/${product._id}`}
+                    className="absolute top-2 right-2 z-30 p-2 bg-black/60 hover:bg-black/80 text-white rounded-full backdrop-blur-sm transition-colors shadow-lg"
+                    title="Chỉnh sửa (Admin)"
+                >
+                    <Edit size={14} />
+                </Link>
+            )}
+
+            {/* COMPARING BADGE (Optional) */}
+            {isSelected && (
+                <div className="absolute top-2 left-2 z-20 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded shadow-md flex items-center gap-1">
+                    <Check size={12} /> Đã chọn
+                </div>
+            )}
+
+            {/* IMAGE - Larger */}
+            <div className="relative w-full aspect-[4/3] bg-gradient-to-br from-gray-50 to-white p-6 group/image">
+                <Image
+                    src={product.image || (product.images && product.images[0]) || '/placeholder-laptop.png'}
+                    alt={`${product.name} - Laptop Cần Thơ - LapLap`}
+
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-contain group-hover:scale-105 transition-transform duration-300"
+                />
+            </div>
+
+            {/* CONTENT */}
+            <div className="p-3 md:p-4 flex flex-col gap-2 md:gap-3 flex-1">
+
+                {/* NAME - Compact for better fit */}
+                <Link href={`/laptops/${product.slug || product._id}`} className="group/title">
+                    <h3 className="font-bold text-sm md:text-base text-[var(--color-text-brand)] text-center line-clamp-2 md:min-h-[48px] group-hover/title:text-primary transition-colors">
+                        {product.name}
+                    </h3>
+                </Link>
+
+                {/* SPECS - Grid 2 columns like the image */}
+                {/* SPECS - Tags on mobile, Grid on desktop */}
+                <div className="flex-1">
+                    <div className="grid grid-cols-2 gap-1 md:gap-2">
+                        {[
+                            { icon: Cpu, value: product.specs.cpu },
+                            { icon: CreditCard, value: product.specs.gpu },
+                            { icon: MemoryStick, value: product.specs.ram },
+                            { icon: HardDrive, value: product.specs.ssd },
+                            { icon: Monitor, value: [product.specs.screen, product.specs.resolution, product.specs.hz].filter(Boolean).join(' ') || 'N/A' },
+                            { icon: Battery, value: product.specs.battery },
+                        ].map((spec, index) => (
+                            <div
+                                key={index}
+                                className="flex items-center gap-1 bg-gray-100 md:bg-primary/5 px-1.5 py-1 md:p-2 rounded md:rounded-lg min-w-0"
+                            >
+                                <spec.icon className="w-3 h-3 md:w-4 md:h-4 text-gray-500 md:text-primary flex-shrink-0" />
+                                <span className="text-[9px] sm:text-[10px] md:text-xs font-medium md:font-semibold text-gray-700 md:text-gray-800 truncate" title={spec.value}>
+                                    {spec.value}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="mt-auto pt-3 md:pt-4 border-t border-dashed border-slate-200 flex flex-col gap-2 md:gap-3">
+                    <div className="flex items-baseline justify-center gap-1 text-[var(--color-primary)] mb-0.5 md:mb-1">
+                        <span className="text-base sm:text-lg md:text-xl font-bold tracking-tight">
+                            {product.price.toLocaleString('vi-VN')}
+                        </span>
+                        <span className="text-[10px] md:text-sm font-semibold underline decoration-1 underline-offset-4">đ</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-1.5 md:gap-2">
+                        <div // Wrapper to handle click event properly
+                            onClick={handleCompare}
+                            className="w-full"
+                        >
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                fullWidth
+                                className={`text-[10px] sm:text-xs px-0.5 sm:px-2 h-8 md:h-9 whitespace-nowrap !gap-1 sm:!gap-1.5 rounded-full border-gray-200 shadow-sm hover:shadow-md transition-all ${isSelected
+                                    ? 'bg-primary/5 border-primary text-primary font-bold'
+                                    : 'text-gray-600 hover:text-primary hover:border-primary/30 bg-white'
+                                    }`}
+                                leftIcon={isSelected ? <Check size={12} className="sm:w-[14px] sm:h-[14px]" /> : <Scale size={12} className="sm:w-[14px] sm:h-[14px]" />}
+                            >
+                                {isSelected ? "Đã chọn" : "So sánh"}
+                            </Button>
+                        </div>
+                        <Button
+                            href={`/laptops/${product.slug || product._id}`}
+                            variant="primary"
+                            size="sm"
+                            fullWidth
+                            className="text-[10px] sm:text-xs px-0.5 sm:px-2 h-8 md:h-9 shadow-sm hover:shadow-md rounded-full bg-primary hover:bg-primary-dark text-white font-semibold transition-all whitespace-nowrap"
+                        >
+                            Chi tiết
+                        </Button>
+                    </div>
+
+                    <Button
+                        onClick={handleAddToCart}
+                        variant="primary"
+                        size="sm"
+                        fullWidth
+                        className="text-[11px] sm:text-sm h-8 md:h-10 shadow-lg shadow-primary/20 rounded-full bg-primary hover:bg-primary-dark text-white font-bold transition-all transform active:scale-95 whitespace-nowrap !gap-1.5 sm:!gap-2"
+                        leftIcon={<ShoppingBag size={14} className="sm:w-4 sm:h-4" />}
+                    >
+                        Thêm vào giỏ
+                    </Button>
+                </div>
+            </div>
+        </div >
+    );
+}

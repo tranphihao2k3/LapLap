@@ -1,0 +1,42 @@
+﻿
+> laptop-test-web@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+
+node.exe : ΓÜá The "middleware" file convention is deprecated. Please use "proxy" 
+instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá The "middle...leware-to-proxy:Strin 
+   g) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 7.0s
+  Running TypeScript ...
+Failed to compile.
+
+./app/laptops/[slug]/ProductDetailClient.tsx:255:42
+Type error: Property 'originalPrice' does not exist on type 'Product'.
+
+[0m [90m 253 |[39m                                     [33m<[39m[33mspan[39m 
+className[33m=[39m[32m"text-lg md:text-xl font-black 
+text-[var(--color-primary)]/60 underline decoration-2 
+underline-offset-4"[39m[33m>[39m─æ[33m<[39m[33m/[39m[33mspan[39m[33m>[39m
+ [90m 254 |[39m                                 
+[33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+[31m[1m>[22m[39m[90m 255 |[39m                                 
+{product[33m.[39moriginalPrice [33m&&[39m product[33m.[39moriginalPrice 
+[33m>[39m product[33m.[39mprice [33m&&[39m (
+ [90m     |[39m                                          [31m[1m^[22m[39m
+ [90m 256 |[39m                                     [33m<[39m[33mdiv[39m 
+className[33m=[39m[32m"flex items-center gap-3 mt-2 relative z-10"[39m[33m>[39m
+ [90m 257 |[39m                                         [33m<[39m[33mspan[39m 
+className[33m=[39m[32m"text-sm text-slate-400 line-through 
+font-bold"[39m[33m>[39m
+ [90m 258 |[39m                                             
+{product[33m.[39moriginalPrice[33m.[39mtoLocaleString([32m'vi-VN'[39m)}─æ[0m
+Next.js build worker exited with code: 1 and signal: null
