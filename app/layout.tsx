@@ -50,6 +50,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "/favicon.ico",
+    apple: "/icon-192.png",
   },
   openGraph: {
     type: "website",
@@ -72,6 +73,11 @@ export const metadata: Metadata = {
     description: "LapLap - Chuyên laptop tại Cần Thơ. Laptop mới, laptop cũ chính hãng, giá tốt nhất.",
   },
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    title: "LapLap",
+    statusBarStyle: "default",
+  },
 };
 
 import { Be_Vietnam_Pro } from "next/font/google";
