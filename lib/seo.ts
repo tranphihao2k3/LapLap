@@ -88,6 +88,29 @@ export function buildWebSiteJsonLd() {
     };
 }
 
+// ─── JSON-LD: Site Navigation ───────────────────────────────────────────────
+export function buildSiteNavigationJsonLd() {
+    const navItems = [
+        { name: 'Laptop', url: `${SITE_URL}/laptops` },
+        { name: 'Sửa chữa', url: `${SITE_URL}/sua-chua-laptop` },
+        { name: 'Thu cũ đổi mới', url: `${SITE_URL}/thu-cu-doi-moi` },
+        { name: 'Giới thiệu', url: `${SITE_URL}/gioi-thieu` },
+        { name: 'Tin tức', url: `${SITE_URL}/blog` },
+        { name: 'Tra cứu bảo hành', url: `${SITE_URL}/tra-cuu-bao-hanh` },
+    ];
+
+    return {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        itemListElement: navItems.map((item, index) => ({
+            '@type': 'SiteNavigationElement',
+            position: index + 1,
+            name: item.name,
+            url: item.url,
+        })),
+    };
+}
+
 // ─── JSON-LD: Breadcrumb ──────────────────────────────────────────────────────
 export function buildBreadcrumbJsonLd(
     items: { name: string; url: string }[]

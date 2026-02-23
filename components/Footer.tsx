@@ -138,6 +138,7 @@ const Footer = () => {
                                 { label: "Sản phẩm Laptop", href: "/laptops" },
                                 { label: "Kiểm tra máy", href: "/test" },
                                 { label: "Sửa chữa", href: "/sua-chua-laptop" },
+                                { label: "Chính sách bảo hành", href: "/chinh-sach-bao-hanh" },
                             ].map((link, idx) => (
                                 <li key={idx}>
                                     <Link href={link.href} className="group flex items-center gap-2 hover:text-blue-400 transition-colors">

@@ -9,7 +9,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import FacebookMessenger from "@/components/FacebookMessenger";
 import type { Metadata } from "next";
 import JsonLd from "@/components/JsonLd";
-import { buildOrganizationJsonLd, buildWebSiteJsonLd } from "@/lib/seo";
+import { buildOrganizationJsonLd, buildWebSiteJsonLd, buildSiteNavigationJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://laplapcantho.store"),
@@ -117,6 +117,7 @@ export default function RootLayout({
         {/* JSON-LD: Structured Data cho toàn site */}
         <JsonLd id="organization-jsonld" data={buildOrganizationJsonLd()} />
         <JsonLd id="website-jsonld" data={buildWebSiteJsonLd()} />
+        <JsonLd id="navigation-jsonld" data={buildSiteNavigationJsonLd()} />
 
         <SessionProviderWrapper>
           <CartProvider>
