@@ -8,6 +8,8 @@ import Footer from '@/components/Footer';
 import { ChevronDown, ChevronLeft, ChevronRight, X, Search as SearchIcon } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import TechLoader from '@/components/ui/TechLoader';
+import FilterDrawer from './FilterDrawer';
+import { SlidersHorizontal } from 'lucide-react';
 
 interface LaptopSpec {
     cpu: string;
@@ -112,6 +114,7 @@ function LaptopsContent() {
 
     // Dropdown states
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+    const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
 
     const [totalPages, setTotalPages] = useState(1);
     const [totalProducts, setTotalProducts] = useState(0);
@@ -445,6 +448,22 @@ function LaptopsContent() {
                         </div>
                     </div>
 
+                    {/* Mobile Filter Button */}
+                    <div className="flex md:hidden mb-6">
+                        <button
+                            onClick={() => setIsFilterDrawerOpen(true)}
+                            className="flex-1 flex items-center justify-center gap-2 bg-[#004e9a] text-white py-3.5 rounded-2xl font-bold shadow-lg shadow-blue-100 active:scale-95 transition-all text-sm"
+                        >
+                            <SlidersHorizontal size={18} />
+                            Bộ lọc tìm kiếm
+                            {activeFiltersCount > 0 && (
+                                <span className="bg-white text-[#004e9a] w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-black ml-1">
+                                    {activeFiltersCount}
+                                </span>
+                            )}
+                        </button>
+                    </div>
+
                     {/* Brand Logos Filter */}
                     {brands.length > 0 && (
                         <div className="mb-8">
@@ -487,8 +506,8 @@ function LaptopsContent() {
                         </div>
                     )}
 
-                    {/* Filters */}
-                    <div className="mb-6 bg-white p-4 rounded-lg shadow-sm">
+                    {/* Filters - Desktop Only */}
+                    <div className="hidden md:block mb-6 bg-white p-4 rounded-lg shadow-sm">
                         <div className="flex items-center justify-between mb-3">
                             <h2 className="font-bold text-[#004e9a] text-lg">Danh mục phân loại</h2>
                             {activeFiltersCount > 0 && (
@@ -954,6 +973,22 @@ function LaptopsContent() {
                         </>
                     )}
                 </div>
+
+                {/* Filter Drawer for Mobile */}
+                <FilterDrawer
+                    isOpen={isFilterDrawerOpen}
+                    onClose={() => setIsFilterDrawerOpen(false)}
+                    filters={filters}
+                    toggleFilter={toggleFilter}
+                    clearAllFilters={clearAllFilters}
+                    filterOptions={filterOptions}
+                    categories={categories}
+                    brands={brands}
+                    priceRanges={priceRanges}
+                    totalProducts={totalProducts}
+                    sortBy={sortBy}
+                    setSortBy={setSortBy}
+                />
             </main>
 
         </>

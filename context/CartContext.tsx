@@ -73,7 +73,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 ];
             }
         });
-        setIsCartOpen(true);
     };
 
     const removeFromCart = (productId: string) => {

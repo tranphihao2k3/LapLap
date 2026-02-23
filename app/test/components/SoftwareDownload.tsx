@@ -17,6 +17,14 @@ export default function SoftwareDownload({ onBack }: SoftwareDownloadProps) {
             size: "~30 KB",
         },
         {
+            id: 5,
+            name: "Menu Công Cụ",
+            desc: "Tổng hợp các công cụ hỗ trợ test laptop, kích hoạt phần mềm và tiện ích hệ thống.",
+            icon: <Terminal className="w-12 h-12 text-orange-500" />,
+            filename: "menu_cong_cu.cmd",
+            size: "~15 KB",
+        },
+        {
             id: 2,
             name: "BatteryMon",
             desc: "Phần mềm kiểm tra pin laptop, xem dung lượng thực tế, chai pin...",
@@ -79,7 +87,7 @@ export default function SoftwareDownload({ onBack }: SoftwareDownloadProps) {
             </div>
 
             <motion.div
-                className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+                className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -89,24 +97,27 @@ export default function SoftwareDownload({ onBack }: SoftwareDownloadProps) {
                         key={sw.id}
                         variants={itemVariants}
                         whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)" }}
-                        className="border rounded-xl p-6 transition-shadow flex flex-col items-center text-center bg-gray-50/50"
+                        className="border rounded-xl p-3 md:p-6 transition-shadow flex flex-col items-center text-center bg-gray-50/50"
                     >
-                        <div className="mb-4 bg-white p-4 rounded-full shadow-sm">
-                            {sw.icon}
+                        <div className="mb-3 md:mb-4 bg-white p-3 md:p-4 rounded-full shadow-sm">
+                            {/* Resize icon for mobile */}
+                            <div className="scale-75 md:scale-100">
+                                {sw.icon}
+                            </div>
                         </div>
-                        <h3 className="font-bold text-lg text-gray-800 mb-2">{sw.name}</h3>
-                        <p className="text-sm text-gray-500 mb-4 flex-grow">{sw.desc}</p>
-                        {sw.size && <div className="text-xs text-gray-400 mb-4">Dung lượng: {sw.size}</div>}
+                        <h3 className="font-bold text-sm md:text-lg text-gray-800 mb-1 md:mb-2 line-clamp-1">{sw.name}</h3>
+                        <p className="text-[10px] md:text-sm text-gray-500 mb-3 md:mb-4 flex-grow line-clamp-2 md:line-clamp-none leading-tight">{sw.desc}</p>
+                        {sw.size && <div className="text-[9px] md:text-xs text-gray-400 mb-3 md:mb-4">Dung lượng: {sw.size}</div>}
 
                         <a
                             href={sw.link || `/software/${sw.filename}`}
                             target={sw.link ? "_blank" : undefined}
                             rel={sw.link ? "noopener noreferrer" : undefined}
                             download={!sw.link}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-md hover:shadow-lg"
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 md:py-2.5 px-2 md:px-4 rounded-lg flex items-center justify-center gap-1.5 md:gap-2 transition-colors shadow-md hover:shadow-lg text-[10px] md:text-sm"
                         >
-                            <Download className="w-4 h-4" />
-                            {sw.link ? "Tới Trang Tải" : "Tải Ngay"}
+                            <Download className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                            {sw.link ? "Trang Tải" : "Tải Ngay"}
                         </a>
                     </motion.div>
                 ))}

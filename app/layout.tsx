@@ -98,6 +98,7 @@ import CartDrawer from "@/components/CartDrawer";
 import SessionProviderWrapper from "@/components/SessionProviderWrapper";
 
 import MobileBottomMenu from "@/components/MobileBottomMenu";
+import WelcomeBanner from "@/components/WelcomeBanner";
 
 // ... (omitted imports)
 
@@ -126,6 +127,7 @@ export default function RootLayout({
             </ComparisonProvider>
             <CartDrawer />
             <MobileBottomMenu />
+            <WelcomeBanner />
           </CartProvider>
           <FloatingContact />
         </SessionProviderWrapper>

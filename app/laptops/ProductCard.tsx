@@ -78,11 +78,14 @@ export default function ProductCard({ product }: ProductCardProps) {
     ];
 
     return (
-        <Link
-            href={`/laptops/${product.slug || product._id}`}
-            className="block h-full"
-        >
-            <div className="glass-card h-full flex flex-col rounded-2xl overflow-hidden relative group cursor-pointer">
+        <div className="block h-full group">
+            <div className="glass-card h-full flex flex-col rounded-2xl overflow-hidden relative cursor-pointer">
+                {/* Main Link Overlay */}
+                <Link
+                    href={`/laptops/${product.slug || product._id}`}
+                    className="absolute inset-0 z-10"
+                    aria-label={product.name}
+                />
 
                 {/* ====== TOP BADGES ====== */}
                 <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-20">
@@ -136,7 +139,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     />
 
                     {/* Hover Overlay — Desktop Only (hidden on mobile via md:) */}
-                    <div className="hidden md:flex absolute inset-0 bg-gradient-to-t from-[#0d1b2a]/95 via-[#0d1b2a]/70 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex-col justify-end p-4 z-10">
+                    <div className="hidden md:flex absolute inset-0 bg-gradient-to-t from-[#0d1b2a]/95 via-[#0d1b2a]/70 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex-col justify-end p-4 z-20">
                         {/* Specs Grid on Hover */}
                         <div className="translate-y-6 group-hover:translate-y-0 transition-transform duration-500 ease-out">
                             <div className="grid grid-cols-2 gap-1.5 mb-3">
@@ -209,7 +212,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                         </div>
 
                         {/* Mobile CTA (hidden on desktop where hover takes over) */}
-                        <div className="md:hidden">
+                        <div className="md:hidden relative z-20">
                             <button
                                 onClick={handleAddToCart}
                                 className="w-full flex items-center justify-center gap-2 py-2.5 bg-[var(--color-primary)] text-white font-bold text-sm rounded-xl hover:bg-[var(--color-primary-dark)] transition-colors active:scale-95 shadow-lg shadow-blue-500/20"
@@ -227,6 +230,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                     </div>
                 </div>
             </div>
-        </Link>
+        </div>
     );
 }

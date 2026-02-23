@@ -32,6 +32,15 @@ export default function Header() {
     const pathname = usePathname();
 
     const { isCartOpen, setIsCartOpen, totalItems } = useCart();
+    const [isCartBumping, setIsCartBumping] = useState(false);
+
+    // Trigger bump animation when totalItems changes
+    useEffect(() => {
+        if (totalItems === 0) return;
+        setIsCartBumping(true);
+        const timer = setTimeout(() => setIsCartBumping(false), 300);
+        return () => clearTimeout(timer);
+    }, [totalItems]);
 
     // Typing animation state
     const [placeholderText, setPlaceholderText] = useState("");
@@ -366,11 +375,13 @@ export default function Header() {
 
                         {/* Cart Button */}
                         <div className="relative">
-                            <button
+                            <motion.button
                                 className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
                                 onClick={() => setIsCartOpen(true)}
+                                animate={isCartBumping ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+                                transition={{ duration: 0.3 }}
                             >
-                                <ShoppingBag className="w-6 h-6 text-gray-700" />
+                                <ShoppingBag className={`w-6 h-6 transition-colors ${isCartBumping ? 'text-blue-600' : 'text-gray-700'}`} />
                                 {totalItems > 0 && (
                                     <motion.div
                                         initial={{ scale: 0 }}
@@ -380,7 +391,7 @@ export default function Header() {
                                         {totalItems}
                                     </motion.div>
                                 )}
-                            </button>
+                            </motion.button>
                         </div>
 
                         {/* Mobile Menu Button */}
