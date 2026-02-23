@@ -32,8 +32,8 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
     const pathname = usePathname();
     const { data: session } = useSession();
 
-    // Sidebar is collapsed unless hovered
-    const sidebarCollapsed = !hoverExpanded;
+    // Sidebar is collapsed unless hovered or opened on mobile
+    const sidebarCollapsed = !hoverExpanded && !sidebarOpen;
 
     const menuItems = [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },

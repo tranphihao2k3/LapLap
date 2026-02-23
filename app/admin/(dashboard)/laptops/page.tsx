@@ -46,6 +46,7 @@ export default function LaptopsPage() {
     const [selectedSSDs, setSelectedSSDs] = useState<string[]>([]);
     const [selectedGPUs, setSelectedGPUs] = useState<string[]>([]);
     const [selectedStatus, setSelectedStatus] = useState<string>('');
+    const [selectedPriceRange, setSelectedPriceRange] = useState<string>('');
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info'; isVisible: boolean }>({ message: '', type: 'info', isVisible: false });
@@ -102,12 +103,21 @@ export default function LaptopsPage() {
             if (selectedRAMs.length > 0 && !selectedRAMs.includes(l.specs?.ram)) return false;
             if (selectedSSDs.length > 0 && !selectedSSDs.includes(l.specs?.ssd)) return false;
             if (selectedGPUs.length > 0 && !selectedGPUs.includes(l.specs?.gpu)) return false;
+
+            if (selectedPriceRange) {
+                if (selectedPriceRange === '< 10tr' && l.price >= 10000000) return false;
+                if (selectedPriceRange === '10tr - 15tr' && (l.price < 10000000 || l.price >= 15000000)) return false;
+                if (selectedPriceRange === '15tr - 20tr' && (l.price < 15000000 || l.price >= 20000000)) return false;
+                if (selectedPriceRange === '20tr - 30tr' && (l.price < 20000000 || l.price >= 30000000)) return false;
+                if (selectedPriceRange === '> 30tr' && l.price < 30000000) return false;
+            }
+
             if (selectedStatus && l.status !== selectedStatus) return false;
             return true;
         });
-    }, [laptops, searchQuery, selectedBrands, selectedCPUs, selectedRAMs, selectedSSDs, selectedGPUs, selectedStatus]);
+    }, [laptops, searchQuery, selectedBrands, selectedCPUs, selectedRAMs, selectedSSDs, selectedGPUs, selectedStatus, selectedPriceRange]);
 
-    const hasActiveFilters = selectedBrands.length > 0 || selectedCPUs.length > 0 || selectedRAMs.length > 0 || selectedSSDs.length > 0 || selectedGPUs.length > 0 || selectedStatus;
+    const hasActiveFilters = selectedBrands.length > 0 || selectedCPUs.length > 0 || selectedRAMs.length > 0 || selectedSSDs.length > 0 || selectedGPUs.length > 0 || selectedStatus || selectedPriceRange;
 
     const clearAllFilters = () => {
         setSearchQuery('');
@@ -117,6 +127,7 @@ export default function LaptopsPage() {
         setSelectedSSDs([]);
         setSelectedGPUs([]);
         setSelectedStatus('');
+        setSelectedPriceRange('');
     };
 
     const toggleFilter = (list: string[], setList: (v: string[]) => void, val: string) => {
@@ -287,6 +298,28 @@ export default function LaptopsPage() {
                     <FilterDropdown id="ssd" label="SSD" options={filterOpts.ssds} selected={selectedSSDs} onSelect={setSelectedSSDs} />
                     <FilterDropdown id="gpu" label="VGA" options={filterOpts.gpus} selected={selectedGPUs} onSelect={setSelectedGPUs} />
 
+                    {/* Price Filter */}
+                    <div className="relative filter-dd">
+                        <button
+                            onClick={() => setOpenDropdown(openDropdown === 'price' ? null : 'price')}
+                            className={`flex items-center gap-1.5 pl-3 pr-2 py-2 rounded-lg border text-xs font-bold transition-colors
+                                ${selectedPriceRange ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-gray-200 text-gray-600 hover:border-blue-400 hover:text-blue-600'}`}
+                        >
+                            {selectedPriceRange || 'Giá'}
+                            <ChevronDown size={13} className={`transition-transform ${openDropdown === 'price' ? 'rotate-180' : ''}`} />
+                        </button>
+                        {openDropdown === 'price' && (
+                            <div className="absolute top-full left-0 mt-1.5 bg-white border border-gray-200 rounded-xl shadow-xl z-50 w-40 p-1.5">
+                                {['< 10tr', '10tr - 15tr', '15tr - 20tr', '20tr - 30tr', '> 30tr'].map(s => (
+                                    <button key={s} onClick={() => { setSelectedPriceRange(selectedPriceRange === s ? '' : s); setOpenDropdown(null); }}
+                                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold transition-colors ${selectedPriceRange === s ? 'bg-blue-600 text-white' : 'hover:bg-blue-50 text-gray-700'}`}>
+                                        {s}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
                     {/* Status Filter */}
                     <div className="relative filter-dd">
                         <button
@@ -351,7 +384,7 @@ export default function LaptopsPage() {
                     {/* Rows */}
                     <div className="divide-y divide-gray-100">
                         {filteredLaptops.map(laptop => (
-                            <div key={laptop._id} className="grid grid-cols-1 lg:grid-cols-[36px_72px_1.6fr_0.9fr_1fr_90px_110px_130px] gap-3 px-5 py-3.5 items-center hover:bg-blue-50/30 transition-colors group">
+                            <div key={laptop._id} className="grid grid-cols-[auto_1fr] lg:grid-cols-[36px_72px_1.6fr_0.9fr_1fr_90px_110px_130px] gap-x-3 gap-y-1 lg:gap-3 px-3 py-3 lg:px-5 lg:py-3.5 items-start lg:items-center hover:bg-blue-50/30 transition-colors group relative">
                                 {/* Checkbox */}
                                 <div className="hidden lg:flex justify-center">
                                     <input type="checkbox"
@@ -361,10 +394,10 @@ export default function LaptopsPage() {
                                 </div>
 
                                 {/* Image + mobile actions */}
-                                <div className="flex items-center gap-3 lg:gap-0">
+                                <div className="flex flex-col items-center gap-2 lg:gap-0 lg:flex-row row-span-4 lg:row-span-1 mt-1 lg:mt-0">
                                     {/* Mobile checkbox */}
                                     <input type="checkbox" checked={selectedIds.includes(laptop._id)} onChange={() => setSelectedIds(selectedIds.includes(laptop._id) ? selectedIds.filter(x => x !== laptop._id) : [...selectedIds, laptop._id])} className="lg:hidden w-4 h-4 accent-blue-600 rounded flex-shrink-0" />
-                                    <div className="w-14 h-12 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 flex items-center justify-center">
+                                    <div className="w-16 h-16 lg:w-14 lg:h-12 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 flex items-center justify-center">
                                         {(laptop.image || laptop.images?.[0]) ? (
                                             <img src={laptop.image || laptop.images[0]} alt="" className="w-full h-full object-contain" />
                                         ) : <ImageIcon size={20} className="text-gray-300" />}
@@ -372,8 +405,8 @@ export default function LaptopsPage() {
                                 </div>
 
                                 {/* Name */}
-                                <div>
-                                    <div className="text-sm font-bold text-gray-800 line-clamp-1 group-hover:text-blue-600 transition-colors">{laptop.name}</div>
+                                <div className="col-start-2 lg:col-start-auto">
+                                    <div className="text-sm font-bold text-gray-800 line-clamp-2 md:line-clamp-1 group-hover:text-blue-600 transition-colors leading-snug lg:leading-normal pr-8 lg:pr-0">{laptop.name}</div>
                                     <div className="text-[11px] text-gray-400 mt-0.5">{laptop.brandId?.name} • {laptop.categoryId?.name}</div>
                                 </div>
 
@@ -392,7 +425,7 @@ export default function LaptopsPage() {
                                 </div>
 
                                 {/* Price */}
-                                <div className="text-sm font-black text-blue-600">{formatPrice(laptop.price)}</div>
+                                <div className="col-start-2 lg:col-start-auto text-[13px] lg:text-sm font-black text-blue-600">{formatPrice(laptop.price)}</div>
 
                                 {/* Status */}
                                 <div className="hidden lg:flex justify-center">
@@ -402,7 +435,7 @@ export default function LaptopsPage() {
                                 </div>
 
                                 {/* Actions */}
-                                <div className="flex items-center gap-1 lg:justify-end">
+                                <div className="col-start-2 lg:col-start-auto flex items-center gap-1 mt-1 lg:mt-0 lg:justify-end border-t border-gray-100 lg:border-t-0 pt-2 lg:pt-0 w-full lg:w-auto">
                                     <button onClick={() => handleCopyUrl(laptop._id, laptop.slug)} className="p-1.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition" title="Copy link">
                                         {copiedId === laptop._id ? <Check size={15} className="text-green-500" /> : <Copy size={15} />}
                                     </button>

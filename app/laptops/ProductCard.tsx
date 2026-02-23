@@ -190,11 +190,11 @@ export default function ProductCard({ product }: ProductCardProps) {
                     </div>
 
                     {/* Desktop Mini Specs — Subtle hint (hidden on mobile) */}
-                    <div className="hidden md:flex items-center justify-center gap-2 mt-2 text-[10px] text-gray-400 font-medium">
+                    <div className="hidden md:flex items-center justify-center gap-2 mt-2 text-[10px] text-gray-500 font-bold tracking-wide">
                         <span>{product.specs.cpu?.split(' ').slice(0, 2).join(' ')}</span>
-                        <span className="w-1 h-1 rounded-full bg-gray-300" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
                         <span>{product.specs.ram}</span>
-                        <span className="w-1 h-1 rounded-full bg-gray-300" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
                         <span>{product.specs.ssd}</span>
                     </div>
 
@@ -222,7 +222,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                         {/* Desktop: Hint to hover */}
                         <div className="hidden md:flex items-center justify-center gap-1.5 text-[10px] text-gray-400 font-medium opacity-100 group-hover:opacity-0 transition-opacity duration-300">
                             <Eye size={12} />
-                            <span>Hover để xem chi tiết</span>
+                            <span>Chạm để xem chi tiết</span>
                         </div>
                     </div>
                 </div>

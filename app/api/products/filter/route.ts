@@ -62,7 +62,14 @@ export async function POST(request: Request) {
             .populate('categoryId', 'name slug')
             .populate('brandId', 'name slug logo');
 
-        dbQuery = dbQuery.sort({ createdAt: -1 }).skip(skip).limit(limit);
+        let sortOption: any = { createdAt: -1 };
+        if (body.sort === 'price_asc') {
+            sortOption = { price: 1 };
+        } else if (body.sort === 'price_desc') {
+            sortOption = { price: -1 };
+        }
+
+        dbQuery = dbQuery.sort(sortOption).skip(skip).limit(limit);
 
         const [products, total] = await Promise.all([
             dbQuery.lean(),

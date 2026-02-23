@@ -238,8 +238,8 @@ export default function LaptopFormPage() {
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <h2 className="text-lg font-bold mb-4 text-gray-800 border-b pb-2">Thông tin cơ bản</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                        <div className="col-span-2">
                             <label className="block text-sm font-medium text-gray-700 mb-2">Tên sản phẩm *</label>
                             <input
                                 type="text"
@@ -249,7 +249,7 @@ export default function LaptopFormPage() {
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
-                        <div>
+                        <div className="col-span-2 sm:col-span-1">
                             <label className="block text-sm font-medium text-gray-700 mb-2">Model Mạch (Mã) *</label>
                             <input
                                 type="text"
@@ -313,7 +313,7 @@ export default function LaptopFormPage() {
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <h2 className="text-lg font-bold mb-4 text-gray-800 border-b pb-2">Cấu hình máy tính (Specs)</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
                         <div>
                             <SearchableSelect
                                 label="CPU"
@@ -414,7 +414,7 @@ export default function LaptopFormPage() {
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Thời gian Bảo hành (Theo Tháng)</label>
                                 <select

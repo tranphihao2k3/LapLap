@@ -64,6 +64,7 @@ function LaptopsContent() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState(initialSearch);
+    const [sortBy, setSortBy] = useState<string>('');
 
     // Sync search query from URL
     useEffect(() => {
@@ -216,7 +217,8 @@ function LaptopsContent() {
                         hzs: filters.hzs,
                         resolutions: filters.resolutions,
                         statuses: filters.statuses,
-                        priceRanges: activePriceRanges
+                        priceRanges: activePriceRanges,
+                        sort: sortBy
                     })
                 });
 
@@ -238,7 +240,7 @@ function LaptopsContent() {
         }, 300); // 300ms debounce
 
         return () => clearTimeout(timeoutId);
-    }, [searchQuery, filters, currentPage]);
+    }, [searchQuery, filters, currentPage, sortBy]);
 
     // Reset to page 1 when filters change
     useEffect(() => {
@@ -412,6 +414,35 @@ function LaptopsContent() {
                                 </div>
                             )}
                         </div>
+
+                        {/* Sort Dropdown for Desktop */}
+                        <div className="hidden md:flex relative filter-dd z-50">
+                            <button
+                                onClick={() => toggleDropdown('sort')}
+                                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 hover:border-blue-400 hover:text-blue-600 transition shadow-sm"
+                            >
+                                <span className="text-gray-500 font-medium">Sắp xếp:</span>
+                                {sortBy === 'price_asc' ? 'Giá tăng dần' : sortBy === 'price_desc' ? 'Giá giảm dần' : 'Mới nhất'}
+                                <ChevronDown size={16} />
+                            </button>
+                            {openDropdown === 'sort' && (
+                                <div className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl z-50 min-w-[200px] overflow-hidden">
+                                    {[
+                                        { value: '', label: 'Mới nhất' },
+                                        { value: 'price_asc', label: 'Giá tăng dần' },
+                                        { value: 'price_desc', label: 'Giá giảm dần' }
+                                    ].map(opt => (
+                                        <button
+                                            key={opt.value}
+                                            onClick={() => { setSortBy(opt.value); setOpenDropdown(null); }}
+                                            className={`w-full text-left px-4 py-2.5 text-sm font-semibold transition hover:bg-blue-50 hover:text-blue-600 ${sortBy === opt.value ? 'bg-blue-50 text-blue-600' : 'text-gray-700'}`}
+                                        >
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Brand Logos Filter */}
@@ -470,19 +501,19 @@ function LaptopsContent() {
                             )}
                         </div>
 
-                        <div className="flex flex-wrap gap-3">
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 auto-rows-fr [&>div]:h-full [&>div>button]:h-full [&>div>button]:w-full [&>div>button]:justify-between">
                             {/* Category Filter */}
-                            <div className="relative">
+                            <div className={`relative ${openDropdown === 'categories' ? 'z-[60]' : ''}`}>
                                 <button
                                     onClick={() => toggleDropdown('categories')}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${filters.categories.length > 0
+                                    className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg text-[13px] sm:text-sm font-semibold transition ${filters.categories.length > 0
                                         ? 'bg-[#004e9a] text-white'
                                         : 'bg-[#004e9a] text-white hover:bg-[#003b78]'
                                         }`}
                                 >
-                                    Theo phân loại
+                                    Phân loại
                                     {filters.categories.length > 0 && ` (${filters.categories.length})`}
-                                    <ChevronDown size={16} />
+                                    <ChevronDown size={14} className="flex-shrink-0" />
                                 </button>
                                 {openDropdown === 'categories' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px] max-h-[300px] overflow-y-auto">
@@ -502,17 +533,17 @@ function LaptopsContent() {
                             </div>
 
                             {/* Brand Filter */}
-                            <div className="relative">
+                            <div className={`relative ${openDropdown === 'brands' ? 'z-[60]' : ''}`}>
                                 <button
                                     onClick={() => toggleDropdown('brands')}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${filters.brands.length > 0
+                                    className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg text-[13px] sm:text-sm font-semibold transition ${filters.brands.length > 0
                                         ? 'bg-[#004e9a] text-white'
                                         : 'bg-[#004e9a] text-white hover:bg-[#003b78]'
                                         }`}
                                 >
-                                    Theo hãng
+                                    Hãng
                                     {filters.brands.length > 0 && ` (${filters.brands.length})`}
-                                    <ChevronDown size={16} />
+                                    <ChevronDown size={14} className="flex-shrink-0" />
                                 </button>
                                 {openDropdown === 'brands' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px] max-h-[300px] overflow-y-auto">
@@ -532,17 +563,17 @@ function LaptopsContent() {
                             </div>
 
                             {/* CPU Filter */}
-                            <div className="relative">
+                            <div className={`relative ${openDropdown === 'cpus' ? 'z-[60]' : ''}`}>
                                 <button
                                     onClick={() => toggleDropdown('cpus')}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${filters.cpus.length > 0
+                                    className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg text-[13px] sm:text-sm font-semibold transition ${filters.cpus.length > 0
                                         ? 'bg-[#004e9a] text-white'
                                         : 'bg-[#004e9a] text-white hover:bg-[#003b78]'
                                         }`}
                                 >
                                     CPU
                                     {filters.cpus.length > 0 && ` (${filters.cpus.length})`}
-                                    <ChevronDown size={16} />
+                                    <ChevronDown size={14} className="flex-shrink-0" />
                                 </button>
                                 {openDropdown === 'cpus' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px] max-h-[300px] overflow-y-auto">
@@ -562,17 +593,17 @@ function LaptopsContent() {
                             </div>
 
                             {/* RAM Filter */}
-                            <div className="relative">
+                            <div className={`relative ${openDropdown === 'rams' ? 'z-[60]' : ''}`}>
                                 <button
                                     onClick={() => toggleDropdown('rams')}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${filters.rams.length > 0
+                                    className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg text-[13px] sm:text-sm font-semibold transition ${filters.rams.length > 0
                                         ? 'bg-[#004e9a] text-white'
                                         : 'bg-[#004e9a] text-white hover:bg-[#003b78]'
                                         }`}
                                 >
                                     RAM
                                     {filters.rams.length > 0 && ` (${filters.rams.length})`}
-                                    <ChevronDown size={16} />
+                                    <ChevronDown size={14} className="flex-shrink-0" />
                                 </button>
                                 {openDropdown === 'rams' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px] max-h-[300px] overflow-y-auto">
@@ -592,17 +623,17 @@ function LaptopsContent() {
                             </div>
 
                             {/* SSD Filter */}
-                            <div className="relative">
+                            <div className={`relative ${openDropdown === 'ssds' ? 'z-[60]' : ''}`}>
                                 <button
                                     onClick={() => toggleDropdown('ssds')}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${filters.ssds.length > 0
+                                    className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg text-[13px] sm:text-sm font-semibold transition ${filters.ssds.length > 0
                                         ? 'bg-[#004e9a] text-white'
                                         : 'bg-[#004e9a] text-white hover:bg-[#003b78]'
                                         }`}
                                 >
-                                    SSD HDD
+                                    Ổ cứng
                                     {filters.ssds.length > 0 && ` (${filters.ssds.length})`}
-                                    <ChevronDown size={16} />
+                                    <ChevronDown size={14} className="flex-shrink-0" />
                                 </button>
                                 {openDropdown === 'ssds' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px] max-h-[300px] overflow-y-auto">
@@ -622,17 +653,17 @@ function LaptopsContent() {
                             </div>
 
                             {/* GPU Filter */}
-                            <div className="relative">
+                            <div className={`relative ${openDropdown === 'gpus' ? 'z-[60]' : ''}`}>
                                 <button
                                     onClick={() => toggleDropdown('gpus')}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${filters.gpus.length > 0
+                                    className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg text-[13px] sm:text-sm font-semibold transition ${filters.gpus.length > 0
                                         ? 'bg-[#004e9a] text-white'
                                         : 'bg-[#004e9a] text-white hover:bg-[#003b78]'
                                         }`}
                                 >
                                     VGA
                                     {filters.gpus.length > 0 && ` (${filters.gpus.length})`}
-                                    <ChevronDown size={16} />
+                                    <ChevronDown size={14} className="flex-shrink-0" />
                                 </button>
                                 {openDropdown === 'gpus' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px] max-h-[300px] overflow-y-auto">
@@ -652,17 +683,17 @@ function LaptopsContent() {
                             </div>
 
                             {/* Price Filter */}
-                            <div className="relative">
+                            <div className={`relative ${openDropdown === 'prices' ? 'z-[60]' : ''}`}>
                                 <button
                                     onClick={() => toggleDropdown('prices')}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${filters.priceRanges.length > 0
+                                    className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg text-[13px] sm:text-sm font-semibold transition ${filters.priceRanges.length > 0
                                         ? 'bg-[#004e9a] text-white'
                                         : 'bg-[#004e9a] text-white hover:bg-[#003b78]'
                                         }`}
                                 >
                                     Theo giá
                                     {filters.priceRanges.length > 0 && ` (${filters.priceRanges.length})`}
-                                    <ChevronDown size={16} />
+                                    <ChevronDown size={14} className="flex-shrink-0" />
                                 </button>
                                 {openDropdown === 'prices' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px]">
@@ -682,17 +713,17 @@ function LaptopsContent() {
                             </div>
 
                             {/* Screen Filter */}
-                            <div className="relative">
+                            <div className={`relative ${openDropdown === 'screens' ? 'z-[60]' : ''}`}>
                                 <button
                                     onClick={() => toggleDropdown('screens')}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${filters.screens.length > 0
+                                    className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg text-[13px] sm:text-sm font-semibold transition ${filters.screens.length > 0
                                         ? 'bg-[#004e9a] text-white'
                                         : 'bg-[#004e9a] text-white hover:bg-[#003b78]'
                                         }`}
                                 >
-                                    Kích thước màn hình
+                                    Màn hình
                                     {filters.screens.length > 0 && ` (${filters.screens.length})`}
-                                    <ChevronDown size={16} />
+                                    <ChevronDown size={14} className="flex-shrink-0" />
                                 </button>
                                 {openDropdown === 'screens' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px] max-h-[300px] overflow-y-auto">
@@ -712,17 +743,17 @@ function LaptopsContent() {
                             </div>
 
                             {/* Hz Filter */}
-                            <div className="relative">
+                            <div className={`relative ${openDropdown === 'hzs' ? 'z-[60]' : ''}`}>
                                 <button
                                     onClick={() => toggleDropdown('hzs')}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${filters.hzs.length > 0
+                                    className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg text-[13px] sm:text-sm font-semibold transition ${filters.hzs.length > 0
                                         ? 'bg-[#004e9a] text-white'
                                         : 'bg-[#004e9a] text-white hover:bg-[#003b78]'
                                         }`}
                                 >
                                     Tần số quét
                                     {filters.hzs.length > 0 && ` (${filters.hzs.length})`}
-                                    <ChevronDown size={16} />
+                                    <ChevronDown size={14} className="flex-shrink-0" />
                                 </button>
                                 {openDropdown === 'hzs' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[160px] max-h-[300px] overflow-y-auto">
@@ -742,17 +773,17 @@ function LaptopsContent() {
                             </div>
 
                             {/* Resolution Filter */}
-                            <div className="relative">
+                            <div className={`relative ${openDropdown === 'resolutions' ? 'z-[60]' : ''}`}>
                                 <button
                                     onClick={() => toggleDropdown('resolutions')}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition ${filters.resolutions.length > 0
+                                    className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg text-[13px] sm:text-sm font-semibold transition ${filters.resolutions.length > 0
                                         ? 'bg-[#004e9a] text-white'
                                         : 'bg-[#004e9a] text-white hover:bg-[#003b78]'
                                         }`}
                                 >
                                     Độ phân giải
                                     {filters.resolutions.length > 0 && ` (${filters.resolutions.length})`}
-                                    <ChevronDown size={16} />
+                                    <ChevronDown size={14} className="flex-shrink-0" />
                                 </button>
                                 {openDropdown === 'resolutions' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[180px] max-h-[300px] overflow-y-auto">
@@ -772,16 +803,14 @@ function LaptopsContent() {
                             </div>
 
                             {/* Status Filter */}
-                            <div className="relative">
-                                <Button
+                            <div className={`relative ${openDropdown === 'statuses' ? 'z-[60]' : ''}`}>
+                                <button
                                     onClick={() => toggleDropdown('statuses')}
-                                    variant={filters.statuses.length > 0 ? 'primary' : 'outline'}
-                                    size="sm"
-                                    rightIcon={<ChevronDown size={16} />}
-                                    className={filters.statuses.length > 0 ? 'shadow-md shadow-blue-500/20' : 'bg-white border-gray-300 text-gray-700'}
+                                    className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 rounded-lg text-[13px] sm:text-sm font-semibold transition ${filters.statuses.length > 0 ? 'bg-[#004e9a] text-white' : 'bg-white border text-gray-700 border-gray-200 hover:border-blue-300'}`}
                                 >
                                     Tình trạng {filters.statuses.length > 0 && ` (${filters.statuses.length})`}
-                                </Button>
+                                    <ChevronDown size={14} className="flex-shrink-0" />
+                                </button>
                                 {openDropdown === 'statuses' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px]">
                                         <label className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
@@ -802,6 +831,37 @@ function LaptopsContent() {
                                             />
                                             <span className="text-sm">Hết hàng</span>
                                         </label>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Sort Dropdown for Mobile */}
+                            <div className={`relative filter-dd md:hidden w-full col-span-2 ${openDropdown === 'sort_mobile' ? 'z-[90]' : 'z-50'}`}>
+                                <button
+                                    onClick={() => toggleDropdown('sort_mobile')}
+                                    className="flex w-full min-h-[40px] items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-white border border-gray-200 rounded-lg text-[13px] sm:text-sm font-semibold text-gray-700 hover:border-blue-400 hover:text-blue-600 transition shadow-sm"
+                                >
+                                    <span className="truncate">
+                                        <span className="text-gray-500 font-medium font-normal mr-1">Sắp xếp:</span>
+                                        {sortBy === 'price_asc' ? 'Giá tăng' : sortBy === 'price_desc' ? 'Giá giảm' : 'Mới nhất'}
+                                    </span>
+                                    <ChevronDown size={14} className="flex-shrink-0" />
+                                </button>
+                                {openDropdown === 'sort_mobile' && (
+                                    <div className="absolute top-full left-0 right-0 sm:right-auto mt-2 bg-white border border-gray-200 rounded-lg shadow-xl z-50">
+                                        {[
+                                            { value: '', label: 'Mới nhất' },
+                                            { value: 'price_asc', label: 'Giá tăng dần' },
+                                            { value: 'price_desc', label: 'Giá giảm dần' }
+                                        ].map(opt => (
+                                            <button
+                                                key={opt.value}
+                                                onClick={() => { setSortBy(opt.value); setOpenDropdown(null); }}
+                                                className={`w-full text-left px-4 py-2.5 text-sm font-semibold transition hover:bg-blue-50 hover:text-blue-600 ${sortBy === opt.value ? 'bg-blue-50 text-blue-600' : 'text-gray-700'}`}
+                                            >
+                                                {opt.label}
+                                            </button>
+                                        ))}
                                     </div>
                                 )}
                             </div>

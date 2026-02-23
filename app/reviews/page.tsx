@@ -156,7 +156,7 @@ export default function ReviewsPage() {
                 </section>
 
                 {/* OVERVIEW STATS */}
-                <div className="bg-white border-y border-slate-100 sticky top-0 z-30 shadow-sm backdrop-blur-md bg-white/90">
+                <div className="bg-white border-y border-slate-100 relative z-20 shadow-sm backdrop-blur-md bg-white/90">
                     <div className="max-w-7xl mx-auto px-4 py-4 md:py-6">
                         <div className="flex flex-col md:flex-row justify-center items-center gap-6 md:gap-16">
                             <div className="text-center">

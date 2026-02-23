@@ -317,7 +317,7 @@ export default function BlogPage() {
                         {/* Blog Grid */}
                         {filteredBlogs.length > 0 ? (
                             <motion.div
-                                className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8"
+                                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8"
                                 variants={stagger}
                                 initial="hidden"
                                 animate="visible"

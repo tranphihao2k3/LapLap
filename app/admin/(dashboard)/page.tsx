@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import {
     FolderTree,
     Building2,
@@ -136,6 +137,7 @@ export default function AdminDashboard() {
             accentBg: 'rgba(6,214,160,0.1)',
             borderColor: 'rgba(6,214,160,0.25)',
             topBar: 'linear-gradient(90deg, #06d6a0, transparent)',
+            href: '/admin',
         },
         {
             icon: ShoppingCart,
@@ -146,6 +148,7 @@ export default function AdminDashboard() {
             accentBg: 'rgba(249,115,22,0.1)',
             borderColor: 'rgba(249,115,22,0.25)',
             topBar: 'linear-gradient(90deg, #f97316, transparent)',
+            href: '/admin/orders',
         },
         {
             icon: Users,
@@ -156,6 +159,7 @@ export default function AdminDashboard() {
             accentBg: 'rgba(139,92,246,0.1)',
             borderColor: 'rgba(139,92,246,0.25)',
             topBar: 'linear-gradient(90deg, #8b5cf6, transparent)',
+            href: '/admin/customers',
         },
         {
             icon: Laptop,
@@ -166,6 +170,7 @@ export default function AdminDashboard() {
             accentBg: 'rgba(79,142,247,0.1)',
             borderColor: 'rgba(79,142,247,0.25)',
             topBar: 'linear-gradient(90deg, #4f8ef7, transparent)',
+            href: '/admin/laptops',
         },
         {
             icon: Star,
@@ -176,6 +181,7 @@ export default function AdminDashboard() {
             accentBg: 'rgba(251,191,36,0.1)',
             borderColor: 'rgba(251,191,36,0.25)',
             topBar: 'linear-gradient(90deg, #fbbf24, transparent)',
+            href: '/admin/reviews',
         },
         {
             icon: Building2,
@@ -186,6 +192,7 @@ export default function AdminDashboard() {
             accentBg: 'rgba(236,72,153,0.1)',
             borderColor: 'rgba(236,72,153,0.25)',
             topBar: 'linear-gradient(90deg, #ec4899, transparent)',
+            href: '/admin/brands',
         },
         {
             icon: FolderTree,
@@ -196,6 +203,7 @@ export default function AdminDashboard() {
             accentBg: 'rgba(20,184,166,0.1)',
             borderColor: 'rgba(20,184,166,0.25)',
             topBar: 'linear-gradient(90deg, #14b8a6, transparent)',
+            href: '/admin/categories',
         },
         {
             icon: Package,
@@ -206,6 +214,7 @@ export default function AdminDashboard() {
             accentBg: 'rgba(244,63,94,0.1)',
             borderColor: 'rgba(244,63,94,0.25)',
             topBar: 'linear-gradient(90deg, #f43f5e, transparent)',
+            href: '/admin/software',
         },
     ];
 
@@ -304,16 +313,16 @@ export default function AdminDashboard() {
     const getWeekData = () => {
         const now = new Date();
         const currentDay = now.getDay(); // 0 = Chủ nhật, 1 = Thứ 2, ..., 6 = Thứ 7
-        
+
         // Chuyển đổi: Chủ nhật (0) -> 6, Thứ 2 (1) -> 0, ..., Thứ 7 (6) -> 5
         // Để tuần bắt đầu từ Thứ 2 (index 0)
         const dayIndex = currentDay === 0 ? 6 : currentDay - 1;
-        
+
         const weekDays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-        
+
         // Dữ liệu giả (có thể thay bằng dữ liệu thực từ API)
         const weekBars = [30, 55, 40, 80, 65, 45, 70];
-        
+
         return { weekDays, weekBars, currentDayIndex: dayIndex };
     };
 
@@ -380,7 +389,7 @@ export default function AdminDashboard() {
                     pointerEvents: 'none',
                 }} />
 
-                <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
                     <div>
                         <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#ffffff', marginBottom: 8 }}>
                             ✦ Chào mừng trở lại
@@ -401,7 +410,7 @@ export default function AdminDashboard() {
                         </p>
                     </div>
 
-                    <div style={{ display: 'flex', gap: 28, flexShrink: 0 }}>
+                    <div className="flex gap-4 sm:gap-7 flex-shrink-0 flex-wrap">
                         {[
                             { val: stats.visitors.toLocaleString('vi-VN'), label: 'Lượt truy cập' },
                             { val: stats.orders.toString(), label: 'Tổng đơn hàng' },
@@ -438,7 +447,7 @@ export default function AdminDashboard() {
 
             {/* Stat Cards */}
             {loading ? (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                         <div key={i} style={{
                             background: '#ffffff',
@@ -452,28 +461,31 @@ export default function AdminDashboard() {
                     ))}
                 </div>
             ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                     {statCards.map((card, i) => (
-                        <div
+                        <Link
+                            href={card.href}
                             key={i}
                             style={{
+                                display: 'block',
                                 background: '#ffffff',
                                 border: `1px solid ${card.borderColor}`,
                                 borderRadius: 16,
                                 padding: 20,
                                 position: 'relative',
                                 overflow: 'hidden',
-                                cursor: 'default',
+                                cursor: 'pointer',
                                 transition: 'transform 0.2s, box-shadow 0.2s',
                                 boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                                textDecoration: 'none',
                             }}
                             onMouseEnter={e => {
-                                (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-                                (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)';
+                                (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)';
+                                (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)';
                             }}
                             onMouseLeave={e => {
-                                (e.currentTarget as HTMLDivElement).style.transform = 'translateY(0)';
-                                (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
+                                (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(0)';
+                                (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
                             }}
                         >
                             {/* top accent bar */}
@@ -519,13 +531,13 @@ export default function AdminDashboard() {
                             <div style={{ fontSize: 12, color: '#4b5563', fontWeight: 500 }}>
                                 {card.label}
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             )}
 
             {/* Bottom Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 20 }}>
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-5">
 
                 {/* Recent Laptops */}
                 <div style={{
