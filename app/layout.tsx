@@ -71,6 +71,7 @@ export const metadata: Metadata = {
     title: "LapLap - Laptop Cần Thơ | Mua Bán Laptop Chính Hãng Giá Tốt",
     description: "LapLap - Chuyên laptop tại Cần Thơ. Laptop mới, laptop cũ chính hãng, giá tốt nhất.",
   },
+  manifest: "/manifest.json",
 };
 
 import { Be_Vietnam_Pro } from "next/font/google";
