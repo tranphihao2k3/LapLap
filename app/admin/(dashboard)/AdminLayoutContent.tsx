@@ -23,7 +23,8 @@ import {
     ShoppingCart,
     Megaphone,
     Shield,
-    MessageSquare
+    MessageSquare,
+    Key
 } from 'lucide-react';
 
 export default function AdminLayoutContent({ children }: { children: ReactNode }) {
@@ -46,6 +47,7 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
         { icon: Users, label: 'Khách hàng', href: '/admin/customers' }, // CRM
         { icon: FileText, label: 'Blog', href: '/admin/blog' },
         { icon: Laptop, label: 'Driver & Soft', href: '/admin/software' },
+        { icon: Key, label: 'Quản lý Bản quyền', href: '/admin/licenses' },
         { icon: Shield, label: 'Quản trị viên', href: '/admin/users' },
         { icon: Megaphone, label: 'Marketing', href: '/admin/marketing' },
     ];
