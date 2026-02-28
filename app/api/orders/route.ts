@@ -14,6 +14,44 @@ const transporter = nodemailer.createTransport({
     },
 });
 
+export async function GET(request: Request) {
+    try {
+        await connectDB();
+        
+        const { searchParams } = new URL(request.url);
+        const status = searchParams.get("status");
+        const customerId = searchParams.get("customerId");
+        const fromDate = searchParams.get("fromDate");
+        const toDate = searchParams.get("toDate");
+        
+        const query: any = {};
+        if (status) query.status = status;
+        if (customerId) query.customerId = customerId;
+        if (fromDate || toDate) {
+            query.createdAt = {};
+            if (fromDate) query.createdAt.$gte = new Date(fromDate);
+            if (toDate) query.createdAt.$lte = new Date(toDate);
+        }
+        
+        const orders = await Order.find(query)
+            .populate('customerId', 'name phone email')
+            .sort({ createdAt: -1 })
+            .lean();
+        
+        return NextResponse.json({
+            success: true,
+            data: orders,
+            count: orders.length
+        });
+    } catch (error: any) {
+        console.error("Get Orders Error:", error);
+        return NextResponse.json({
+            success: false,
+            error: "Lỗi khi lấy danh sách đơn hàng: " + error.message
+        }, { status: 500 });
+    }
+}
+
 export async function POST(request: Request) {
     try {
         await connectDB();

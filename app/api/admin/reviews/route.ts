@@ -1,61 +1,40 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Review } from "@/models/Review";
 
-export async function GET(request: Request) {
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "10");
-    const status = searchParams.get("status") || "all";
-    const skip = (page - 1) * limit;
-
+// GET all reviews with filters
+export async function GET(request: NextRequest) {
     try {
         await connectDB();
+        const { searchParams } = new URL(request.url);
+        const productId = searchParams.get("productId");
+        const rating = searchParams.get("rating");
+        const status = searchParams.get("status");
+        const page = parseInt(searchParams.get("page") || "1");
+        const limit = parseInt(searchParams.get("limit") || "20");
 
-        let query: any = {};
-        if (status !== 'all') {
-            query.status = status;
-        }
+        const query: any = {};
+        if (productId) query.productId = productId;
+        if (rating) query.rating = parseInt(rating);
+        if (status) query.status = status;
 
+        const skip = (page - 1) * limit;
+        const total = await Review.countDocuments(query);
         const reviews = await Review.find(query)
-            .populate("productId", "name image")
+            .populate("productId", "name slug images")
+            .populate("customerId", "name email phone")
             .sort({ createdAt: -1 })
             .skip(skip)
-            .limit(limit);
-
-        const total = await Review.countDocuments(query);
+            .limit(limit)
+            .lean();
 
         return NextResponse.json({
             success: true,
             data: reviews,
-            pagination: {
-                total,
-                page,
-                limit,
-                totalPages: Math.ceil(total / limit),
-            },
+            pagination: { page, limit, total, pages: Math.ceil(total / limit) },
         });
-    } catch (error) {
-        return NextResponse.json({ success: false, message: "Error fetching reviews" }, { status: 500 });
-    }
-}
-
-export async function PATCH(request: Request) {
-    try {
-        await connectDB();
-        const body = await request.json();
-        const { reviewId, status, reply } = body;
-
-        const updateData: any = {};
-        if (status) updateData.status = status;
-        if (reply) updateData.reply = { content: reply, repliedAt: new Date() };
-
-        const updatedReview = await Review.findByIdAndUpdate(reviewId, updateData, { new: true });
-
-        // TODO: Update Product averageRating if status changes to/from 'approved'
-
-        return NextResponse.json({ success: true, data: updatedReview });
-    } catch (error) {
-        return NextResponse.json({ success: false, message: "Error updating review" }, { status: 500 });
+    } catch (error: any) {
+        console.error("Error fetching reviews:", error);
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }

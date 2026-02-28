@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, Eye } from 'lucide-react';
 import Toast from '@/components/admin/Toast';
+import ImageUploader from '@/components/admin/ImageUploader';
+
 
 export default function NewBlogPage() {
     const router = useRouter();
@@ -190,16 +192,15 @@ export default function NewBlogPage() {
                     {/* Featured Image */}
                     <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Ảnh đại diện (URL)
+                            Ảnh đại diện
                         </label>
-                        <input
-                            type="url"
-                            value={formData.featuredImage}
-                            onChange={(e) => setFormData({ ...formData, featuredImage: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="https://example.com/image.jpg"
+                        <ImageUploader
+                            value={formData.featuredImage ? [formData.featuredImage] : []}
+                            onChange={(urls) => setFormData({ ...formData, featuredImage: urls[0] || '' })}
+                            maxImages={1}
                         />
                     </div>
+
 
                     {/* Author */}
                     <div>

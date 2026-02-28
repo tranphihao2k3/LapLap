@@ -153,7 +153,7 @@ export default function HomeClient() {
                                 <motion.h2 className="text-2xl md:text-3xl font-bold text-gray-800 border-b-4 border-blue-600 pb-2 inline-block" initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}>{category.name}</motion.h2>
                                 <Button href={`/laptops?category=${category._id}`} variant="outline" size="sm" rounded="full">Xem thêm</Button>
                             </div>
-                            <motion.div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6" initial="hidden" whileInView="visible" variants={stagger}>
+                            <motion.div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6" initial="hidden" whileInView="visible" variants={stagger}>
                                 {laptops.slice(0, 4).map((laptop) => (
                                     <motion.div key={laptop._id} variants={fadeInUp}><ProductCard product={laptop} /></motion.div>
                                 ))}

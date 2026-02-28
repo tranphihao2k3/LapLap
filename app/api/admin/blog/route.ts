@@ -2,114 +2,61 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Blog } from "@/models/Blog";
 
-// GET all blog posts (admin view - includes drafts)
+// GET all blog posts with filters
 export async function GET(request: NextRequest) {
     try {
         await connectDB();
-
         const { searchParams } = new URL(request.url);
+        const category = searchParams.get("category");
         const status = searchParams.get("status");
+        const search = searchParams.get("search");
+        const page = parseInt(searchParams.get("page") || "1");
+        const limit = parseInt(searchParams.get("limit") || "20");
 
-        let query = {};
-        if (status && (status === "draft" || status === "published")) {
-            query = { status };
+        const query: any = {};
+        if (category) query.category = category;
+        if (status) query.status = status;
+        if (search) {
+            query.$or = [
+                { title: { $regex: search, $options: 'i' } },
+                { slug: { $regex: search, $options: 'i' } }
+            ];
         }
 
-        const blogs = await Blog.find(query)
+        const skip = (page - 1) * limit;
+        const total = await Blog.countDocuments(query);
+        const posts = await Blog.find(query)
+            .select("-content")
             .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
             .lean();
 
         return NextResponse.json({
             success: true,
-            data: blogs,
+            data: posts,
+            pagination: { page, limit, total, pages: Math.ceil(total / limit) },
         });
-    } catch (error) {
-        console.error("Error fetching blogs:", error);
-        return NextResponse.json(
-            { success: false, error: "Failed to fetch blogs" },
-            { status: 500 }
-        );
+    } catch (error: any) {
+        console.error("Error fetching blog posts:", error);
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }
 
-// Helper function to generate slug from title
-function generateSlug(title: string): string {
-    return title
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "") // Remove diacritics
-        .replace(/đ/g, "d")
-        .replace(/[^a-z0-9\s-]/g, "")
-        .trim()
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-");
-}
-
-// POST create new blog post
+// POST - Create new blog post
 export async function POST(request: NextRequest) {
     try {
         await connectDB();
-
         const body = await request.json();
-        const {
-            title,
-            slug,
-            excerpt,
-            content,
-            featuredImage,
-            author,
-            tags,
-            metaTitle,
-            metaDescription,
-            status,
-        } = body;
 
-        // Validate required fields
-        if (!title || !content) {
-            return NextResponse.json(
-                { success: false, error: "Title and content are required" },
-                { status: 400 }
-            );
+        if (!body.title || !body.slug) {
+            return NextResponse.json({ success: false, error: "Thiếu thông tin bắt buộc" }, { status: 400 });
         }
 
-        // Generate slug if not provided
-        const finalSlug = slug || generateSlug(title);
-
-        // Check if slug already exists
-        const existingBlog = await Blog.findOne({ slug: finalSlug });
-        if (existingBlog) {
-            return NextResponse.json(
-                { success: false, error: "Slug already exists" },
-                { status: 400 }
-            );
-        }
-
-        // Set publishedAt if status is published
-        const publishedAt = status === "published" ? new Date() : null;
-
-        const newBlog = await Blog.create({
-            title,
-            slug: finalSlug,
-            excerpt: excerpt || "",
-            content,
-            featuredImage: featuredImage || "",
-            author: author || "LapLap Team",
-            tags: tags || [],
-            metaTitle: metaTitle || title,
-            metaDescription: metaDescription || excerpt || "",
-            status: status || "draft",
-            publishedAt,
-        });
-
-        return NextResponse.json({
-            success: true,
-            data: newBlog,
-        });
-    } catch (error) {
-        console.error("Error creating blog:", error);
-        return NextResponse.json(
-            { success: false, error: "Failed to create blog" },
-            { status: 500 }
-        );
+        const post = await Blog.create(body);
+        return NextResponse.json({ success: true, data: post }, { status: 201 });
+    } catch (error: any) {
+        console.error("Error creating blog post:", error);
+        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }

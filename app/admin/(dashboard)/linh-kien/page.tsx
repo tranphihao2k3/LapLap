@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import PriceInput from '@/components/admin/PriceInput';
 import Toast from '@/components/admin/Toast';
+import ImageUploader from '@/components/admin/ImageUploader';
+
 
 interface ComponentSpec {
     // RAM Specs
@@ -518,16 +520,15 @@ export default function ComponentsPage() {
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Hình ảnh đại diện (URL)</label>
-                                    <input
-                                        type="text"
-                                        className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all font-bold text-xs"
-                                        value={formData.image}
-                                        onChange={e => setFormData({ ...formData, image: e.target.value })}
-                                        placeholder="https://..."
+                                <div className="md:col-span-2">
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Hình ảnh đại diện</label>
+                                    <ImageUploader
+                                        value={formData.image ? [formData.image] : []}
+                                        onChange={(urls) => setFormData({ ...formData, image: urls[0] || '' })}
+                                        maxImages={1}
                                     />
                                 </div>
+
 
                                 <div className="md:col-span-2">
                                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Mô tả chi tiết</label>

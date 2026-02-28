@@ -36,11 +36,17 @@ export default function LaptopFormPage() {
         categoryId: '',
         brandId: '',
         price: 9900000,
+        costPrice: 0,
         image: '',
         images: [''],
         gift: 'Túi chống sốc, Chuột không dây',
         description: '',
         warrantyMonths: 12,
+        isUsed: false,
+        condition: 'new',
+        usedGrade: '',
+        conditionNote: '',
+        isFeatured: false,
         specs: {
             cpu: '',
             gpu: '',
@@ -50,6 +56,7 @@ export default function LaptopFormPage() {
             hz: '',
             resolution: '',
             battery: '',
+            weight: '',
         },
         warranty: {
             duration: '12 tháng',
@@ -57,6 +64,7 @@ export default function LaptopFormPage() {
         },
         status: 'active',
     });
+
 
     const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info'; isVisible: boolean }>({
         message: '',
@@ -93,11 +101,17 @@ export default function LaptopFormPage() {
                             categoryId: laptop.categoryId?._id || laptop.categoryId,
                             brandId: laptop.brandId?._id || laptop.brandId,
                             price: laptop.price,
+                            costPrice: laptop.costPrice || 0,
                             image: laptop.image || '',
                             images: laptop.images?.length > 0 ? laptop.images : [''],
                             gift: laptop.gift || '',
                             description: laptop.description || '',
                             warrantyMonths: laptop.warrantyMonths || 12,
+                            isUsed: laptop.isUsed || false,
+                            condition: laptop.condition || 'new',
+                            usedGrade: laptop.usedGrade || '',
+                            conditionNote: laptop.conditionNote || '',
+                            isFeatured: laptop.isFeatured || false,
                             specs: {
                                 cpu: laptop.specs?.cpu || '',
                                 gpu: laptop.specs?.gpu || '',
@@ -107,10 +121,12 @@ export default function LaptopFormPage() {
                                 hz: laptop.specs?.hz || '',
                                 resolution: laptop.specs?.resolution || '',
                                 battery: laptop.specs?.battery || '',
+                                weight: laptop.specs?.weight || '',
                             },
                             warranty: laptop.warranty || { duration: '12 tháng', items: [''] },
                             status: laptop.status || 'active',
                         });
+
                     } else {
                         showToast('Không tìm thấy laptop', 'error');
                         setTimeout(() => router.push('/admin/laptops'), 2000);
@@ -184,9 +200,15 @@ export default function LaptopFormPage() {
             brandId: parsedData.brandId || (parsedData.brand ? brands.find(b => b.name.toLowerCase() === parsedData.brand.toLowerCase())?._id || prev.brandId : prev.brandId),
             categoryId: parsedData.categoryId || prev.categoryId,
             price: parsedData.price || prev.price,
+            costPrice: parsedData.costPrice || prev.costPrice,
             warrantyMonths: parsedData.warrantyMonths || prev.warrantyMonths,
             gift: parsedData.gift || prev.gift,
             description: parsedData.description || prev.description,
+            isUsed: parsedData.isUsed !== undefined ? parsedData.isUsed : prev.isUsed,
+            condition: parsedData.condition || prev.condition,
+            usedGrade: parsedData.usedGrade || prev.usedGrade,
+            conditionNote: parsedData.conditionNote || prev.conditionNote,
+            isFeatured: parsedData.isFeatured !== undefined ? parsedData.isFeatured : prev.isFeatured,
             specs: {
                 cpu: parsedData.cpu || prev.specs.cpu,
                 gpu: parsedData.gpu || prev.specs.gpu,
@@ -196,9 +218,11 @@ export default function LaptopFormPage() {
                 hz: parsedData.hz || prev.specs.hz,
                 resolution: parsedData.resolution || prev.specs.resolution,
                 battery: parsedData.battery || prev.specs.battery,
+                weight: parsedData.weight || prev.specs.weight,
             }
         }));
     };
+
 
     if (loading) {
         return (
@@ -291,15 +315,30 @@ export default function LaptopFormPage() {
                 </div>
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h2 className="text-lg font-bold mb-4 text-gray-800 border-b pb-2">Giá & Hình ảnh</h2>
-                    <div className="grid grid-cols-1 mb-6">
+                    <h2 className="text-lg font-bold mb-4 text-gray-800 border-b pb-2">Giá bán & Giá vốn</h2>
+                    <div className="grid grid-cols-2 gap-4 mb-6">
                         <PriceInput
                             value={formData.price}
                             onChange={(value) => setFormData({ ...formData, price: value })}
                             label="Giá bán (VNĐ) *"
                             placeholder="Ví dụ: 9900 = 9.900.000đ"
                         />
+                        <PriceInput
+                            value={formData.costPrice}
+                            onChange={(value) => setFormData({ ...formData, costPrice: value })}
+                            label="Giá vốn (VNĐ)"
+                            placeholder="Giá nhập hàng..."
+                        />
                     </div>
+                    {formData.costPrice > 0 && (
+                        <div className="mb-4 p-3 bg-green-50 rounded-lg">
+                            <p className="text-sm text-green-800">
+                                <span className="font-medium">Lợi nhuận:</span> {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(formData.price - formData.costPrice)} 
+                                <span className="text-green-600 ml-2">({((formData.price - formData.costPrice) / formData.price * 100).toFixed(1)}%)</span>
+                            </p>
+                        </div>
+                    )}
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Hình ảnh sản phẩm</label>
                         <ImageUploader
@@ -386,8 +425,86 @@ export default function LaptopFormPage() {
                                 placeholder="Ví dụ: 3-Cell, 42Whr"
                             />
                         </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Trọng lượng</label>
+                            <input
+                                type="text"
+                                value={formData.specs.weight}
+                                onChange={(e) => setFormData({ ...formData, specs: { ...formData.specs, weight: e.target.value } })}
+                                placeholder="Ví dụ: 1.3 kg"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                        </div>
                     </div>
                 </div>
+
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h2 className="text-lg font-bold mb-4 text-gray-800 border-b pb-2">Phân loại Laptop</h2>
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={!formData.isUsed}
+                                    onChange={() => setFormData({ ...formData, isUsed: false, condition: 'new', usedGrade: '' })}
+                                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                />
+                                <span className="text-sm font-medium text-gray-700">Laptop Mới</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.isUsed}
+                                    onChange={() => setFormData({ ...formData, isUsed: true, condition: 'good' })}
+                                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                />
+                                <span className="text-sm font-medium text-gray-700">Laptop Cũ</span>
+                            </label>
+                        </div>
+
+                        {formData.isUsed && (
+                            <div className="grid grid-cols-2 gap-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Tình trạng</label>
+                                    <select
+                                        value={formData.condition}
+                                        onChange={(e) => setFormData({ ...formData, condition: e.target.value })}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    >
+                                        <option value="like_new">Như mới (Like new)</option>
+                                        <option value="good">Tốt (Good)</option>
+                                        <option value="fair">Khá (Fair)</option>
+                                        <option value="poor">Trung bình (Poor)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Phân loại máy cũ</label>
+                                    <select
+                                        value={formData.usedGrade}
+                                        onChange={(e) => setFormData({ ...formData, usedGrade: e.target.value })}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    >
+                                        <option value="">Chọn loại</option>
+                                        <option value="A">Hạng A (Đẹp, ít trầy)</option>
+                                        <option value="B">Hạng B (Trầy nhẹ, dùng tốt)</option>
+                                        <option value="C">Hạng C (Trầy nhiều, dùng được)</option>
+                                    </select>
+                                </div>
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả tình trạng chi tiết</label>
+                                    <textarea
+                                        value={formData.conditionNote}
+                                        onChange={(e) => setFormData({ ...formData, conditionNote: e.target.value })}
+                                        rows={2}
+                                        placeholder="Ví dụ: Màn hình không có vết xước, pin 95%, vỏ có trầy nhẹ góc..."
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     <h2 className="text-lg font-bold mb-4 text-gray-800 border-b pb-2">Ưu đãi & Chính sách</h2>
@@ -442,6 +559,57 @@ export default function LaptopFormPage() {
                                 </select>
                             </div>
                         </div>
+
+                        <div className="border-t pt-4 mt-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Các mục bảo hành</label>
+                            <div className="space-y-2">
+                                {formData.warranty.items.map((item, index) => (
+                                    <div key={index} className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={item}
+                                            onChange={(e) => {
+                                                const newItems = [...formData.warranty.items];
+                                                newItems[index] = e.target.value;
+                                                setFormData({ ...formData, warranty: { ...formData.warranty, items: newItems } });
+                                            }}
+                                            placeholder={`Mục bảo hành ${index + 1}`}
+                                            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const newItems = formData.warranty.items.filter((_, i) => i !== index);
+                                                setFormData({ ...formData, warranty: { ...formData.warranty, items: newItems } });
+                                            }}
+                                            className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData({ ...formData, warranty: { ...formData.warranty, items: [...formData.warranty.items, ''] } })}
+                                    className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                                >
+                                    + Thêm mục bảo hành
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 pt-2">
+                            <input
+                                type="checkbox"
+                                checked={formData.isFeatured}
+                                onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
+                                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                            />
+                            <label className="text-sm font-medium text-gray-700 cursor-pointer">
+                                Đánh dấu là sản phẩm nổi bật (hiển thị ở trang chủ)
+                            </label>
+                        </div>
+
                     </div>
                 </div>
 
