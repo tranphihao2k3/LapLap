@@ -14,6 +14,8 @@ interface License {
         title: string;
     };
     expiryDate: string;
+    customerName?: string;
+    customerPhone?: string;
     status: 'active' | 'blocked' | 'expired';
     lastUsed: string;
     createdAt: string;
@@ -94,7 +96,9 @@ export default function AdminLicensesPage() {
     const filteredLicenses = licenses.filter(license =>
         license.key.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (license.hwid && license.hwid.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (license.softwareId?.title && license.softwareId.title.toLowerCase().includes(searchTerm.toLowerCase()))
+        (license.softwareId?.title && license.softwareId.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (license.customerName && license.customerName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (license.customerPhone && license.customerPhone.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     return (
@@ -127,7 +131,7 @@ export default function AdminLicensesPage() {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
                         <input
                             type="text"
-                            placeholder="Tìm kiếm theo Key, HWID hoặc Tên phần mềm..."
+                            placeholder="Tìm kiếm: Key, Khách hàng, HWID, Phần mềm..."
                             className="w-full bg-white border border-slate-200 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-200 transition-all"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -208,11 +212,16 @@ export default function AdminLicensesPage() {
                                         </div>
 
                                         {/* Software */}
-                                        <div className="flex items-center gap-2">
-                                            <span className="lg:hidden text-[10px] font-bold text-slate-400 uppercase w-20">Phần mềm:</span>
-                                            <div className="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-100 uppercase tracking-tighter truncate">
+                                        <div className="flex flex-col gap-1 items-start justify-center">
+                                            <div className="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg border border-indigo-100 uppercase tracking-tighter truncate max-w-full">
                                                 {license.softwareId?.title || 'Unknown Software'}
                                             </div>
+                                            {(license.customerName || license.customerPhone) && (
+                                                <div className="text-[10px] font-medium text-slate-500 flex flex-col mt-1">
+                                                    {license.customerName && <span>👤 {license.customerName}</span>}
+                                                    {license.customerPhone && <span>📞 {license.customerPhone}</span>}
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* HWID */}

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Save, X, Key, Calendar, Monitor, FileText, ChevronLeft, RefreshCw, AlertCircle } from 'lucide-react';
+import { Save, X, Key, Calendar, Monitor, FileText, ChevronLeft, RefreshCw, AlertCircle, Phone, User } from 'lucide-react';
 import Toast from '@/components/admin/Toast';
 
 export default function NewLicensePage() {
@@ -15,7 +15,10 @@ export default function NewLicensePage() {
         key: '',
         hwid: '',
         softwareId: '',
-        expiryDate: '',
+        duration: '12',
+        customExpiryDate: '',
+        customerName: '',
+        customerPhone: '',
         status: 'active',
         note: ''
     });
@@ -32,13 +35,7 @@ export default function NewLicensePage() {
 
     useEffect(() => {
         fetchSoftware();
-        // Set default expiry date to 1 year from now
-        const nextYear = new Date();
-        nextYear.setFullYear(nextYear.getFullYear() + 1);
-        setFormData(prev => ({
-            ...prev,
-            expiryDate: nextYear.toISOString().split('T')[0]
-        }));
+        // Default is handled via duration calculation in handleSubmit
     }, []);
 
     const fetchSoftware = async () => {
@@ -69,17 +66,35 @@ export default function NewLicensePage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formData.key || !formData.softwareId || !formData.expiryDate) {
+
+        // Calculate actual expiry date
+        let calculatedExpiryDate = new Date();
+        if (formData.duration === 'custom') {
+            if (!formData.customExpiryDate) {
+                showToast('Vui lòng chọn ngày hết hạn', 'error');
+                return;
+            }
+            calculatedExpiryDate = new Date(formData.customExpiryDate);
+        } else {
+            calculatedExpiryDate.setMonth(calculatedExpiryDate.getMonth() + parseInt(formData.duration));
+        }
+
+        if (!formData.key || !formData.softwareId) {
             showToast('Vui lòng điền đầy đủ thông tin bắt buộc', 'error');
             return;
         }
 
         setLoading(true);
         try {
+            const submitData = {
+                ...formData,
+                expiryDate: calculatedExpiryDate.toISOString()
+            };
+
             const res = await fetch('/api/admin/licenses', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(submitData),
             });
             const data = await res.json();
 
@@ -171,18 +186,41 @@ export default function NewLicensePage() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Expiry Date */}
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                                        <Calendar className="w-4 h-4 text-emerald-500" /> Ngày hết hạn <span className="text-rose-500">*</span>
-                                    </label>
-                                    <input
-                                        type="date"
-                                        required
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:outline-none"
-                                        value={formData.expiryDate}
-                                        onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
-                                    />
+                                {/* Duration / Expiry Date */}
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                            <Calendar className="w-4 h-4 text-emerald-500" /> Gói bản quyền <span className="text-rose-500">*</span>
+                                        </label>
+                                        <select
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:outline-none appearance-none"
+                                            value={formData.duration}
+                                            onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                                        >
+                                            <option value="1">1 Tháng</option>
+                                            <option value="3">3 Tháng</option>
+                                            <option value="6">6 Tháng</option>
+                                            <option value="12">1 Năm (12 Tháng)</option>
+                                            <option value="24">2 Năm (24 Tháng)</option>
+                                            <option value="120">10 Năm (Trọn đời)</option>
+                                            <option value="custom">Tùy chọn ngày...</option>
+                                        </select>
+                                    </div>
+
+                                    {formData.duration === 'custom' && (
+                                        <div className="space-y-2 mt-2 pt-2 border-t border-slate-100">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                                Chọn ngày hết hạn tùy chỉnh
+                                            </label>
+                                            <input
+                                                type="date"
+                                                required={formData.duration === 'custom'}
+                                                className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:outline-none"
+                                                value={formData.customExpiryDate}
+                                                onChange={(e) => setFormData({ ...formData, customExpiryDate: e.target.value })}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Status */}
@@ -199,6 +237,37 @@ export default function NewLicensePage() {
                                         <option value="blocked">Đã khóa</option>
                                         <option value="expired">Hết hạn</option>
                                     </select>
+                                </div>
+                            </div>
+
+                            {/* Customer Info */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Customer Name */}
+                                <div className="space-y-2">
+                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                        <User className="w-4 h-4 text-slate-500" /> Tên Khách Hàng (Tùy Chọn)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:outline-none"
+                                        placeholder="Tên khách hàng"
+                                        value={formData.customerName}
+                                        onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+                                    />
+                                </div>
+
+                                {/* Customer Phone */}
+                                <div className="space-y-2">
+                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                        <Phone className="w-4 h-4 text-slate-500" /> Số điện thoại (Tùy Chọn)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:outline-none"
+                                        placeholder="09xx..."
+                                        value={formData.customerPhone}
+                                        onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
+                                    />
                                 </div>
                             </div>
 

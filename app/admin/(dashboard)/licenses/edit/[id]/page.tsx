@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Save, X, Key, Calendar, Monitor, FileText, ChevronLeft, AlertCircle, Trash2 } from 'lucide-react';
+import { Save, X, Key, Calendar, Monitor, FileText, ChevronLeft, AlertCircle, Trash2, Phone, User } from 'lucide-react';
 import Toast from '@/components/admin/Toast';
 
 export default function EditLicensePage({ params }: { params: Promise<{ id: string }> }) {
@@ -18,6 +18,8 @@ export default function EditLicensePage({ params }: { params: Promise<{ id: stri
         hwid: '',
         softwareId: '',
         expiryDate: '',
+        customerName: '',
+        customerPhone: '',
         status: 'active',
         note: ''
     });
@@ -64,6 +66,8 @@ export default function EditLicensePage({ params }: { params: Promise<{ id: stri
                     hwid: license.hwid || '',
                     softwareId: typeof license.softwareId === 'object' ? license.softwareId._id : license.softwareId,
                     expiryDate: license.expiryDate ? new Date(license.expiryDate).toISOString().split('T')[0] : '',
+                    customerName: license.customerName || '',
+                    customerPhone: license.customerPhone || '',
                     status: license.status,
                     note: license.note || ''
                 });
@@ -200,6 +204,37 @@ export default function EditLicensePage({ params }: { params: Promise<{ id: stri
                                         <option value="blocked">Đã khóa</option>
                                         <option value="expired">Hết hạn</option>
                                     </select>
+                                </div>
+                            </div>
+
+                            {/* Customer Info */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* Customer Name */}
+                                <div className="space-y-2">
+                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                        <User className="w-4 h-4 text-slate-500" /> Tên Khách Hàng (Tùy Chọn)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:outline-none"
+                                        placeholder="Tên khách hàng"
+                                        value={formData.customerName}
+                                        onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+                                    />
+                                </div>
+
+                                {/* Customer Phone */}
+                                <div className="space-y-2">
+                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                        <Phone className="w-4 h-4 text-slate-500" /> Số điện thoại (Tùy Chọn)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-4 text-sm font-bold text-slate-700 focus:outline-none"
+                                        placeholder="09xx..."
+                                        value={formData.customerPhone}
+                                        onChange={(e) => setFormData({ ...formData, customerPhone: e.target.value })}
+                                    />
                                 </div>
                             </div>
 

@@ -22,6 +22,16 @@ const LicenseSchema = new Schema(
             type: Date,
             required: true,
         },
+        customerName: {
+            type: String,
+            default: "",
+            trim: true,
+        },
+        customerPhone: {
+            type: String,
+            default: "",
+            trim: true,
+        },
         status: {
             type: String,
             enum: ["active", "blocked", "expired"],

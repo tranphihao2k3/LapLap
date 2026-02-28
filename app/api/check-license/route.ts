@@ -96,6 +96,8 @@ async function handleCheckLicense(request: NextRequest) {
             data: {
                 token: license.key,
                 expiryDate: license.expiryDate,
+                customerName: license.customerName,
+                customerPhone: license.customerPhone,
                 status: license.status,
                 hwid: license.hwid
             }
