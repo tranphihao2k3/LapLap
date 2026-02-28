@@ -536,7 +536,24 @@ export default function LaptopFormPage() {
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Thời gian Bảo hành (Theo Tháng)</label>
                                 <select
                                     value={formData.warrantyMonths}
-                                    onChange={(e) => setFormData({ ...formData, warrantyMonths: Number(e.target.value) })}
+                                    onChange={(e) => {
+                                        const months = Number(e.target.value);
+                                        const newItems = formData.warranty.items.map(item => {
+                                            if (item.match(/Bảo hành \d+ tháng/)) {
+                                                return item.replace(/Bảo hành \d+ tháng/, `Bảo hành ${months} tháng`);
+                                            }
+                                            return item;
+                                        });
+                                        setFormData({
+                                            ...formData,
+                                            warrantyMonths: months,
+                                            warranty: {
+                                                ...formData.warranty,
+                                                duration: `${months} tháng`,
+                                                items: newItems,
+                                            },
+                                        });
+                                    }}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 >
                                     <option value={1}>1 tháng</option>

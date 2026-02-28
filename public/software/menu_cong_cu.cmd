@@ -193,8 +193,8 @@ set "confirm="
 set /p confirm="  Nhap Y de chay, N de quay lai: "
 if /i "%confirm%"=="Y" (
     echo.
-    echo  [*] Dang khoi chay cong cu kich hoat...
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://get.activated.win | iex"
+    echo  [*] Dang khoi chay cong cu kich hoat trong cua so moi...
+    start powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://get.activated.win | iex"
 ) else (
     echo  [*] Huy bo.
     timeout /t 2 >nul

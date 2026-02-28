@@ -37,19 +37,38 @@ export default function BookingForm({
         setStatus('submitting');
 
         try {
-            const response = await fetch('/api/send-email', {
+            // 1) Tạo đơn trên hệ thống (DB)
+            const serviceResponse = await fetch('/api/services', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customerName: formData.name,
+                    customerPhone: formData.contact,
+                    productInfo: {
+                        model: formData.model,
+                    },
+                    serviceType: requestType,
+                    issueDescription: formData.issue,
+                    notes: formData.notes,
+                    status: 'pending',
+                }),
+            });
+
+            const serviceData = await serviceResponse.json();
+
+            // 2) Gửi email thông báo (Background)
+            fetch('/api/send-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     type: requestType,
                     ...formData
                 }),
-            });
+            }).catch(err => console.error("Email error:", err));
 
-            if (response.ok) {
+            if (serviceResponse.ok && serviceData.success) {
                 setStatus('success');
                 setFormData({ name: '', contact: '', model: '', issue: '', notes: '' });
-                // Reset status after 5 seconds
                 setTimeout(() => setStatus('idle'), 5000);
             } else {
                 setStatus('error');

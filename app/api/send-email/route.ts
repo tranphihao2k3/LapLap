@@ -18,7 +18,11 @@ export async function POST(request: NextRequest) {
         let htmlContent = '';
 
         if (type === 'repair') {
-            const { name, contact, model, issue, notes } = data;
+            const name = data.name || data.customerName || 'Khách hàng';
+            const contact = data.contact || data.customerPhone || 'Không có sđt';
+            const model = data.model || data.productModel || (data.productInfo ? `${data.productInfo.brand} ${data.productInfo.model}` : 'Máy');
+            const issue = data.issue || data.issueDescription || 'Cần kiểm tra';
+            const notes = data.notes || '';
             subject = `🛠️ ĐẶT LỊCH SỬA CHỮA: ${model} - ${contact}`;
             htmlContent = `
                 <!DOCTYPE html>
@@ -86,7 +90,11 @@ export async function POST(request: NextRequest) {
                 </html>
             `;
         } else if (type === 'cleaning') {
-            const { name, contact, model, issue, notes } = data; // Issue might be typically distinct, but reusing form fields
+            const name = data.name || data.customerName || 'Khách hàng';
+            const contact = data.contact || data.customerPhone || 'Không có sđt';
+            const model = data.model || data.productModel || (data.productInfo ? `${data.productInfo.brand} ${data.productInfo.model}` : 'Máy');
+            const issue = data.issue || data.issueDescription || 'Vệ sinh định kỳ';
+            const notes = data.notes || '';
             subject = `✨ ĐẶT LỊCH VỆ SINH: ${model || 'Khách'} - ${contact}`;
             htmlContent = `
                 <!DOCTYPE html>

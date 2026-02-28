@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { License } from "@/models/License";
+import "@/models/Software";
 import { logAudit } from "@/lib/audit";
 
 export async function GET(

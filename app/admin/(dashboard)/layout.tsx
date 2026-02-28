@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { signOut, useSession } from 'next-auth/react';
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import {
   LayoutDashboard,
   Laptop,
@@ -15,8 +15,6 @@ import {
   ShoppingCart,
   Users,
   Bell,
-  ChevronRight,
-  ChevronDown,
   LogOut,
   FolderTree,
   Building2,
@@ -44,416 +42,421 @@ import {
   Facebook,
   History,
   HelpCircle,
-} from 'lucide-react';
-
-
-
-
-
-
-
-
-
-
-
-
+  Key,
+} from "lucide-react";
+import { searchMatch } from "@/lib/normalize";
 
 // ============================================
-// Types
+// Types & Helpers
 // ============================================
 interface NavItem {
   title: string;
   href: string;
-  icon: React.ReactNode;
-  children?: NavItem[];
+  iconEl: React.ElementType;
+  keywords?: string;
+}
+
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
+
+function nav(
+  title: string,
+  href: string,
+  iconEl: React.ElementType,
+  keywords?: string,
+): NavItem {
+  return { title, href, iconEl, keywords };
 }
 
 // ============================================
-// Navigation Structure
+// Navigation
 // ============================================
-const navigation: NavItem[] = [
+const navGroups: NavGroup[] = [
   {
-    title: 'Tổng quan',
-    href: '/admin',
-    icon: <LayoutDashboard size={18} />,
-  },
-  {
-    title: 'Kho Laptop',
-    href: '/admin/laptops',
-    icon: <Laptop size={18} />,
-  },
-  {
-    title: 'Sản phẩm',
-    href: '/admin/products',
-    icon: <Package size={18} />,
-  },
-  {
-    title: 'Linh kiện',
-    href: '/admin/linh-kien',
-    icon: <Cpu size={18} />,
-  },
-  {
-    title: 'Danh mục',
-    href: '/admin/categories',
-    icon: <FolderTree size={18} />,
-  },
-  {
-    title: 'Thương hiệu',
-    href: '/admin/brands',
-    icon: <Building2 size={18} />,
-  },
-  {
-    title: 'Nhà cung cấp',
-    href: '/admin/suppliers',
-    icon: <Truck size={18} />,
-  },
-
-  {
-    title: 'Đơn hàng',
-    href: '/admin/orders',
-    icon: <ShoppingCart size={18} />,
-  },
-  {
-    title: 'Thu cũ đổi mới',
-    href: '/admin/buyback-orders',
-    icon: <RefreshCcw size={18} />,
-  },
-  {
-    title: 'Đổi trả hàng',
-    href: '/admin/returns',
-    icon: <ArrowLeftRight size={18} />,
-  },
-  {
-    title: 'Bảo hành',
-    href: '/admin/warranty-cards',
-    icon: <Shield size={18} />,
-  },
-
-  {
-    title: 'Tồn kho',
-    href: '/admin/inventory',
-    icon: <Warehouse size={18} />,
-  },
-
-  {
-    title: 'Thu chi',
-    href: '/admin/transactions',
-    icon: <Wallet size={18} />,
-  },
-  {
-    title: 'Đơn sửa chữa',
-    href: '/admin/services',
-    icon: <Wrench size={18} />,
-  },
-
-
-
-  {
-    title: 'Khách hàng',
-    href: '/admin/customers',
-    icon: <Users size={18} />,
-  },
-  {
-    title: 'Đánh giá',
-    href: '/admin/reviews',
-    icon: <Star size={18} />,
-  },
-  {
-    title: 'Blog',
-    href: '/admin/blog',
-    icon: <FileText size={18} />,
-  },
-  {
-    title: 'Driver & Phần mềm',
-    href: '/admin/software',
-    icon: <MonitorDown size={18} />,
-  },
-  {
-    title: 'Nhóm Facebook',
-    href: '/admin/facebook-groups',
-    icon: <Facebook size={18} />,
-  },
-  {
-    title: 'Marketing',
-
-    href: '/admin/marketing',
-    icon: <Megaphone size={18} />,
-    children: [
-      { title: 'Mã giảm giá', href: '/admin/coupons', icon: <Tag size={16} /> },
-      { title: 'Banner', href: '/admin/banners', icon: <LayoutGrid size={16} /> },
-      { title: 'Popup', href: '/admin/popup-banners', icon: <Megaphone size={16} /> },
-      { title: 'Khuyến mãi', href: '/admin/promotions', icon: <Percent size={16} /> },
-    ],
-  },
-
-
-  {
-    title: 'Nhân sự',
-    href: '/admin/attendance',
-    icon: <UserCheck size={18} />,
-    children: [
-      { title: 'Chấm công', href: '/admin/attendance', icon: <UserCheck size={16} /> },
-      { title: 'Lương', href: '/admin/salary', icon: <DollarSign size={16} /> },
+    label: "",
+    items: [
+      nav("Tổng quan", "/admin", LayoutDashboard, "dashboard home trang chủ"),
     ],
   },
   {
-    title: 'Tài chính',
-    href: '/admin/debts',
-    icon: <CreditCard size={18} />,
-    children: [
-      { title: 'Công nợ', href: '/admin/debts', icon: <CreditCard size={16} /> },
-      { title: 'Điểm thưởng', href: '/admin/loyalty-points', icon: <Gift size={16} /> },
+    label: "Sản phẩm & Kho",
+    items: [
+      nav("Kho Laptop", "/admin/laptops", Laptop, "laptop máy tính"),
+      nav("Sản phẩm", "/admin/products", Package, "product hàng hóa"),
+      nav("Linh kiện", "/admin/linh-kien", Cpu, "parts ram ssd"),
+      nav("Danh mục", "/admin/categories", FolderTree, "category loại"),
+      nav("Thương hiệu", "/admin/brands", Building2, "brand hãng"),
+      nav("Nhà cung cấp", "/admin/suppliers", Truck, "supplier ncc"),
+      nav("Tồn kho", "/admin/inventory", Warehouse, "stock kho"),
     ],
   },
   {
-    title: 'Phản hồi',
-    href: '/admin/feedback',
-    icon: <MessageSquare size={18} />,
+    label: "Bán hàng",
+    items: [
+      nav("Đơn hàng", "/admin/orders", ShoppingCart, "order mua bán"),
+      nav(
+        "Thu cũ đổi mới",
+        "/admin/buyback-orders",
+        RefreshCcw,
+        "buyback trade-in",
+      ),
+      nav("Đổi trả hàng", "/admin/returns", ArrowLeftRight, "return hoàn"),
+      nav("Bảo hành", "/admin/warranty-cards", Shield, "warranty"),
+      nav("Đơn sửa chữa", "/admin/services", Wrench, "repair service"),
+    ],
   },
   {
-    title: 'Khách thăm',
-    href: '/admin/visitors',
-    icon: <Eye size={18} />,
+    label: "Tài chính & Nhân sự",
+    items: [
+      nav("Thu chi", "/admin/transactions", Wallet, "transaction tiền"),
+      nav("Công nợ", "/admin/debts", CreditCard, "debt nợ"),
+      nav("Điểm thưởng", "/admin/loyalty-points", Gift, "loyalty point"),
+      nav("Chấm công", "/admin/attendance", UserCheck, "attendance nhân viên"),
+      nav("Lương", "/admin/salary", DollarSign, "salary pay"),
+    ],
   },
   {
-    title: 'Quản trị viên',
-    href: '/admin/users',
-    icon: <Shield size={18} />,
+    label: "Khách hàng & CRM",
+    items: [
+      nav("Khách hàng", "/admin/customers", Users, "customer crm"),
+      nav("Đánh giá", "/admin/reviews", Star, "review sao"),
+      nav("Phản hồi", "/admin/feedback", MessageSquare, "feedback góp ý"),
+      nav("Khách thăm", "/admin/visitors", Eye, "visitor analytics"),
+    ],
   },
   {
-    title: 'Lịch sử thao tác',
-    href: '/admin/audit-logs',
-    icon: <History size={18} />,
+    label: "Nội dung",
+    items: [
+      nav("Blog", "/admin/blog", FileText, "blog bài viết"),
+      nav(
+        "Driver & Phần mềm",
+        "/admin/software",
+        MonitorDown,
+        "driver software",
+      ),
+      nav("Bản quyền", "/admin/licenses", Key, "license key bản quyền"),
+      nav("FAQ", "/admin/faqs", HelpCircle, "faq hỏi đáp"),
+      nav(
+        "Nhóm Facebook",
+        "/admin/facebook-groups",
+        Facebook,
+        "facebook group",
+      ),
+    ],
   },
   {
-    title: 'Thông báo',
-    href: '/admin/notifications',
-    icon: <Bell size={18} />,
+    label: "Marketing",
+    items: [
+      nav("Mã giảm giá", "/admin/coupons", Tag, "coupon voucher"),
+      nav("Banner", "/admin/banners", LayoutGrid, "banner slide"),
+      nav("Popup", "/admin/popup-banners", Megaphone, "popup quảng cáo"),
+      nav("Khuyến mãi", "/admin/promotions", Percent, "promotion sale"),
+    ],
   },
   {
-    title: 'FAQ',
-    href: '/admin/faqs',
-    icon: <HelpCircle size={18} />,
+    label: "Hệ thống",
+    items: [
+      nav("Quản trị viên", "/admin/users", Shield, "admin user tài khoản"),
+      nav("Lịch sử thao tác", "/admin/audit-logs", History, "audit log"),
+      nav("Thông báo", "/admin/notifications", Bell, "notification"),
+      nav("Cài đặt", "/admin/settings", Settings, "setting cấu hình"),
+    ],
   },
-  {
-    title: 'Cài đặt',
-    href: '/admin/settings',
-    icon: <Settings size={18} />,
-  },
-
-
-
 ];
 
+const allNavItems = navGroups.flatMap((g) => g.items);
+
 // ============================================
-// Nav Item Component
+// Command Palette (fullscreen menu)
 // ============================================
-function NavItemComponent({ item, depth = 0 }: { item: NavItem; depth?: number }) {
+function CommandPalette({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
+  const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-  const [expanded, setExpanded] = useState(() => {
-    if (item.children) {
-      return item.children.some(
-        (child) => pathname === child.href || pathname.startsWith(child.href + '/')
-      );
+  const router = useRouter();
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  useEffect(() => {
+    if (open) {
+      setQuery("");
+      setSelectedIndex(0);
+      setTimeout(() => inputRef.current?.focus(), 50);
     }
-    return false;
-  });
+  }, [open]);
 
-  const isActive =
-    item.href === '/admin'
-      ? pathname === '/admin'
-      : pathname === item.href || pathname.startsWith(item.href + '/');
+  const filteredGroups = useMemo(() => {
+    if (!query.trim()) return navGroups;
+    const q = query.trim();
+    return navGroups
+      .map((g) => ({
+        ...g,
+        items: g.items.filter(
+          (item) =>
+            searchMatch(q, item.title) ||
+            searchMatch(q, item.href) ||
+            (item.keywords && searchMatch(q, item.keywords)) ||
+            (g.label && searchMatch(q, g.label)),
+        ),
+      }))
+      .filter((g) => g.items.length > 0);
+  }, [query]);
 
-  const hasChildren = item.children && item.children.length > 0;
-
-  if (hasChildren) {
-    return (
-      <div>
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className={`
-            w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
-            transition-colors duration-150 text-left
-            ${isActive || expanded
-              ? 'bg-slate-800 text-white'
-              : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-            }
-          `}
-        >
-          <span className="flex-shrink-0">{item.icon}</span>
-          <span className="font-medium text-sm flex-1">{item.title}</span>
-          {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-        </button>
-        {expanded && (
-          <div className="ml-4 mt-1 space-y-1 border-l border-slate-700 pl-3">
-            {item.children!.map((child) => (
-              <NavItemComponent key={child.href} item={child} depth={depth + 1} />
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  return (
-    <Link
-      href={item.href}
-      className={`
-        flex items-center gap-3 px-3 py-2.5 rounded-lg
-        transition-colors duration-150
-        ${isActive
-          ? 'bg-blue-600 text-white shadow-sm'
-          : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-        }
-        ${depth > 0 ? 'py-2 text-sm' : ''}
-      `}
-    >
-      <span className="flex-shrink-0">{item.icon}</span>
-      <span className="font-medium text-sm">{item.title}</span>
-      {isActive && depth === 0 && <ChevronRight size={14} className="ml-auto" />}
-    </Link>
+  const flatFiltered = useMemo(
+    () => filteredGroups.flatMap((g) => g.items),
+    [filteredGroups],
   );
-}
 
-// ============================================
-// Sidebar Component
-// ============================================
-function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const { data: session } = useSession();
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [query]);
+
+  // Scroll selected into view
+  useEffect(() => {
+    if (listRef.current) {
+      const el = listRef.current.querySelector('[data-selected="true"]');
+      if (el) el.scrollIntoView({ block: "nearest" });
+    }
+  }, [selectedIndex]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex((i) => Math.min(i + 1, flatFiltered.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter" && flatFiltered[selectedIndex]) {
+      e.preventDefault();
+      router.push(flatFiltered[selectedIndex].href);
+      onClose();
+    } else if (e.key === "Escape") {
+      onClose();
+    }
+  };
+
+  if (!open) return null;
+
+  const hasQuery = query.trim().length > 0;
 
   return (
-    <>
-      {/* Mobile Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={onClose}
-        />
-      )}
+    <div className="fixed inset-0 z-[100]" onClick={onClose}>
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-md" />
 
-      {/* Sidebar */}
-      <aside
-        className={`
-          fixed top-0 left-0 z-50 h-full w-64 bg-slate-900 text-white
-          transform transition-transform duration-200 ease-in-out
-          flex flex-col
-          lg:translate-x-0
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        `}
+      {/* Content - centered layout */}
+      <div
+        className="relative h-full flex flex-col items-center overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* Logo */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-slate-700 flex-shrink-0">
-          <Link href="/admin" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white text-sm">
-              L
-            </div>
-            <div>
-              <span className="text-base font-bold">LapLap</span>
-              <span className="text-xs text-blue-400 ml-1">Admin</span>
-            </div>
-          </Link>
-          <button
-            onClick={onClose}
-            className="lg:hidden p-1 hover:bg-slate-800 rounded"
-          >
-            <X size={20} />
-          </button>
-        </div>
+        {/* Close button top-right */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 text-sm text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors z-10"
+        >
+          <X size={16} />
+          <span className="hidden sm:inline">Đóng</span>
+        </button>
 
-        {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
-          {navigation.map((item) => (
-            <NavItemComponent key={item.href} item={item} />
-          ))}
-        </nav>
+        {/* Spacer - pushes search to center when no results, shrinks when results appear */}
+        <div
+          className={`transition-all duration-300 ${hasQuery && filteredGroups.length > 0 ? "h-[8vh]" : "h-[25vh]"}`}
+        />
 
-        {/* User Footer */}
-        <div className="p-3 border-t border-slate-700 flex-shrink-0">
-          <div className="flex items-center gap-3 px-3 py-2 rounded-lg">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
-              {session?.user?.name?.charAt(0).toUpperCase() || 'A'}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">
-                {session?.user?.name || 'Admin'}
-              </p>
-              <p className="text-xs text-slate-400 truncate">
-                {session?.user?.email || 'admin@laplap.com'}
-              </p>
-            </div>
+        {/* Search box - always centered horizontally */}
+        <div className="w-full max-w-xl px-4 flex-shrink-0">
+          <div className="bg-white/10 border border-white/10 rounded-2xl px-5 py-4 flex items-center gap-3 shadow-2xl">
+            <Search size={22} className="text-slate-400 flex-shrink-0" />
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Tìm kiếm công cụ, trang quản lý..."
+              className="flex-1 text-lg bg-transparent outline-none text-white placeholder:text-slate-500"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            {query && (
+              <button
+                onClick={() => setQuery("")}
+                className="text-slate-500 hover:text-white transition-colors"
+              >
+                <X size={18} />
+              </button>
+            )}
           </div>
-          <button
-            onClick={() => signOut({ callbackUrl: '/admin/login' })}
-            className="mt-1 flex items-center gap-3 w-full px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors text-sm"
-          >
-            <LogOut size={16} />
-            <span>Đăng xuất</span>
-          </button>
+          <div className="flex items-center gap-4 mt-2 px-2 text-[11px] text-slate-500">
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-white/5 rounded border border-white/10 text-[10px]">
+                ↑↓
+              </kbd>{" "}
+              Di chuyển
+            </span>
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-white/5 rounded border border-white/10 text-[10px]">
+                Enter
+              </kbd>{" "}
+              Mở
+            </span>
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-white/5 rounded border border-white/10 text-[10px]">
+                Esc
+              </kbd>{" "}
+              Đóng
+            </span>
+          </div>
         </div>
-      </aside>
-    </>
+
+        {/* Results - appear below the search box */}
+        <div ref={listRef} className="w-full max-w-3xl px-4 mt-6 pb-10">
+          {filteredGroups.length > 0 ? (
+            <div className="space-y-5">
+              {filteredGroups.map((group) => (
+                <div key={group.label || "_root"}>
+                  {group.label && (
+                    <div className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">
+                      {group.label}
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5">
+                    {group.items.map((item) => {
+                      const Icon = item.iconEl;
+                      const globalIdx = flatFiltered.indexOf(item);
+                      const isSelected = globalIdx === selectedIndex;
+                      const isActive =
+                        item.href === "/admin"
+                          ? pathname === "/admin"
+                          : pathname === item.href ||
+                            pathname.startsWith(item.href + "/");
+
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={onClose}
+                          data-selected={isSelected}
+                          onMouseEnter={() => setSelectedIndex(globalIdx)}
+                          className={`
+                            flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all
+                            ${
+                              isSelected
+                                ? "bg-blue-600 text-white"
+                                : isActive
+                                  ? "bg-white/10 text-white"
+                                  : "text-slate-300 hover:bg-white/5 hover:text-white"
+                            }
+                          `}
+                        >
+                          <div
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${isSelected ? "bg-blue-500" : "bg-white/5"}`}
+                          >
+                            <Icon size={18} />
+                          </div>
+                          <span className="font-medium text-sm truncate">
+                            {item.title}
+                          </span>
+                          {isActive && !isSelected && (
+                            <span className="ml-auto text-[10px] font-bold text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded-full flex-shrink-0">
+                              Đang mở
+                            </span>
+                          )}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : hasQuery ? (
+            <div className="py-12 text-center">
+              <Search size={40} className="mx-auto text-slate-600 mb-4" />
+              <p className="text-slate-400 text-base">
+                Không tìm thấy &ldquo;{query}&rdquo;
+              </p>
+              <p className="text-slate-600 text-sm mt-1">Thử từ khóa khác</p>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
   );
 }
 
 // ============================================
-// Header Component
+// Header (only UI element - no sidebar)
 // ============================================
-function Header({ onMenuClick }: { onMenuClick: () => void }) {
+function Header({ onOpenPalette }: { onOpenPalette: () => void }) {
   const { data: session } = useSession();
   const pathname = usePathname();
 
   const getPageTitle = () => {
-    const flat = navigation.flatMap((item) =>
-      item.children ? [item, ...item.children] : [item]
-    );
-    const match = flat.find(
+    const match = allNavItems.find(
       (item) =>
         item.href === pathname ||
-        (item.href !== '/admin' && pathname.startsWith(item.href + '/'))
+        (item.href !== "/admin" && pathname.startsWith(item.href + "/")),
     );
-    return match?.title || 'Admin';
+    return match?.title || "Admin";
   };
 
+  const PageIcon =
+    allNavItems.find(
+      (item) =>
+        item.href === pathname ||
+        (item.href !== "/admin" && pathname.startsWith(item.href + "/")),
+    )?.iconEl || LayoutDashboard;
+
   return (
-    <header className="sticky top-0 z-30 h-16 bg-white border-b border-slate-200 shadow-sm">
+    <header className="sticky top-0 z-30 h-14 bg-white border-b border-slate-200/80">
       <div className="flex items-center justify-between h-full px-4 lg:px-6">
-        {/* Left */}
-        <div className="flex items-center gap-4">
+        {/* Left: Menu button + page title */}
+        <div className="flex items-center gap-3">
           <button
-            onClick={onMenuClick}
-            className="lg:hidden p-2 hover:bg-slate-100 rounded-lg"
+            onClick={onOpenPalette}
+            className="p-2 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors"
+            title="Menu (Ctrl+K)"
           >
             <Menu size={20} />
           </button>
-          <h2 className="text-base font-semibold text-slate-800 hidden sm:block">
-            {getPageTitle()}
-          </h2>
+          <div className="h-5 w-px bg-slate-200" />
+          <div className="flex items-center gap-2 text-slate-800">
+            <PageIcon size={18} className="text-slate-400" />
+            <h2 className="text-sm font-semibold">{getPageTitle()}</h2>
+          </div>
         </div>
 
         {/* Right */}
-        <div className="flex items-center gap-3">
-          {/* Search */}
-          <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-lg w-56">
-            <Search size={16} className="text-slate-400" />
-            <input
-              type="text"
-              placeholder="Tìm kiếm..."
-              className="flex-1 bg-transparent border-none outline-none text-sm"
-            />
-          </div>
-
-          {/* Notifications */}
-          <button className="relative p-2 hover:bg-slate-100 rounded-lg">
-            <Bell size={20} className="text-slate-600" />
+        <div className="flex items-center gap-2">
+          {/* Search trigger */}
+          <button
+            onClick={onOpenPalette}
+            className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+          >
+            <Search size={14} className="text-slate-400" />
+            <span className="text-sm text-slate-400">Tìm kiếm...</span>
+            <kbd className="hidden md:inline text-[10px] font-semibold text-slate-400 bg-white px-1.5 py-0.5 rounded border border-slate-200">
+              Ctrl+K
+            </kbd>
           </button>
-
-          {/* User Avatar */}
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center font-bold text-white text-sm">
-            {session?.user?.name?.charAt(0).toUpperCase() || 'A'}
-          </div>
-          <span className="hidden sm:block text-sm font-medium text-slate-700">
-            {session?.user?.name || 'Admin'}
-          </span>
+          <button className="relative p-2 hover:bg-slate-100 rounded-lg">
+            <Bell size={18} className="text-slate-500" />
+          </button>
+          <button
+            onClick={() => signOut({ callbackUrl: "/admin/login" })}
+            className="flex items-center gap-2 p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
+            title="Đăng xuất"
+          >
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center font-bold text-white text-xs">
+              {session?.user?.name?.charAt(0).toUpperCase() || "A"}
+            </div>
+          </button>
         </div>
       </div>
     </header>
@@ -468,23 +471,32 @@ export default function AdminDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+
+  // Ctrl+K / Cmd+K shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setPaletteOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  const openPalette = useCallback(() => setPaletteOpen(true), []);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
-      {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      {/* Main Content */}
-      <div className="flex flex-col flex-1 min-h-screen lg:ml-64">
-        {/* Header */}
-        <Header onMenuClick={() => setSidebarOpen(true)} />
-
-        {/* Page Content */}
-        <main className="flex-1 p-4 lg:p-6 overflow-auto">
-          {children}
-        </main>
+    <div className="min-h-screen bg-slate-50">
+      <div className="flex flex-col min-h-screen">
+        <Header onOpenPalette={openPalette} />
+        <main className="flex-1 p-4 lg:p-6 overflow-auto">{children}</main>
       </div>
+      <CommandPalette
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+      />
     </div>
   );
 }
