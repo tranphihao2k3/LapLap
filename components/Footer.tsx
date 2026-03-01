@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Facebook, Instagram, Mail, Phone, MapPin, User, ArrowRight, Users } from 'lucide-react';
+import { Facebook, Mail, Phone, MapPin, User, ArrowRight, Users, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Footer = () => {
@@ -121,6 +121,21 @@ const Footer = () => {
                                     <social.icon size={20} />
                                 </motion.a>
                             ))}
+                        </div>
+
+                        {/* Nút tải tool */}
+                        <div className="pt-6">
+                            <motion.a
+                                href="https://drive.google.com/drive/folders/1AWTDENyKPw4NWpHIU0ThUzIro-f4CJ7B?usp=sharing"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 border border-blue-500/30 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.2)] hover:shadow-[0_0_25px_rgba(37,99,235,0.4)] transition-all duration-300 w-fit text-sm group"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <Download size={16} className="group-hover:-translate-y-0.5 group-hover:text-blue-200 transition-all duration-300" />
+                                <span>Tải Tool Phần Mềm PC</span>
+                            </motion.a>
                         </div>
                     </motion.div>
 
