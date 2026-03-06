@@ -69,9 +69,10 @@ export default function BlogDetailClient({ blog }: BlogDetailClientProps) {
 
             {/* Content */}
             <div className="prose prose-lg prose-blue max-w-none mb-12 mt-6">
-                <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {blog.content}
-                </div>
+                <div
+                    className="text-gray-700 leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: blog.content }}
+                />
             </div>
 
             {/* Related Posts */}

@@ -171,20 +171,11 @@ export default async function BlogDetailPage({ params }: PageProps) {
                             <span>{blog.viewCount} lượt xem</span>
                         </div>
 
-                        {/* Share button — client component */}
-                        <BlogDetailClient blog={{
-                            _id: blog._id.toString(),
-                            title: blog.title,
-                            slug: blog.slug,
-                            excerpt: blog.excerpt,
-                            content: blog.content,
-                            tags: blog.tags || [],
-                        }} />
                     </div>
 
                     {/* Tags */}
                     {blog.tags?.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-8">
+                        <div className="flex flex-wrap gap-2 mb-8 mt-2">
                             {blog.tags.map((tag: string) => (
                                 <span
                                     key={tag}
@@ -195,6 +186,16 @@ export default async function BlogDetailPage({ params }: PageProps) {
                             ))}
                         </div>
                     )}
+
+                    {/* Share button, Content, and Related Posts — client component */}
+                    <BlogDetailClient blog={{
+                        _id: blog._id.toString(),
+                        title: blog.title,
+                        slug: blog.slug,
+                        excerpt: blog.excerpt,
+                        content: blog.content,
+                        tags: blog.tags || [],
+                    }} />
                 </article>
             </main>
             <Footer />
