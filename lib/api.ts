@@ -27,7 +27,6 @@ async function callApi<T>(
   }
 
   const res = await fetch(url, {
-    credentials: 'include',
     ...options,
     headers,
   });
