@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { 
-  Laptop, 
-  Search, 
-  Plus, 
-  Pencil, 
-  Trash2, 
+import {
+  Laptop,
+  Search,
+  Plus,
+  Pencil,
+  Trash2,
   Filter,
   AlertCircle,
   Loader2,
@@ -16,125 +16,16 @@ import {
 
 import { Toaster, toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import {
+  getProducts,
+  getBrands,
+  getCategories,
+  deleteProduct as deleteProductApi
+} from '@/lib/api/products';
+import { Product, Brand, Category } from '@/types/api';
 
 
-// ============================================
-// Types
-// ============================================
-interface Product {
-  _id: string;
-  name: string;
-  model: string;
-  slug: string;
-  price: number;
-  costPrice?: number;
-  image?: string;
-  images?: string[];
-  specs?: {
-    cpu?: string;
-    gpu?: string;
-    ram?: string;
-    ssd?: string;
-    screen?: string;
-  };
-  brandId?: {
-    _id: string;
-    name: string;
-    slug: string;
-  };
-  categoryId?: {
-    _id: string;
-    name: string;
-  };
-  isUsed?: boolean;
-  condition?: string;
-  status?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-interface Brand {
-  _id: string;
-  name: string;
-  slug: string;
-}
-
-interface Category {
-  _id: string;
-  name: string;
-  slug: string;
-}
-
-// ============================================
-// API Functions with Debug & Error Handling
-// ============================================
-async function fetchProducts(search?: string): Promise<Product[]> {
-  try {
-    const url = search 
-      ? `/api/products?search=${encodeURIComponent(search)}&limit=100`
-      : '/api/products?limit=100';
-    
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    
-    const result = await response.json();
-    if (!result.success) {
-      throw new Error(result.message || 'API returned failure');
-    }
-    
-    console.log('✅ [GET /api/products] Success:', result.data?.length, 'products');
-    return result.data || [];
-  } catch (error: any) {
-    console.error('❌ [GET /api/products] Error:', error.message);
-    throw error;
-  }
-}
-
-async function fetchBrands(): Promise<Brand[]> {
-  try {
-    const response = await fetch('/api/brands');
-    if (!response.ok) throw new Error('Failed to fetch brands');
-    const result = await response.json();
-    return result.data || [];
-  } catch (error: any) {
-    console.error('❌ [GET /api/brands] Error:', error.message);
-    return [];
-  }
-}
-
-async function fetchCategories(): Promise<Category[]> {
-  try {
-    const response = await fetch('/api/categories');
-    if (!response.ok) throw new Error('Failed to fetch categories');
-    const result = await response.json();
-    return result.data || [];
-  } catch (error: any) {
-    console.error('❌ [GET /api/categories] Error:', error.message);
-    return [];
-  }
-}
-
-async function deleteProduct(id: string): Promise<void> {
-  try {
-    const response = await fetch(`/api/products/${id}`, {
-      method: 'DELETE',
-    });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to delete');
-    }
-    
-    const result = await response.json();
-    console.log('✅ [DELETE /api/products/:id] Success');
-    toast.success('Xóa sản phẩm thành công!');
-  } catch (error: any) {
-    console.error('❌ [DELETE /api/products/:id] Error:', error.message);
-    throw error;
-  }
-}
+// Local wrappers removed in favor of @/lib/api/products imports
 
 // ============================================
 // Loading Skeleton
@@ -184,13 +75,13 @@ function EmptyState({ onAddNew }: { onAddNew: () => void }) {
 // ============================================
 // Product Table Row
 // ============================================
-function ProductRow({ 
-  product, 
-  onEdit, 
-  onDelete 
-}: { 
-  product: Product; 
-  onEdit: (p: Product) => void; 
+function ProductRow({
+  product,
+  onEdit,
+  onDelete
+}: {
+  product: Product;
+  onEdit: (p: Product) => void;
   onDelete: (p: Product) => void;
 }) {
   const formatPrice = (price: number) => {
@@ -207,14 +98,25 @@ function ProductRow({
     return <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">Còn hàng</span>;
   };
 
+  const getSpec = (keys: string[]) => {
+    const specs: any = product.specs || {};
+    for (const key of keys) {
+      if (specs[key]) return specs[key];
+    }
+    return '-';
+  };
+
+  const currentPrice = product.salePrice || product.basePrice || product.price || 0;
+  const brandName = typeof product.brand === 'object' ? product.brand?.name : (typeof product.brandId === 'object' ? product.brandId?.name : '-');
+
   return (
     <tr className="hover:bg-slate-50">
       {/* Image */}
       <td className="px-4 py-3">
         <div className="w-12 h-12 bg-slate-100 rounded-lg overflow-hidden">
           {product.image || product.images?.[0] ? (
-            <img 
-              src={product.image || product.images?.[0]} 
+            <img
+              src={product.image || product.images?.[0]}
               alt={product.name}
               className="w-full h-full object-cover"
             />
@@ -225,43 +127,43 @@ function ProductRow({
           )}
         </div>
       </td>
-      
+
       {/* Name & Model */}
       <td className="px-4 py-3">
         <div className="font-medium text-slate-900">{product.name}</div>
-        <div className="text-sm text-slate-500">{product.model}</div>
+        <div className="text-sm text-slate-500">{product.slug}</div>
       </td>
-      
+
       {/* Brand */}
       <td className="px-4 py-3 text-sm text-slate-600">
-        {product.brandId?.name || '-'}
+        {brandName}
       </td>
-      
+
       {/* CPU */}
       <td className="px-4 py-3 text-sm text-slate-600">
-        {product.specs?.cpu || '-'}
+        {getSpec(['CPU', 'cpu', 'Vi xử lý'])}
       </td>
-      
+
       {/* RAM */}
       <td className="px-4 py-3 text-sm text-slate-600">
-        {product.specs?.ram || '-'}
+        {getSpec(['RAM', 'ram', 'Bộ nhớ'])}
       </td>
-      
+
       {/* SSD */}
       <td className="px-4 py-3 text-sm text-slate-600">
-        {product.specs?.ssd || '-'}
+        {getSpec(['Ổ cứng', 'SSD', 'ssd', 'SSD/HDD'])}
       </td>
-      
+
       {/* Price */}
       <td className="px-4 py-3">
-        <span className="font-medium text-slate-900">{formatPrice(product.price)}</span>
+        <span className="font-medium text-slate-900">{formatPrice(currentPrice)}</span>
       </td>
-      
+
       {/* Status */}
       <td className="px-4 py-3">
         {getStatusBadge(product.status)}
       </td>
-      
+
       {/* Actions */}
       <td className="px-4 py-3">
         <div className="flex items-center gap-2">
@@ -296,7 +198,7 @@ export default function LaptopsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  
+
   // Filter states
   const [search, setSearch] = useState('');
   const [filterBrand, setFilterBrand] = useState('');
@@ -309,7 +211,7 @@ export default function LaptopsPage() {
   const [filterMinPrice, setFilterMinPrice] = useState('');
   const [filterMaxPrice, setFilterMaxPrice] = useState('');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  
+
   // Delete modal state
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -321,8 +223,16 @@ export default function LaptopsPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchProducts(searchTerm);
-      setProducts(data);
+      const res = await getProducts({
+        search: searchTerm,
+        limit: 100,
+        categorySlug: 'laptop'
+      });
+      if (res.success && res.data) {
+        setProducts(res.data);
+      } else {
+        throw new Error(res.error || 'Failed to fetch products');
+      }
     } catch (err: any) {
       setError(err.message);
       toast.error('Không thể tải danh sách sản phẩm');
@@ -333,12 +243,23 @@ export default function LaptopsPage() {
 
   // Load brands & categories
   useEffect(() => {
-    Promise.all([fetchBrands(), fetchCategories()]).then(([brandsData, categoriesData]) => {
-      setBrands(brandsData);
-      setCategories(categoriesData);
-    });
-    
-    loadProducts();
+    const loadInitialData = async () => {
+      try {
+        const [brandsRes, categoriesRes] = await Promise.all([
+          getBrands({ limit: 100 }),
+          getCategories()
+        ]);
+
+        if (brandsRes.success && brandsRes.data) setBrands(brandsRes.data);
+        if (categoriesRes.success && categoriesRes.data) setCategories(categoriesRes.data);
+
+        await loadProducts();
+      } catch (err) {
+        console.error('Error loading initial data:', err);
+      }
+    };
+
+    loadInitialData();
   }, [loadProducts]);
 
 
@@ -367,18 +288,19 @@ export default function LaptopsPage() {
   // Confirm delete
   const confirmDelete = async () => {
     if (!deletingProduct) return;
-    
+
     setSubmitting(true);
     try {
-      await deleteProduct(deletingProduct._id);
-      setDeletingProduct(null);
-      loadProducts(search); // Refresh data
-    } catch (err: any) {
-      if (err.message.includes('duplicate') || err.message.includes('trùng')) {
-        toast.error('Lỗi: Mã máy này đã tồn tại trong kho Cheaplap!');
+      const res = await deleteProductApi(deletingProduct._id);
+      if (res.success) {
+        toast.success('Xóa sản phẩm thành công!');
+        setDeletingProduct(null);
+        loadProducts(search); // Refresh data
       } else {
-        toast.error(err.message || 'Không thể xóa sản phẩm');
+        throw new Error(res.error || 'Failed to delete');
       }
+    } catch (err: any) {
+      toast.error(err.message || 'Không thể xóa sản phẩm');
     } finally {
       setSubmitting(false);
     }
@@ -387,21 +309,30 @@ export default function LaptopsPage() {
 
   // Filter products
   const filteredProducts = products.filter(p => {
-    if (filterBrand && p.brandId?._id !== filterBrand) return false;
+    const pBrandId = typeof p.brand === 'object' ? p.brand?._id : (typeof p.brandId === 'object' ? p.brandId?._id : p.brandId);
+    if (filterBrand && pBrandId !== filterBrand) return false;
+
     if (filterStatus === 'active' && p.status !== 'active') return false;
     if (filterStatus === 'inactive' && p.status !== 'inactive') return false;
-    
+
+    const specs: any = p.specs || {};
+    const getS = (keys: string[]) => {
+      for (const k of keys) if (specs[k]) return specs[k];
+      return '';
+    };
+
     // Advanced filters
-    if (filterCPU && !p.specs?.cpu?.toLowerCase().includes(filterCPU.toLowerCase())) return false;
-    if (filterRAM && !p.specs?.ram?.toLowerCase().includes(filterRAM.toLowerCase())) return false;
-    if (filterGPU && !p.specs?.gpu?.toLowerCase().includes(filterGPU.toLowerCase())) return false;
-    if (filterSSD && !p.specs?.ssd?.toLowerCase().includes(filterSSD.toLowerCase())) return false;
-    if (filterScreen && !p.specs?.screen?.toLowerCase().includes(filterScreen.toLowerCase())) return false;
-    
+    if (filterCPU && !getS(['CPU', 'cpu', 'Vi xử lý']).toLowerCase().includes(filterCPU.toLowerCase())) return false;
+    if (filterRAM && !getS(['RAM', 'ram', 'Bộ nhớ']).toLowerCase().includes(filterRAM.toLowerCase())) return false;
+    if (filterGPU && !getS(['Card đồ họa', 'GPU', 'gpu', 'VGA']).toLowerCase().includes(filterGPU.toLowerCase())) return false;
+    if (filterSSD && !getS(['Ổ cứng', 'SSD', 'ssd', 'SSD/HDD']).toLowerCase().includes(filterSSD.toLowerCase())) return false;
+    if (filterScreen && !getS(['Màn hình', 'screen', 'Kích thước màn hình']).toLowerCase().includes(filterScreen.toLowerCase())) return false;
+
     // Price range filter
-    if (filterMinPrice && p.price < parseInt(filterMinPrice)) return false;
-    if (filterMaxPrice && p.price > parseInt(filterMaxPrice)) return false;
-    
+    const currentPrice = p.salePrice || p.basePrice || p.price || 0;
+    if (filterMinPrice && currentPrice < parseInt(filterMinPrice)) return false;
+    if (filterMaxPrice && currentPrice > parseInt(filterMaxPrice)) return false;
+
     return true;
   });
 
@@ -420,18 +351,32 @@ export default function LaptopsPage() {
   };
 
   // Extract unique filter options from actual data
-  const cpuOptions = Array.from(new Set(products.map(p => p.specs?.cpu).filter(Boolean))).sort();
-  const ramOptions = Array.from(new Set(products.map(p => p.specs?.ram).filter(Boolean))).sort();
-  const gpuOptions = Array.from(new Set(products.map(p => p.specs?.gpu).filter(Boolean))).sort();
-  const ssdOptions = Array.from(new Set(products.map(p => p.specs?.ssd).filter(Boolean))).sort();
-  const screenOptions = Array.from(new Set(products.map(p => p.specs?.screen).filter(Boolean))).sort();
+  const getOptions = (keys: string[]) => {
+    const opts = new Set<string>();
+    products.forEach(p => {
+      const specs: any = p.specs || {};
+      for (const k of keys) {
+        if (specs[k]) {
+          opts.add(specs[k]);
+          break;
+        }
+      }
+    });
+    return Array.from(opts).sort();
+  };
+
+  const cpuOptions = getOptions(['CPU', 'cpu', 'Vi xử lý']);
+  const ramOptions = getOptions(['RAM', 'ram', 'Bộ nhớ']);
+  const gpuOptions = getOptions(['Card đồ họa', 'GPU', 'gpu', 'VGA']);
+  const ssdOptions = getOptions(['Ổ cứng', 'SSD', 'ssd', 'SSD/HDD']);
+  const screenOptions = getOptions(['Màn hình', 'screen', 'Kích thước màn hình']);
 
 
 
   return (
     <div className="space-y-6">
       <Toaster position="top-right" />
-      
+
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -463,7 +408,7 @@ export default function LaptopsPage() {
                 className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            
+
             {/* Brand Filter */}
             <select
               value={filterBrand}
@@ -475,7 +420,7 @@ export default function LaptopsPage() {
                 <option key={brand._id} value={brand._id}>{brand.name}</option>
               ))}
             </select>
-            
+
             {/* Status Filter */}
             <select
               value={filterStatus}
@@ -486,7 +431,7 @@ export default function LaptopsPage() {
               <option value="active">Còn hàng</option>
               <option value="inactive">Ngừng bán</option>
             </select>
-            
+
             {/* Search Button */}
             <button
               type="submit"
@@ -495,7 +440,7 @@ export default function LaptopsPage() {
               <Search size={18} />
               Tìm
             </button>
-            
+
             {/* Refresh Button */}
             <button
               type="button"
@@ -516,7 +461,7 @@ export default function LaptopsPage() {
               <Filter size={16} />
               {showAdvancedFilters ? 'Ẩn bộ lọc nâng cao' : 'Hiện bộ lọc nâng cao'}
             </button>
-            
+
             {(filterCPU || filterRAM || filterGPU || filterSSD || filterScreen || filterMinPrice || filterMaxPrice) && (
               <button
                 type="button"
@@ -648,7 +593,7 @@ export default function LaptopsPage() {
           <div>
             <p className="font-medium text-red-900">Đã xảy ra lỗi</p>
             <p className="text-sm text-red-700">{error}</p>
-            <button 
+            <button
               onClick={() => loadProducts(search)}
               className="mt-2 text-sm text-red-600 hover:underline"
             >
@@ -686,9 +631,9 @@ export default function LaptopsPage() {
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {filteredProducts.map(product => (
-                  <ProductRow 
-                    key={product._id} 
-                    product={product} 
+                  <ProductRow
+                    key={product._id}
+                    product={product}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                   />
@@ -696,7 +641,7 @@ export default function LaptopsPage() {
               </tbody>
             </table>
           </div>
-          
+
           {/* Footer */}
           <div className="px-4 py-3 border-t border-slate-200 bg-slate-50">
             <p className="text-sm text-slate-500">

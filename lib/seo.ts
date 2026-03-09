@@ -132,6 +132,8 @@ export function buildProductJsonLd(product: {
     name: string;
     description: string;
     price: number;
+    basePrice?: number;
+    salePrice?: number;
     originalPrice?: number;
     image?: string;
     images?: string[];
@@ -142,15 +144,15 @@ export function buildProductJsonLd(product: {
     condition?: string;
 }) {
     const imageUrl =
-        product.image ||
         (product.images && product.images[0]) ||
+        product.image ||
         DEFAULT_OG_IMAGE;
     const absoluteImage = imageUrl.startsWith('http')
         ? imageUrl
         : `${SITE_URL}${imageUrl}`;
 
-    const soldPrice = product.price;
-    const listPrice = product.originalPrice || product.price;
+    const soldPrice = product.salePrice || product.price;
+    const listPrice = product.basePrice || product.originalPrice || product.price;
 
     return {
         '@context': 'https://schema.org',
@@ -180,7 +182,7 @@ export function buildProductJsonLd(product: {
                 '@type': 'Organization',
                 name: SITE_NAME,
             },
-            ...(product.originalPrice && product.originalPrice > product.price
+            ...(listPrice > soldPrice
                 ? {
                     priceSpecification: {
                         '@type': 'UnitPriceSpecification',

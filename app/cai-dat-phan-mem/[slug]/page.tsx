@@ -13,30 +13,23 @@ import {
   ArrowLeft,
   Monitor,
 } from "lucide-react";
-import { connectDB } from "@/lib/mongodb";
-import { Software } from "@/models/Software";
+// replaced DB model with API client
 import { notFound } from "next/navigation";
 
-import { seedSoftware, softwareList } from "@/lib/seed";
+import { getSoftware as apiGetSoftware } from '@/lib/api/software';
 
 async function getSoftware(slug: string) {
-  await connectDB();
-  let software = await Software.findOne({ slug, status: "published" }).lean();
-
-  if (!software) {
-    // Try to find in seed list and insert if missing
-    const seedItem = softwareList.find((s) => s.slug === slug);
-    if (seedItem) {
-      console.log(`Auto-seeding missing item: ${slug}`);
-      await Software.create(seedItem);
-      software = await Software.findOne({ slug, status: "published" }).lean();
-    }
+  try {
+    const res = await apiGetSoftware(slug);
+    if (res.success && res.data) return res.data;
+  } catch (error) {
+    console.error("Error fetching software:", error);
   }
-
-  if (!software) return null;
-  return JSON.parse(JSON.stringify(software)); // Serialize for Next.js
+  return null;
 }
 
+// NOTE: previously the page auto-seeded missing software; with frontend-only
+// now we assume NexGear backend holds the catalog and seeding occurs there.
 export async function generateMetadata({
   params,
 }: {
@@ -108,11 +101,10 @@ export default async function SoftwareDetailPage({
                       {sw.category}
                     </span>
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${
-                        sw.type === "Free"
+                      className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${sw.type === "Free"
                           ? "bg-green-50 text-green-600 border-green-100"
                           : "bg-purple-50 text-purple-600 border-purple-100"
-                      }`}
+                        }`}
                     >
                       {sw.type}
                     </span>

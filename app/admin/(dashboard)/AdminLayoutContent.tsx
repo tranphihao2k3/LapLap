@@ -3,7 +3,7 @@
 import { ReactNode, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { signOut, useSession } from 'next-auth/react';
+import { useJWTAuth } from '@/context/JWTAuthContext';
 import {
     LayoutDashboard,
     FolderTree,
@@ -31,7 +31,7 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [hoverExpanded, setHoverExpanded] = useState(false);
     const pathname = usePathname();
-    const { data: session } = useSession();
+    const { user, logout, isAuthenticated } = useJWTAuth();
 
     // Sidebar is collapsed unless hovered or opened on mobile
     const sidebarCollapsed = !hoverExpanded && !sidebarOpen;
@@ -166,7 +166,7 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
                 {/* User Profile */}
                 <div className="p-4 border-t border-[#1f2937] bg-[#0f1523]">
                     <div
-                        onClick={() => signOut({ callbackUrl: '/admin/login' })}
+                        onClick={() => logout()}
                         className={`
                             flex items-center gap-3 p-2 rounded-xl hover:bg-gray-800 transition-colors cursor-pointer group
                             ${sidebarCollapsed ? 'justify-center' : ''}
@@ -174,15 +174,15 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
                         title={sidebarCollapsed ? 'Đăng xuất' : ''}
                     >
                         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white text-sm shadow-inner ring-2 ring-gray-800 flex-shrink-0">
-                            {session?.user?.name?.charAt(0).toUpperCase() || 'A'}
+                            {user?.name?.charAt(0).toUpperCase() || 'A'}
                         </div>
 
                         <div className={`flex-1 min-w-0 transition-opacity duration-300 ${sidebarCollapsed ? 'hidden' : 'block'}`}>
                             <div className="font-semibold text-sm text-gray-200 truncate group-hover:text-white">
-                                {session?.user?.name || 'Admin User'}
+                                {user?.name || 'Admin User'}
                             </div>
                             <div className="text-xs text-gray-500 truncate group-hover:text-gray-400">
-                                {session?.user?.email || 'admin@laplap.com'}
+                                {user?.email || 'admin@laplap.com'}
                             </div>
                         </div>
 
@@ -244,7 +244,7 @@ export default function AdminLayoutContent({ children }: { children: ReactNode }
 
                                 {/* User Avatar */}
                                 <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold text-white text-sm shadow-lg cursor-pointer hover:scale-110 transition-transform">
-                                    {session?.user?.name?.charAt(0).toUpperCase() || 'A'}
+                                    {user?.name?.charAt(0).toUpperCase() || 'A'}
                                 </div>
                             </div>
                         </div>

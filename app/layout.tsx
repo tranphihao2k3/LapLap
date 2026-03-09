@@ -95,7 +95,7 @@ import { ComparisonProvider } from "@/context/ComparisonContext";
 import ComparisonBar from "@/components/ComparisonBar";
 import { CartProvider } from "@/context/CartContext";
 import CartDrawer from "@/components/CartDrawer";
-import SessionProviderWrapper from "@/components/SessionProviderWrapper";
+import { JWTAuthProvider } from "@/context/JWTAuthContext";
 
 import MobileBottomMenu from "@/components/MobileBottomMenu";
 import WelcomeBanner from "@/components/WelcomeBanner";
@@ -119,7 +119,7 @@ export default function RootLayout({
         <JsonLd id="website-jsonld" data={buildWebSiteJsonLd()} />
         <JsonLd id="navigation-jsonld" data={buildSiteNavigationJsonLd()} />
 
-        <SessionProviderWrapper>
+        <JWTAuthProvider>
           <CartProvider>
             <ComparisonProvider>
               {children}
@@ -131,7 +131,7 @@ export default function RootLayout({
             <WelcomeBanner />
           </CartProvider>
           <FloatingContact />
-        </SessionProviderWrapper>
+        </JWTAuthProvider>
         <FacebookMessenger />
         <SpeedInsights />
         <Analytics />

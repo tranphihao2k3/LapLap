@@ -6,10 +6,11 @@ import { Itim } from "next/font/google";
 import { MapPin, Menu, X, Facebook, Search, ShoppingBag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import Button from "./ui/Button";
 import { useCart } from "@/context/CartContext";
+import { getProducts } from "@/lib/api/products";
 
 const SEARCH_PLACEHOLDERS = [
   "Tìm kiếm laptop...",
@@ -21,6 +22,7 @@ const SEARCH_PLACEHOLDERS = [
 ];
 
 export default function Header() {
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -45,6 +47,15 @@ export default function Header() {
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Search submission
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      router.push(`/laptops?search=${encodeURIComponent(searchTerm.trim())}`);
+      setIsSearchFocused(false);
+    }
+  };
 
   // Typing effect logic
   useEffect(() => {
@@ -83,12 +94,13 @@ export default function Header() {
       if (searchTerm.trim()) {
         setIsLoading(true);
         try {
-          const res = await fetch(
-            `/api/products?search=${encodeURIComponent(searchTerm)}&limit=5`,
-          );
-          const data = await res.json();
-          if (data.success) {
-            setSearchResults(data.data);
+          const res = await getProducts({
+            search: searchTerm,
+            limit: 5,
+            active: true,
+          });
+          if (res.success && res.data) {
+            setSearchResults(res.data);
           }
         } catch (error) {
           console.error("Search error:", error);
@@ -215,7 +227,10 @@ export default function Header() {
           </div>
 
           {/* Search Bar */}
-          <div className="w-full md:flex-1 max-w-md md:mx-4 relative order-3 md:order-none">
+          <form
+            onSubmit={handleSearchSubmit}
+            className="w-full md:flex-1 max-w-md md:mx-4 relative order-3 md:order-none"
+          >
             <motion.div
               className="relative"
               initial={{ scale: 1 }}
@@ -225,11 +240,10 @@ export default function Header() {
               <input
                 type="text"
                 placeholder={placeholderText}
-                className={`w-full pl-10 pr-12 py-2.5 rounded-full border transition-all duration-300 ${
-                  isSearchFocused
-                    ? "border-blue-500 ring-4 ring-blue-100 shadow-xl bg-white"
-                    : "border-gray-200 hover:border-blue-300 bg-gray-50/50"
-                } focus:outline-none font-medium text-slate-700`}
+                className={`w-full pl-10 pr-12 py-2.5 rounded-full border transition-all duration-300 ${isSearchFocused
+                  ? "border-blue-500 ring-4 ring-blue-100 shadow-xl bg-white"
+                  : "border-gray-200 hover:border-blue-300 bg-gray-50/50"
+                  } focus:outline-none font-medium text-slate-700`}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onFocus={() => setIsSearchFocused(true)}
@@ -240,6 +254,7 @@ export default function Header() {
               <AnimatePresence>
                 {searchTerm && (
                   <motion.button
+                    type="button"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
@@ -351,7 +366,7 @@ export default function Header() {
                                       {new Intl.NumberFormat("vi-VN", {
                                         style: "currency",
                                         currency: "VND",
-                                      }).format(product.price)}
+                                      }).format(product.salePrice || product.basePrice || product.price || 0)}
                                     </span>
                                   </div>
                                 </div>
@@ -391,7 +406,7 @@ export default function Header() {
                   </motion.div>
                 )}
             </AnimatePresence>
-          </div>
+          </form>
 
           <div className="flex items-center gap-2 sm:gap-4 order-2 md:order-none ml-auto md:ml-0">
             <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 shadow-sm">
@@ -483,11 +498,10 @@ export default function Header() {
                 >
                   <Link
                     href={item.href}
-                    className={`relative z-10 block px-4 py-2 text-[15px] font-bold transition-colors duration-300 ${
-                      isActive
-                        ? "text-blue-600"
-                        : "text-slate-600 hover:text-slate-900 group-hover/menu:text-blue-600"
-                    } flex items-center gap-1`}
+                    className={`relative z-10 block px-4 py-2 text-[15px] font-bold transition-colors duration-300 ${isActive
+                      ? "text-blue-600"
+                      : "text-slate-600 hover:text-slate-900 group-hover/menu:text-blue-600"
+                      } flex items-center gap-1`}
                   >
                     {item.label}
                     {item.children && (
@@ -558,110 +572,110 @@ export default function Header() {
       {/* Mobile Sidebar - Using Portal to ensure it's above everything */}
       {typeof window !== "undefined" && isMobileMenuOpen && document.body
         ? createPortal(
-            <>
-              {/* Overlay */}
-              <div
-                className="fixed inset-0 bg-black/50 lg:hidden transition-opacity duration-300"
-                onClick={() => setIsMobileMenuOpen(false)}
-                style={{
-                  zIndex: 99999,
-                  position: "fixed",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  width: "100%",
-                  height: "100%",
-                }}
-              />
-              {/* Sidebar Menu */}
-              <div
-                className="fixed top-0 right-0 h-full h-screen w-[280px] bg-white shadow-2xl transform transition-transform duration-300 overflow-y-auto translate-x-0"
-                onClick={(e) => e.stopPropagation()}
-                style={{
-                  backgroundColor: "#ffffff",
-                  zIndex: 100000,
-                  position: "fixed",
-                  top: 0,
-                  right: 0,
-                  height: "100vh",
-                  width: "280px",
-                }}
-              >
-                {/* Sidebar Header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                  <h2 className={" text-xl font-bold text-gray-800"}>Menu</h2>
-                  <button
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <X className="w-5 h-5 text-gray-700" />
-                  </button>
-                </div>
+          <>
+            {/* Overlay */}
+            <div
+              className="fixed inset-0 bg-black/50 lg:hidden transition-opacity duration-300"
+              onClick={() => setIsMobileMenuOpen(false)}
+              style={{
+                zIndex: 99999,
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                width: "100%",
+                height: "100%",
+              }}
+            />
+            {/* Sidebar Menu */}
+            <div
+              className="fixed top-0 right-0 h-full h-screen w-[280px] bg-white shadow-2xl transform transition-transform duration-300 overflow-y-auto translate-x-0"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                backgroundColor: "#ffffff",
+                zIndex: 100000,
+                position: "fixed",
+                top: 0,
+                right: 0,
+                height: "100vh",
+                width: "280px",
+              }}
+            >
+              {/* Sidebar Header */}
+              <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                <h2 className={" text-xl font-bold text-gray-800"}>Menu</h2>
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-700" />
+                </button>
+              </div>
 
-                {/* Location */}
-                <div className="px-4 py-2 bg-blue-50 border-b border-gray-200">
-                  <div className="flex items-center gap-2 text-sm text-gray-700">
-                    <MapPin className="w-4 h-4 text-blue-600" />
-                    <span className="font-medium">Cần Thơ</span>
-                  </div>
+              {/* Location */}
+              <div className="px-4 py-2 bg-blue-50 border-b border-gray-200">
+                <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <MapPin className="w-4 h-4 text-blue-600" />
+                  <span className="font-medium">Cần Thơ</span>
                 </div>
+              </div>
 
-                {/* Mobile Fanpage Button */}
-                <div className="px-4 py-2">
-                  <a
-                    href="https://facebook.com/profile.php?id=61582947329036"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[#1877F2] text-white rounded-xl shadow-md font-bold active:scale-95 transition-transform text-sm"
-                  >
-                    <Facebook className="w-4 h-4 animate-pulse" />
-                    <span>Ghé thăm Fanpage</span>
-                  </a>
-                </div>
+              {/* Mobile Fanpage Button */}
+              <div className="px-4 py-2">
+                <a
+                  href="https://facebook.com/profile.php?id=61582947329036"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[#1877F2] text-white rounded-xl shadow-md font-bold active:scale-95 transition-transform text-sm"
+                >
+                  <Facebook className="w-4 h-4 animate-pulse" />
+                  <span>Ghé thăm Fanpage</span>
+                </a>
+              </div>
 
-                {/* Menu Items */}
-                <nav className="px-4 py-2">
-                  <ul className="space-y-1">
-                    {menuItems.map((item: any, index) => (
-                      <li key={index}>
-                        {item.children ? (
-                          <div className="space-y-1">
-                            <div
-                              className={`block px-4 py-2 text-sm font-bold text-gray-400 uppercase tracking-wider`}
-                            >
-                              {item.label}
-                            </div>
-                            {item.children.map(
-                              (child: any, childIdx: number) => (
-                                <Link
-                                  key={childIdx}
-                                  href={child.href}
-                                  onClick={() => setIsMobileMenuOpen(false)}
-                                  className={`block px-4 py-2.5 pl-8 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors`}
-                                >
-                                  {child.label}
-                                </Link>
-                              ),
-                            )}
-                          </div>
-                        ) : (
-                          <Link
-                            href={item.href}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className={`block px-4 py-2.5 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors`}
+              {/* Menu Items */}
+              <nav className="px-4 py-2">
+                <ul className="space-y-1">
+                  {menuItems.map((item: any, index) => (
+                    <li key={index}>
+                      {item.children ? (
+                        <div className="space-y-1">
+                          <div
+                            className={`block px-4 py-2 text-sm font-bold text-gray-400 uppercase tracking-wider`}
                           >
                             {item.label}
-                          </Link>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-              </div>
-            </>,
-            document.body,
-          )
+                          </div>
+                          {item.children.map(
+                            (child: any, childIdx: number) => (
+                              <Link
+                                key={childIdx}
+                                href={child.href}
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className={`block px-4 py-2.5 pl-8 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors`}
+                              >
+                                {child.label}
+                              </Link>
+                            ),
+                          )}
+                        </div>
+                      ) : (
+                        <Link
+                          href={item.href}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className={`block px-4 py-2.5 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors`}
+                        >
+                          {item.label}
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
+          </>,
+          document.body,
+        )
         : null}
     </header>
   );

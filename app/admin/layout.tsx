@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import JWTAuthLayoutWrapper from '@/components/admin/JWTAuthLayoutWrapper';
 
 export const metadata: Metadata = {
     title: 'Admin Dashboard',
@@ -19,5 +20,9 @@ export const metadata: Metadata = {
 };
 
 export default function AdminMetadataLayout({ children }: { children: React.ReactNode }) {
-    return <>{children}</>;
+    return (
+        <JWTAuthLayoutWrapper>
+            {children}
+        </JWTAuthLayoutWrapper>
+    );
 }

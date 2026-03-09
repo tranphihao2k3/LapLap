@@ -9,16 +9,16 @@ import Toast from '@/components/admin/Toast';
 import ImageUploader from '@/components/admin/ImageUploader';
 import QuickFillTextarea from '@/components/admin/QuickFillTextarea';
 import { COMMON_CPUS, COMMON_GPUS, COMMON_RAM_SIZES, COMMON_SSD_SIZES, COMMON_SCREENS, COMMON_BATTERIES, COMMON_HZ, COMMON_RESOLUTIONS } from '../commonSpecs';
+import {
+    getCategories,
+    getBrands,
+    getProduct,
+    createProduct,
+    updateProduct
+} from '@/lib/api/products';
+import { Category, Brand, Product } from '@/types/api';
 
-interface Category {
-    _id: string;
-    name: string;
-}
-
-interface Brand {
-    _id: string;
-    name: string;
-}
+// Interfaces moved to types/api.ts imports
 
 export default function LaptopFormPage() {
     const router = useRouter();
@@ -80,30 +80,35 @@ export default function LaptopFormPage() {
         const fetchInitialData = async () => {
             try {
                 const [categoriesRes, brandsRes] = await Promise.all([
-                    fetch('/api/admin/categories'),
-                    fetch('/api/admin/brands')
+                    getCategories(),
+                    getBrands({ limit: 100 })
                 ]);
-                const categoriesData = await categoriesRes.json();
-                const brandsData = await brandsRes.json();
 
-                if (categoriesData.success) setCategories(categoriesData.data);
-                if (brandsData.success) setBrands(brandsData.data);
+                if (categoriesRes.success && categoriesRes.data) setCategories(categoriesRes.data);
+                if (brandsRes.success && brandsRes.data) setBrands(brandsRes.data);
 
                 if (!isNew) {
-                    const laptopRes = await fetch(`/api/admin/laptops/${params.id}`);
-                    const laptopData = await laptopRes.json();
+                    const laptopRes = await getProduct(params.id as string);
 
-                    if (laptopData.success) {
-                        const laptop = laptopData.data;
+                    if (laptopRes.success && laptopRes.data) {
+                        const laptop = laptopRes.data;
+                        const lSpecs: any = laptop.specs || {};
+
+                        // Helper to find spec across common variants
+                        const getS = (keys: string[]) => {
+                            for (const k of keys) if (lSpecs[k]) return lSpecs[k];
+                            return '';
+                        };
+
                         setFormData({
                             name: laptop.name,
-                            model: laptop.model,
-                            categoryId: laptop.categoryId?._id || laptop.categoryId,
-                            brandId: laptop.brandId?._id || laptop.brandId,
-                            price: laptop.price,
+                            model: laptop.slug || '',
+                            categoryId: (typeof laptop.category === 'object' ? laptop.category?._id : (typeof laptop.categoryId === 'object' ? laptop.categoryId?._id : laptop.categoryId)) || '',
+                            brandId: (typeof laptop.brand === 'object' ? laptop.brand?._id : (typeof laptop.brandId === 'object' ? laptop.brandId?._id : laptop.brandId)) || '',
+                            price: laptop.salePrice || laptop.basePrice || laptop.price || 0,
                             costPrice: laptop.costPrice || 0,
-                            image: laptop.image || '',
-                            images: laptop.images?.length > 0 ? laptop.images : [''],
+                            image: laptop.image || (laptop.images?.[0] || ''),
+                            images: laptop.images?.length ? laptop.images : [''],
                             gift: laptop.gift || '',
                             description: laptop.description || '',
                             warrantyMonths: laptop.warrantyMonths || 12,
@@ -113,17 +118,17 @@ export default function LaptopFormPage() {
                             conditionNote: laptop.conditionNote || '',
                             isFeatured: laptop.isFeatured || false,
                             specs: {
-                                cpu: laptop.specs?.cpu || '',
-                                gpu: laptop.specs?.gpu || '',
-                                ram: laptop.specs?.ram || '',
-                                ssd: laptop.specs?.ssd || '',
-                                screen: laptop.specs?.screen || '',
-                                hz: laptop.specs?.hz || '',
-                                resolution: laptop.specs?.resolution || '',
-                                battery: laptop.specs?.battery || '',
-                                weight: laptop.specs?.weight || '',
+                                cpu: getS(['CPU', 'cpu', 'Vi xử lý']),
+                                gpu: getS(['Card đồ họa', 'GPU', 'gpu', 'VGA']),
+                                ram: getS(['RAM', 'ram', 'Bộ nhớ']),
+                                ssd: getS(['Ổ cứng', 'SSD', 'ssd', 'SSD/HDD']),
+                                screen: getS(['Màn hình', 'screen', 'Kích thước màn hình']),
+                                hz: getS(['Tần số quét', 'hz']),
+                                resolution: getS(['Độ phân giải', 'resolution']),
+                                battery: getS(['Pin', 'battery', 'Dung lượng pin']),
+                                weight: getS(['Trọng lượng', 'weight']),
                             },
-                            warranty: laptop.warranty || { duration: '12 tháng', items: [''] },
+                            warranty: (laptop.warranty as any) || { duration: '12 tháng', items: [''] },
                             status: laptop.status || 'active',
                         });
 
@@ -162,27 +167,35 @@ export default function LaptopFormPage() {
         };
 
         try {
-            const url = isNew
-                ? '/api/admin/laptops'
-                : `/api/admin/laptops/${params.id}`;
+            const payload: any = {
+                ...cleanedData,
+                basePrice: cleanedData.price,
+                salePrice: 0, // Admin can adjust later
+                // Map Specs to NexGear expected keys
+                specs: {
+                    'CPU': cleanedData.specs.cpu,
+                    'RAM': cleanedData.specs.ram,
+                    'Ổ cứng': cleanedData.specs.ssd,
+                    'Card đồ họa': cleanedData.specs.gpu,
+                    'Màn hình': cleanedData.specs.screen,
+                    'Độ phân giải': cleanedData.specs.resolution,
+                    'Tần số quét': cleanedData.specs.hz,
+                    'Pin': cleanedData.specs.battery,
+                    'Trọng lượng': cleanedData.specs.weight,
+                }
+            };
 
-            const method = isNew ? 'POST' : 'PUT';
+            const res = isNew
+                ? await createProduct(payload)
+                : await updateProduct(params.id as string, payload);
 
-            const res = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(cleanedData),
-            });
-
-            const data = await res.json();
-
-            if (data.success) {
+            if (res.success) {
                 showToast(isNew ? 'Thêm mới thành công!' : 'Cập nhật thành công!', 'success');
                 setTimeout(() => {
                     router.push('/admin/laptops');
                 }, 1000);
             } else {
-                showToast('Lỗi: ' + data.error, 'error');
+                showToast('Lỗi: ' + res.error, 'error');
                 setSubmitting(false);
             }
         } catch (error) {
@@ -333,7 +346,7 @@ export default function LaptopFormPage() {
                     {formData.costPrice > 0 && (
                         <div className="mb-4 p-3 bg-green-50 rounded-lg">
                             <p className="text-sm text-green-800">
-                                <span className="font-medium">Lợi nhuận:</span> {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(formData.price - formData.costPrice)} 
+                                <span className="font-medium">Lợi nhuận:</span> {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(formData.price - formData.costPrice)}
                                 <span className="text-green-600 ml-2">({((formData.price - formData.costPrice) / formData.price * 100).toFixed(1)}%)</span>
                             </p>
                         </div>

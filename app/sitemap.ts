@@ -1,9 +1,12 @@
 import { MetadataRoute } from "next";
-import { connectDB } from "@/lib/mongodb";
-import { Blog } from "@/models/Blog";
-import { Product } from "@/models/Product";
-import { Category } from "@/models/Category";
-import { Brand } from "@/models/Brand";
+// replaced DB models with API clients
+// import { connectDB } from "@/lib/mongodb";
+// import { Blog } from "@/models/Blog";
+// import { Product } from "@/models/Product";
+// import { Category } from "@/models/Category";
+// import { Brand } from "@/models/Brand";
+import { getBlogs } from '@/lib/api/admin';
+import { getProducts, getCategories } from '@/lib/api/products';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = "https://laplapcantho.store";
@@ -11,57 +14,51 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Fetch all published blogs
     let blogEntries: MetadataRoute.Sitemap = [];
     try {
-        await connectDB();
-        const blogs = await Blog.find({ status: "published" })
-            .select("slug updatedAt")
-            .lean();
-
-        blogEntries = blogs.map((blog) => ({
-            url: `${baseUrl}/blog/${blog.slug}`,
-            lastModified: new Date(blog.updatedAt),
-            changeFrequency: "weekly" as const,
-            priority: 0.7,
-        }));
+        const res = await getBlogs();
+        if (res.success && res.data) {
+            blogEntries = res.data.map((blog: any) => ({
+                url: `${baseUrl}/blog/${blog.slug}`,
+                lastModified: new Date(blog.updatedAt || new Date()),
+                changeFrequency: "weekly" as const,
+                priority: 0.7,
+            }));
+        }
     } catch (error) {
         console.error("Error fetching blogs for sitemap:", error);
     }
 
-    // Fetch all active products
+    // Fetch all active products via API
     let productEntries: MetadataRoute.Sitemap = [];
     try {
-        await connectDB();
-        const products = await Product.find({ status: "active" })
-            .select("slug updatedAt")
-            .lean();
-
-        productEntries = products
-            .filter((p) => p.slug) // Only include products with slug
-            .map((product) => ({
-                url: `${baseUrl}/laptops/${product._id}`,
-                lastModified: new Date(product.updatedAt),
-                changeFrequency: "weekly" as const,
-                priority: 0.8,
-            }));
+        const res = await getProducts({ page: 1, limit: 1000 });
+        if (res.success && res.data) {
+            productEntries = res.data
+                .filter((p: any) => p.status === "active" && p.slug)
+                .map((product: any) => ({
+                    url: `${baseUrl}/laptops/${product.slug}`,
+                    lastModified: new Date(product.updatedAt || product.createdAt || new Date()),
+                    changeFrequency: "weekly" as const,
+                    priority: 0.8,
+                }));
+        }
     } catch (error) {
         console.error("Error fetching products for sitemap:", error);
     }
 
-    // Fetch categories
+    // Fetch categories via API
     let categoryEntries: MetadataRoute.Sitemap = [];
     try {
-        await connectDB();
-        const categories = await Category.find()
-            .select("slug updatedAt")
-            .lean();
-
-        categoryEntries = categories
-            .filter((c) => c.slug)
-            .map((category) => ({
-                url: `${baseUrl}/laptops?category=${category.slug}`,
-                lastModified: new Date(category.updatedAt),
-                changeFrequency: "weekly" as const,
-                priority: 0.7,
-            }));
+        const res = await getCategories();
+        if (res.success && res.data) {
+            categoryEntries = res.data
+                .filter((c: any) => c.slug)
+                .map((category: any) => ({
+                    url: `${baseUrl}/laptops?category=${category.slug}`,
+                    lastModified: new Date((category as any).updatedAt || (category as any).createdAt || new Date()),
+                    changeFrequency: "weekly" as const,
+                    priority: 0.7,
+                }));
+        }
     } catch (error) {
         console.error("Error fetching categories for sitemap:", error);
     }

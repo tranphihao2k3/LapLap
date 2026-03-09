@@ -9,14 +9,14 @@ import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 import InstallmentModal from '@/components/InstallmentModal';
 import ProductCard from '../ProductCard';
-import { Product } from '../types';
+import { Product } from '@/types/api';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 import ProductReviews from '@/components/ProductReviews';
 
 interface ProductDetailClientProps {
-    product: Product;
-    relatedProducts: Product[];
+    product: any;
+    relatedProducts: any[];
 }
 
 export default function ProductDetailClient({ product, relatedProducts }: ProductDetailClientProps) {
@@ -39,18 +39,36 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
         setTimeout(() => setIsCopied(false), 2000);
     };
 
-    const productImages = product.images && product.images.length > 0
-        ? product.images
-        : [product.image || 'https://placehold.co/600x450/e5e7eb/64748b?text=No+Image'];
+    const productSpecs = product.specs || {};
+
+    const getSpec = (keys: string[]) => {
+        for (const key of keys) {
+            if (productSpecs[key]) return productSpecs[key];
+        }
+        return null;
+    };
+
+    const cpu = getSpec(['CPU', 'cpu', 'Vi xử lý']);
+    const gpu = getSpec(['Card đồ họa', 'GPU', 'gpu', 'VGA']);
+    const ram = getSpec(['RAM', 'ram', 'Bộ nhớ']);
+    const ssd = getSpec(['Ổ cứng', 'SSD', 'ssd', 'SSD/HDD']);
+    const screen = getSpec(['Màn hình', 'screen', 'Kích thước màn hình']);
+    const resolution = getSpec(['Độ phân giải', 'resolution']);
+    const hz = getSpec(['Tần số quét', 'hz']);
 
     const specItems = [
-        { label: 'Vi xử lý (CPU)', value: product.specs.cpu || 'N/A', icon: Cpu },
-        { label: 'Card đồ họa (VGA)', value: product.specs.gpu || 'N/A', icon: Monitor },
-        { label: 'Bộ nhớ (RAM)', value: product.specs.ram || 'N/A', icon: Zap },
-        { label: 'Ổ cứng (SSD)', value: product.specs.ssd || 'N/A', icon: CreditCard },
-        { label: 'Màn hình', value: [product.specs.screen, product.specs.resolution, product.specs.hz].filter(Boolean).join(' ') || 'N/A', icon: Monitor },
+        { label: 'Vi xử lý (CPU)', value: cpu || 'N/A', icon: Cpu },
+        { label: 'Card đồ họa (VGA)', value: gpu || 'N/A', icon: Monitor },
+        { label: 'Bộ nhớ (RAM)', value: ram || 'N/A', icon: Zap },
+        { label: 'Ổ cứng (SSD)', value: ssd || 'N/A', icon: CreditCard },
+        { label: 'Màn hình', value: [screen, resolution, hz].filter(Boolean).join(' ') || 'N/A', icon: Monitor },
         { label: 'Bảo hành', value: `${product.warrantyMonths || 12} Tháng`, icon: Shield, highlight: true },
     ];
+
+    const basePrice = product.basePrice || product.price || 0;
+    const salePrice = product.salePrice || 0;
+    const currentPrice = salePrice > 0 ? salePrice : basePrice;
+    const hasDiscount = salePrice > 0 && salePrice < basePrice;
 
     return (
         <div className="min-h-screen bg-[#F8FAFC]">
@@ -86,13 +104,13 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                                 <PhotoProvider>
                                     <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gradient-to-br from-slate-50 to-white cursor-zoom-in">
                                         <AnimatePresence mode="wait">
-                                            <PhotoView key={selectedImage} src={productImages[selectedImage]}>
+                                            <PhotoView key={selectedImage} src={product.images?.[selectedImage] || product.image || 'https://placehold.co/600x450/e5e7eb/64748b?text=No+Image'}>
                                                 <motion.img
                                                     initial={{ opacity: 0, scale: 1.02 }}
                                                     animate={{ opacity: 1, scale: 1 }}
                                                     exit={{ opacity: 0, scale: 0.98 }}
                                                     transition={{ duration: 0.4, ease: 'easeOut' }}
-                                                    src={productImages[selectedImage]}
+                                                    src={product.images?.[selectedImage] || product.image || 'https://placehold.co/600x450/e5e7eb/64748b?text=No+Image'}
                                                     alt={product.name}
                                                     className="w-full h-full object-contain p-4 md:p-6"
                                                 />
@@ -111,9 +129,9 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                             </div>
 
                             {/* Thumbnails */}
-                            {productImages.length > 1 && (
+                            {product.images && product.images.length > 1 && (
                                 <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                                    {productImages.map((img, index) => (
+                                    {product.images.map((img: string, index: number) => (
                                         <button
                                             key={index}
                                             onClick={() => handleImageChange(index)}
@@ -165,7 +183,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
 
                                 {product.warranty?.items && product.warranty.items.length > 0 && (
                                     <div className="pt-2 space-y-2">
-                                        {product.warranty.items.map((item, idx) => {
+                                        {product.warranty.items.map((item: string, idx: number) => {
                                             let displayItem = item;
                                             if (displayItem.includes('Bảo hành') && displayItem.includes('tháng')) {
                                                 displayItem = displayItem.replace(/Bảo hành \d+ tháng/, `Bảo hành ${product.warrantyMonths || 12} tháng`);
@@ -235,11 +253,16 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                             {/* Tags */}
                             <div className="flex flex-wrap gap-2 mb-5">
                                 <span className="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg uppercase">
-                                    Model: {product.model}
+                                    SKU: {product.sku || product.model}
                                 </span>
                                 <span className="px-3 py-1 bg-blue-50 text-[var(--color-primary)] text-xs font-bold rounded-lg uppercase">
-                                    {product.categoryId?.name || 'Laptop'}
+                                    {product.category?.name || product.categoryId?.name || 'Laptop'}
                                 </span>
+                                {product.isUsed && (
+                                    <span className="px-3 py-1 bg-amber-50 text-amber-600 text-xs font-bold rounded-lg uppercase border border-amber-100">
+                                        Máy cũ {product.usedGrade && `- Loại ${product.usedGrade}`}
+                                    </span>
+                                )}
                             </div>
 
                             {/* ===== PRICE BLOCK ===== */}
@@ -248,17 +271,17 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                                 <div className="text-[10px] text-slate-400 font-black uppercase tracking-[0.15em] mb-2 relative z-10">Giá ưu đãi đặc biệt</div>
                                 <div className="flex items-baseline gap-1.5 relative z-10">
                                     <span className="text-3xl md:text-4xl font-black text-[var(--color-primary)] tracking-tight tabular-nums">
-                                        {product.price.toLocaleString('vi-VN')}
+                                        {currentPrice.toLocaleString('vi-VN')}
                                     </span>
                                     <span className="text-lg md:text-xl font-black text-[var(--color-primary)]/60 underline decoration-2 underline-offset-4">đ</span>
                                 </div>
-                                {product.originalPrice && product.originalPrice > product.price && (
+                                {hasDiscount && (
                                     <div className="flex items-center gap-3 mt-2 relative z-10">
                                         <span className="text-sm text-slate-400 line-through font-bold">
-                                            {product.originalPrice.toLocaleString('vi-VN')}đ
+                                            {basePrice.toLocaleString('vi-VN')}đ
                                         </span>
                                         <span className="text-xs font-black text-red-500 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">
-                                            -{Math.round((1 - product.price / product.originalPrice) * 100)}%
+                                            -{Math.round((1 - salePrice / basePrice) * 100)}%
                                         </span>
                                     </div>
                                 )}
@@ -273,15 +296,15 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                                 <ul className="space-y-1.5">
                                     <li className="text-[13px] text-slate-600 flex items-start gap-2">
                                         <span className="text-[var(--color-primary)] mt-0.5 font-bold">•</span>
-                                        <span>Hiệu năng mạnh mẽ với chip <strong className="text-slate-800">{product.specs.cpu}</strong></span>
+                                        <span>Hiệu năng mạnh mẽ với chip <strong className="text-slate-800">{cpu || 'N/A'}</strong></span>
                                     </li>
                                     <li className="text-[13px] text-slate-600 flex items-start gap-2">
                                         <span className="text-[var(--color-primary)] mt-0.5 font-bold">•</span>
-                                        <span>Đa nhiệm mượt mà nhờ <strong className="text-slate-800">{product.specs.ram}</strong> RAM</span>
+                                        <span>Đa nhiệm mượt mà nhờ <strong className="text-slate-800">{ram || 'N/A'}</strong> RAM</span>
                                     </li>
                                     <li className="text-[13px] text-slate-600 flex items-start gap-2">
                                         <span className="text-[var(--color-primary)] mt-0.5 font-bold">•</span>
-                                        <span>Lưu trữ tốc độ cao với <strong className="text-slate-800">{product.specs.ssd}</strong> SSD</span>
+                                        <span>Lưu trữ tốc độ cao với <strong className="text-slate-800">{ssd || 'N/A'}</strong> SSD</span>
                                     </li>
                                 </ul>
                             </div>
@@ -293,7 +316,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                                     <Button
                                         onClick={() => {
                                             if (product) {
-                                                addToCart(product);
+                                                addToCart({ ...product, price: currentPrice });
                                                 router.push('/checkout');
                                             }
                                         }}
@@ -311,7 +334,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                                     <div className="grid grid-cols-2 gap-2">
                                         {/* Thêm vào giỏ */}
                                         <Button
-                                            onClick={() => product && addToCart(product)}
+                                            onClick={() => product && addToCart({ ...product, price: currentPrice })}
                                             variant="outline"
                                             size="lg"
                                             fullWidth
@@ -436,7 +459,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                     </h2>
                     <div className="space-y-3">
                         <FaqItem question={`Laptop ${product.name} có điểm gì nổi bật?`}>
-                            {product.name} nổi bật với cấu hình mạnh mẽ {product.specs.cpu}, thiết kế hiện đại và khả năng tản nhiệt tốt, phù hợp cho nhiều nhu cầu sử dụng.
+                            {product.name} nổi bật với cấu hình mạnh mẽ {cpu || 'N/A'}, thiết kế hiện đại và khả năng tản nhiệt tốt, phù hợp cho nhiều nhu cầu sử dụng.
                         </FaqItem>
                         <FaqItem question="Chính sách bảo hành và hậu mãi ra sao?">
                             Sản phẩm được bảo hành {product.warrantyMonths || 12} tháng tại LapLap. Chúng tôi cam kết hỗ trợ kỹ thuật trọn đời và vệ sinh máy miễn phí định kỳ.
@@ -456,17 +479,17 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                 <div className="flex items-center gap-3 max-w-lg mx-auto">
                     <div className="flex-1 min-w-0">
                         <p className="text-[10px] text-slate-400 font-bold truncate">{product.name}</p>
-                        <p className="text-lg font-black text-[var(--color-primary)] tabular-nums">{product.price.toLocaleString('vi-VN')}đ</p>
+                        <p className="text-lg font-black text-[var(--color-primary)] tabular-nums">{currentPrice.toLocaleString('vi-VN')}đ</p>
                     </div>
                     <button
-                        onClick={() => product && addToCart(product)}
+                        onClick={() => product && addToCart({ ...product, price: currentPrice })}
                         className="p-3 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
                     >
                         <ShoppingBag size={20} className="text-slate-700" />
                     </button>
                     <button
                         onClick={() => {
-                            addToCart(product);
+                            addToCart({ ...product, price: currentPrice });
                             router.push('/checkout');
                         }}
                         className="px-6 py-3 bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600 text-white font-black text-sm rounded-xl shadow-lg shadow-red-500/20 active:scale-95 transition-all uppercase tracking-wide"
@@ -482,7 +505,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
             <InstallmentModal
                 isOpen={isInstallmentOpen}
                 onClose={() => setInstallmentOpen(false)}
-                productPrice={product.price}
+                productPrice={currentPrice}
                 productName={product.name}
             />
         </div>

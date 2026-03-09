@@ -6,6 +6,7 @@ import { Calendar, User, Eye, Tag } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Button from '@/components/ui/Button';
 import TechLoader from '@/components/ui/TechLoader';
+import { getBlogs } from '@/lib/api/admin';
 
 interface Blog {
     _id: string;
@@ -28,9 +29,10 @@ export default function BlogClient() {
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
-                const res = await fetch('/api/admin/blog?status=published');
-                const data = await res.json();
-                if (data.success) setBlogs(data.data);
+                const res = await getBlogs();
+                if (res.success && res.data) {
+                    setBlogs(res.data);
+                }
             } catch (error) {
                 console.error(error);
             } finally {

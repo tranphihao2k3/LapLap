@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Tag, Share2 } from 'lucide-react';
+import { getBlogs } from '@/lib/api/admin';
 
 interface Blog {
     _id: string;
@@ -23,16 +24,15 @@ export default function BlogDetailClient({ blog }: BlogDetailClientProps) {
     useEffect(() => {
         const fetchRelated = async () => {
             try {
-                const res = await fetch('/api/admin/blog?status=published');
-                const data = await res.json();
-                if (data.success) {
-                    const related = data.data
+                const res = await getBlogs();
+                if (res.success && res.data) {
+                    const related = res.data
                         .filter((b: Blog) =>
                             b._id !== blog._id &&
                             b.tags.some((tag: string) => blog.tags.includes(tag))
                         )
                         .slice(0, 3);
-                    setRelatedBlogs(related);
+                    setRelatedBlogs(related as Blog[]);
                 }
             } catch (e) {
                 console.error(e);

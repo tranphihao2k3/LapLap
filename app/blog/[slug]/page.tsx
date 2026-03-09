@@ -6,11 +6,12 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Calendar, User, Eye, ArrowLeft } from 'lucide-react';
-import { connectDB } from '@/lib/mongodb';
-import { Blog } from '@/models/Blog';
+// import { connectDB } from '@/lib/mongodb';
+// import { Blog } from '@/models/Blog';
 import BlogDetailClient from './BlogDetailClient';
 import JsonLd from '@/components/JsonLd';
 import { buildBlogPostingJsonLd, buildBreadcrumbJsonLd } from '@/lib/seo';
+import { getBlog } from '@/lib/api/admin';
 
 
 interface PageProps {
@@ -24,8 +25,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const { slug } = await params;
 
     try {
-        await connectDB();
-        const blog = await Blog.findOne({ slug, status: 'published' }).lean() as any;
+        const res = await getBlog(slug);
+        const blog = res.success && res.data ? res.data : null;
 
         if (!blog) {
             return {
@@ -71,14 +72,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function BlogDetailPage({ params }: PageProps) {
     const { slug } = await params;
 
-    await connectDB();
-
-    // Tăng view count & lấy dữ liệu
-    const blog = await Blog.findOneAndUpdate(
-        { slug, status: 'published' },
-        { $inc: { viewCount: 1 } },
-        { new: true }
-    ).lean() as any;
+    // fetch via API client
+    const res = await getBlog(slug);
+    const blog = res.success && res.data ? res.data : null;
 
     if (!blog) {
         return (

@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useJWTAuth } from '@/context/JWTAuthContext';
+import { getUsers, createUser } from '@/lib/api/admin';
 import { Users, UserPlus, Shield, Lock, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import Toast from '@/components/admin/Toast';
 
@@ -16,7 +17,7 @@ interface User {
 }
 
 export default function UsersPage() {
-    const { data: session } = useSession();
+    const { user: currentUser } = useJWTAuth();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -40,10 +41,9 @@ export default function UsersPage() {
 
     const fetchUsers = async () => {
         try {
-            const res = await fetch('/api/auth/register');
-            const data = await res.json();
-            if (data.success) {
-                setUsers(data.data);
+            const res = await getUsers();
+            if (res.success && res.data) {
+                setUsers(res.data as any);
             }
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -58,22 +58,16 @@ export default function UsersPage() {
         setSuccess('');
 
         try {
-            const res = await fetch('/api/auth/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
-            });
+            const res = await createUser(formData);
 
-            const data = await res.json();
-
-            if (data.success) {
+            if (res.success) {
                 showToast('User created successfully!', 'success');
                 setFormData({ email: '', password: '', name: '', role: 'admin' });
                 setShowModal(false);
                 fetchUsers();
             } else {
-                setError(data.message || 'Failed to create user');
-                showToast(data.message || 'Failed to create user', 'error');
+                setError(res.error || 'Failed to create user');
+                showToast(res.error || 'Failed to create user', 'error');
             }
         } catch (err) {
             setError('An error occurred');
@@ -109,7 +103,7 @@ export default function UsersPage() {
                     </h1>
                     <p className="text-sm text-slate-500 font-medium mt-1">Quản lý tài khoản quản trị và phân quyền hệ thống</p>
                 </div>
-                {session?.user.role === 'superadmin' && (
+                {currentUser?.role === 'superadmin' && (
                     <button
                         onClick={() => setShowModal(true)}
                         className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl transition-all shadow-lg shadow-blue-200 font-bold text-sm md:text-base active:scale-95"

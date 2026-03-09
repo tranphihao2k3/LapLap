@@ -16,41 +16,18 @@ import {
   Eye,
 } from "lucide-react";
 import Button from "@/components/ui/Button";
-import { useSession } from "next-auth/react";
+import { useJWTAuth } from "@/context/JWTAuthContext";
 import { useComparison } from "@/context/ComparisonContext";
 import { useCart } from "@/context/CartContext";
 
 interface ProductCardProps {
-  product: {
-    _id: string;
-    name: string;
-    image: string;
-    images?: string[];
-    slug?: string;
-    price: number;
-    specs: {
-      cpu: string;
-      gpu: string;
-      ram: string;
-      ssd: string;
-      screen: string;
-      hz?: string;
-      resolution?: string;
-      battery: string;
-    };
-    description?: string;
-    gift?: string;
-    categoryId?: {
-      name: string;
-    };
-    createdAt?: string;
-  };
+  product: any;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCompare, removeFromCompare, selectedProducts } = useComparison();
   const { addToCart } = useCart();
-  const { data: session } = useSession();
+  const { isAuthenticated, user } = useJWTAuth();
   const isSelected = selectedProducts.some((p) => p._id === product._id);
 
   // Check if product is new (created within 24 hours)
@@ -58,10 +35,16 @@ export default function ProductCard({ product }: ProductCardProps) {
     ? new Date(product.createdAt).getTime() > Date.now() - 24 * 60 * 60 * 1000
     : false;
 
+  // Prices
+  const basePrice = product.basePrice || product.price || 0;
+  const salePrice = product.salePrice || 0;
+  const currentPrice = salePrice > 0 ? salePrice : basePrice;
+  const hasDiscount = salePrice > 0 && salePrice < basePrice;
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product);
+    addToCart({ ...product, price: currentPrice }); // Normalizing for cart
   };
 
   const handleCompare = (e: React.MouseEvent) => {
@@ -75,30 +58,48 @@ export default function ProductCard({ product }: ProductCardProps) {
         _id: product._id,
         name: product.name,
         image:
-          product.image ||
           (product.images && product.images[0]) ||
+          product.image ||
           "/placeholder-laptop.png",
-        price: product.price,
+        price: currentPrice,
         slug: product.slug,
-        specs: product.specs,
+        specs: product.specs || {},
       });
     }
   };
 
+  const productSpecs = product.specs || {};
+
+  const getSpec = (keys: string[]) => {
+    for (const key of keys) {
+      if (productSpecs[key]) return productSpecs[key];
+    }
+    return null;
+  };
+
+  const cpu = getSpec(['CPU', 'cpu', 'Vi xử lý']);
+  const gpu = getSpec(['Card đồ họa', 'GPU', 'gpu', 'VGA']);
+  const ram = getSpec(['RAM', 'ram', 'Bộ nhớ']);
+  const ssd = getSpec(['Ổ cứng', 'SSD', 'ssd', 'SSD/HDD']);
+  const screen = getSpec(['Màn hình', 'screen', 'Kích thước màn hình']);
+  const resolution = getSpec(['Độ phân giải', 'resolution']);
+  const hz = getSpec(['Tần số quét', 'hz']);
+  const battery = getSpec(['Pin', 'battery', 'Dung lượng pin']);
+
   const specItems = [
-    { icon: Cpu, value: product.specs.cpu, label: "CPU" },
-    { icon: CreditCard, value: product.specs.gpu, label: "GPU" },
-    { icon: MemoryStick, value: product.specs.ram, label: "RAM" },
-    { icon: HardDrive, value: product.specs.ssd, label: "SSD" },
+    { icon: Cpu, value: cpu, label: "CPU" },
+    { icon: CreditCard, value: gpu, label: "GPU" },
+    { icon: MemoryStick, value: ram, label: "RAM" },
+    { icon: HardDrive, value: ssd, label: "SSD" },
     {
       icon: Monitor,
       value:
-        [product.specs.screen, product.specs.resolution, product.specs.hz]
+        [screen, resolution, hz]
           .filter(Boolean)
           .join(" ") || "N/A",
       label: "Màn hình",
     },
-    { icon: Battery, value: product.specs.battery, label: "Pin" },
+    { icon: Battery, value: battery, label: "Pin" },
   ];
 
   return (
@@ -119,6 +120,11 @@ export default function ProductCard({ product }: ProductCardProps) {
                 Mới
               </span>
             )}
+            {hasDiscount && (
+              <span className="bg-red-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow-lg uppercase tracking-wider animate-pulse">
+                -{Math.round((1 - salePrice / basePrice) * 100)}%
+              </span>
+            )}
             {isSelected && (
               <span className="bg-[var(--color-primary)] text-white text-[9px] font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1">
                 <Check size={10} /> Đã chọn
@@ -129,18 +135,17 @@ export default function ProductCard({ product }: ProductCardProps) {
             {/* Compare Icon Button */}
             <button
               onClick={handleCompare}
-              className={`p-2 rounded-full backdrop-blur-lg shadow-lg transition-all duration-300 border ${
-                isSelected
-                  ? "bg-[var(--color-primary)] border-[var(--color-primary)] text-white scale-110"
-                  : "bg-white/80 border-white/50 text-gray-600 hover:bg-[var(--color-primary)] hover:text-white hover:border-[var(--color-primary)]"
-              }`}
+              className={`p-2 rounded-full backdrop-blur-lg shadow-lg transition-all duration-300 border ${isSelected
+                ? "bg-[var(--color-primary)] border-[var(--color-primary)] text-white scale-110"
+                : "bg-white/80 border-white/50 text-gray-600 hover:bg-[var(--color-primary)] hover:text-white hover:border-[var(--color-primary)]"
+                }`}
               title="So sánh"
             >
               <Scale size={14} />
             </button>
 
             {/* Admin Edit */}
-            {session && (
+            {isAuthenticated && user?.role === 'admin' && (
               <Link
                 href={`/admin/laptops/${product._id}`}
                 onClick={(e) => e.stopPropagation()}
@@ -157,8 +162,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="relative w-full aspect-[4/3] bg-gradient-to-br from-slate-50 via-white to-blue-50/30 overflow-hidden">
           <Image
             src={
-              product.image ||
               (product.images && product.images[0]) ||
+              product.image ||
               "/placeholder-laptop.png"
             }
             alt={`${product.name} - Laptop Cần Thơ - LapLap`}
@@ -184,7 +189,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                       className="text-[10px] font-semibold text-white/90 truncate"
                       title={spec.value}
                     >
-                      {spec.value}
+                      {spec.value || "N/A"}
                     </span>
                   </div>
                 ))}
@@ -221,7 +226,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               >
                 <spec.icon className="w-3 h-3 text-[var(--color-primary)]/60 flex-shrink-0" />
                 <span className="text-[10px] font-bold text-gray-600 truncate">
-                  {spec.value}
+                  {spec.value || "N/A"}
                 </span>
               </div>
             ))}
@@ -229,27 +234,36 @@ export default function ProductCard({ product }: ProductCardProps) {
 
           {/* Desktop Mini Specs — Subtle hint (hidden on mobile) */}
           <div className="hidden md:flex items-center justify-center gap-2 mt-2 text-[10px] text-gray-500 font-bold tracking-wide">
-            <span>{product.specs.cpu?.split(" ").slice(0, 2).join(" ")}</span>
+            <span>{cpu?.split(" ").slice(0, 2).join(" ")}</span>
             <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
-            <span>{product.specs.ram}</span>
+            <span>{ram}</span>
             <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
-            <span>{product.specs.ssd}</span>
+            <span>{ssd}</span>
           </div>
 
           {/* Price + Actions */}
           <div className="mt-auto pt-3">
             {/* Price */}
-            <div className="flex items-baseline justify-center gap-1 mb-3">
+            <div className="flex items-baseline justify-center gap-1 mb-1">
               <span className="text-lg sm:text-xl md:text-2xl font-extrabold text-[var(--color-primary)] tracking-tight tabular-nums">
-                {product.price.toLocaleString("vi-VN")}
+                {currentPrice.toLocaleString("vi-VN")}
               </span>
               <span className="text-xs md:text-sm font-bold text-[var(--color-primary)]/70 underline underline-offset-2">
                 đ
               </span>
             </div>
 
+            {/* Original Price if Discounted */}
+            {hasDiscount && (
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <span className="text-xs text-gray-400 line-through font-medium">
+                  {basePrice.toLocaleString("vi-VN")}đ
+                </span>
+              </div>
+            )}
+
             {/* Mobile CTA (hidden on desktop where hover takes over) */}
-            <div className="md:hidden relative z-20">
+            <div className="md:hidden relative z-20 mt-2">
               <button
                 onClick={handleAddToCart}
                 className="w-full flex items-center justify-center gap-2 py-2.5 bg-[var(--color-primary)] text-white font-bold text-sm rounded-xl hover:bg-[var(--color-primary-dark)] transition-colors active:scale-95 shadow-lg shadow-blue-500/20"
@@ -260,7 +274,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
 
             {/* Desktop: Hint to hover */}
-            <div className="hidden md:flex items-center justify-center gap-1.5 text-[10px] text-gray-400 font-medium opacity-100 group-hover:opacity-0 transition-opacity duration-300">
+            <div className="hidden md:flex items-center justify-center gap-1.5 text-[10px] text-gray-400 font-medium opacity-100 group-hover:opacity-0 transition-opacity duration-300 mt-2">
               <Eye size={12} />
               <span>Chạm để xem chi tiết</span>
             </div>

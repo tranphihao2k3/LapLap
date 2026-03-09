@@ -33,23 +33,28 @@ const Footer = () => {
     const [visitorCount, setVisitorCount] = useState<number | null>(null);
 
     useEffect(() => {
+        const baseUrl = process.env.NEXT_PUBLIC_NEXGEAR_API_URL?.replace(/\/+$/, '') || '';
         const updateVisitors = async () => {
             try {
                 // Determine if we should increment (once per session)
                 const hasVisited = sessionStorage.getItem('hasVisited');
 
                 if (!hasVisited) {
-                    const res = await fetch('/api/stats/visitors', { method: 'POST' });
+                    const res = await fetch(`${baseUrl}/visitors`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ label: 'laplap_visitors' })
+                    });
                     const data = await res.json();
-                    if (data.success) {
-                        setVisitorCount(data.count);
+                    if (data.success && data.data) {
+                        setVisitorCount(data.data.count);
                         sessionStorage.setItem('hasVisited', 'true');
                     }
                 } else {
-                    const res = await fetch('/api/stats/visitors');
+                    const res = await fetch(`${baseUrl}/visitors?label=laplap_visitors`);
                     const data = await res.json();
-                    if (data.success) {
-                        setVisitorCount(data.count);
+                    if (data.success && data.data) {
+                        setVisitorCount(data.data.count);
                     }
                 }
             } catch (error) {

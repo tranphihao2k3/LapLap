@@ -13,10 +13,15 @@ export default function WelcomeBanner() {
   useEffect(() => {
     const fetchBanner = async () => {
       try {
-        const res = await fetch("/api/banner");
+        const baseUrl = process.env.NEXT_PUBLIC_NEXGEAR_API_URL?.replace(/\/+$/, '') || '';
+        const res = await fetch(`${baseUrl}/banners?position=popup&status=active&limit=1`);
         const data = await res.json();
-        if (data.success && data.data && data.data.isActive) {
-          checkAndShow(data.data);
+        // Since we get paginated data back, check data.data[0]
+        if (data.success && data.data && data.data.length > 0) {
+          const bannerData = data.data[0];
+          if (bannerData.isActive || bannerData.status === 'active') {
+            checkAndShow(bannerData);
+          }
         }
       } catch (error) {
         console.error("Failed to fetch banner:", error);

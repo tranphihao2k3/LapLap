@@ -104,15 +104,15 @@ export default function FilterDrawer({
                                 <div className="grid grid-cols-1 gap-1">
                                     {[
                                         { value: '', label: 'Mới nhất' },
-                                        { value: 'price_asc', label: 'Giá thấp đến cao' },
-                                        { value: 'price_desc', label: 'Giá cao đến thấp' }
+                                        { value: 'price-asc', label: 'Giá thấp đến cao' },
+                                        { value: 'price-desc', label: 'Giá cao đến thấp' }
                                     ].map((opt) => (
                                         <button
                                             key={opt.value}
                                             onClick={() => setSortBy(opt.value)}
                                             className={`flex items-center justify-between px-4 py-3.5 rounded-2xl text-sm font-bold transition-all ${sortBy === opt.value
-                                                    ? 'bg-blue-50 text-blue-700'
-                                                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                                                ? 'bg-blue-50 text-blue-700'
+                                                : 'bg-white text-gray-600 hover:bg-gray-50'
                                                 }`}
                                         >
                                             {opt.label}
@@ -158,8 +158,23 @@ export default function FilterDrawer({
                                                 >
                                                     <div className="px-2 pt-2 pb-4 flex flex-wrap gap-2">
                                                         {section.data.map((item: any) => {
-                                                            const id = section.type === 'object' ? item._id : item;
-                                                            const label = section.type === 'object' ? item.name : item;
+                                                            let id: string;
+                                                            let label: string;
+
+                                                            if (section.type === 'object') {
+                                                                // Category or Brand: use _id and name
+                                                                id = item._id;
+                                                                label = item.name;
+                                                            } else if (item && typeof item === 'object' && 'normalized' in item) {
+                                                                // NexGear Specs: use normalized for both id and label
+                                                                id = item.normalized;
+                                                                label = item.normalized;
+                                                            } else {
+                                                                // Price range string or other primitive
+                                                                id = item;
+                                                                label = item;
+                                                            }
+
                                                             const isActive = filters[section.key].includes(id);
 
                                                             return (
@@ -167,8 +182,8 @@ export default function FilterDrawer({
                                                                     key={id}
                                                                     onClick={() => toggleFilter(section.key as any, id)}
                                                                     className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 border ${isActive
-                                                                            ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-100'
-                                                                            : 'bg-white text-gray-600 border-gray-100 hover:border-gray-200'
+                                                                        ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-100'
+                                                                        : 'bg-white text-gray-600 border-gray-100 hover:border-gray-200'
                                                                         }`}
                                                                 >
                                                                     {label}

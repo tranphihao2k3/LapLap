@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { useJWTAuth } from "@/context/JWTAuthContext";
 import {
   LayoutDashboard,
   Laptop,
@@ -394,7 +394,8 @@ function CommandPalette({
 // Header (only UI element - no sidebar)
 // ============================================
 function Header({ onOpenPalette }: { onOpenPalette: () => void }) {
-  const { data: session } = useSession();
+  const { user, logout } = useJWTAuth();
+  const router = useRouter();
   const pathname = usePathname();
 
   const getPageTitle = () => {
@@ -412,6 +413,11 @@ function Header({ onOpenPalette }: { onOpenPalette: () => void }) {
         item.href === pathname ||
         (item.href !== "/admin" && pathname.startsWith(item.href + "/")),
     )?.iconEl || LayoutDashboard;
+
+  const handleLogout = () => {
+    logout();
+    router.push("/admin/(auth)/login");
+  };
 
   return (
     <header className="sticky top-0 z-30 h-14 bg-white border-b border-slate-200/80">
@@ -449,12 +455,12 @@ function Header({ onOpenPalette }: { onOpenPalette: () => void }) {
             <Bell size={18} className="text-slate-500" />
           </button>
           <button
-            onClick={() => signOut({ callbackUrl: "/admin/login" })}
+            onClick={handleLogout}
             className="flex items-center gap-2 p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
             title="Đăng xuất"
           >
             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center font-bold text-white text-xs">
-              {session?.user?.name?.charAt(0).toUpperCase() || "A"}
+              {user?.email?.charAt(0).toUpperCase() || "A"}
             </div>
           </button>
         </div>

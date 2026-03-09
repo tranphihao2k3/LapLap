@@ -8,14 +8,7 @@ export interface ProductSummary {
     image: string;
     price: number;
     slug?: string;
-    specs: {
-        cpu: string;
-        gpu: string;
-        ram: string;
-        ssd: string;
-        screen: string;
-        battery: string;
-    };
+    specs: Record<string, any>;
 }
 
 interface ComparisonContextType {

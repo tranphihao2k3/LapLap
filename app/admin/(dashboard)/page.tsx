@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { 
-  Laptop, 
-  Wrench, 
-  ShoppingCart, 
-  Users, 
-  TrendingUp, 
+import {
+  Laptop,
+  Wrench,
+  ShoppingCart,
+  Users,
+  TrendingUp,
   TrendingDown,
   DollarSign,
   Package,
@@ -14,6 +14,10 @@ import {
   CheckCircle
 } from 'lucide-react';
 import Link from 'next/link';
+import { getProducts } from '@/lib/api/products';
+import { getOrders } from '@/lib/api/orders';
+import { getCustomers } from '@/lib/api/admin';
+// import { getServices } from '@/lib/api/services'; // Assuming this exists or using general callApi
 
 // ============================================
 // Types
@@ -66,9 +70,8 @@ function StatCard({ title, value, change, trend, icon, color }: StatCard) {
           <p className="text-sm text-slate-500 font-medium">{title}</p>
           <p className="text-2xl font-bold mt-1">{value}</p>
           {change && (
-            <div className={`flex items-center gap-1 mt-2 text-sm ${
-              trend === 'up' ? 'text-green-600' : 'text-red-600'
-            }`}>
+            <div className={`flex items-center gap-1 mt-2 text-sm ${trend === 'up' ? 'text-green-600' : 'text-red-600'
+              }`}>
               {trend === 'up' ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
               <span>{change}</span>
             </div>
@@ -85,16 +88,16 @@ function StatCard({ title, value, change, trend, icon, color }: StatCard) {
 // ============================================
 // Quick Action Card
 // ============================================
-function QuickActionCard({ 
-  title, 
-  description, 
-  href, 
-  icon, 
-  buttonText 
-}: { 
-  title: string; 
-  description: string; 
-  href: string; 
+function QuickActionCard({
+  title,
+  description,
+  href,
+  icon,
+  buttonText
+}: {
+  title: string;
+  description: string;
+  href: string;
   icon: React.ReactNode;
   buttonText: string;
 }) {
@@ -107,7 +110,7 @@ function QuickActionCard({
         <div className="flex-1">
           <h3 className="font-semibold text-lg">{title}</h3>
           <p className="text-sm text-slate-500 mt-1">{description}</p>
-          <Link 
+          <Link
             href={href}
             className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
           >
@@ -202,7 +205,7 @@ function LoadingSkeleton() {
           </div>
         ))}
       </div>
-      
+
       {/* Table Skeleton */}
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <div className="h-6 w-48 bg-slate-200 rounded animate-pulse" />
@@ -253,30 +256,28 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      // Parallel API calls for better performance
-      const [laptopsRes, ordersRes, customersRes, servicesRes] = await Promise.allSettled([
-        fetch('/api/admin/laptops').then(r => r.json()),
-        fetch('/api/orders').then(r => r.json()),
-        fetch('/api/customers').then(r => r.json()),
-        fetch('/api/services').then(r => r.json()),
+      // Parallel API calls using centralized client
+      const [laptopsRes, ordersRes, customersRes] = await Promise.allSettled([
+        getProducts({ limit: 100, active: true }),
+        getOrders({ limit: 50 }),
+        getCustomers(),
       ]);
 
-      const laptops = laptopsRes.status === 'fulfilled' ? laptopsRes.value : { data: [] };
-      const orders  = ordersRes.status  === 'fulfilled' ? ordersRes.value  : { data: [] };
-      const customers = customersRes.status === 'fulfilled' ? customersRes.value : { data: [] };
-      const services  = servicesRes.status  === 'fulfilled' ? servicesRes.value  : { data: [] };
+      const laptops = laptopsRes.status === 'fulfilled' ? laptopsRes.value : { success: false, data: [] };
+      const orders = ordersRes.status === 'fulfilled' ? ordersRes.value : { success: false, data: [] };
+      const customers = customersRes.status === 'fulfilled' ? customersRes.value : { success: false, data: [] };
 
       setStats({
-        products:  laptops.data?.length   || 0,
-        orders:    orders.data?.length    || 0,
-        customers: customers.data?.length || 0,
-        services:  services.data?.length  || 0,
+        products: (laptops.success && Array.isArray(laptops.data)) ? laptops.data.length : 0,
+        orders: (orders.success && Array.isArray(orders.data)) ? orders.data.length : 0,
+        customers: (customers.success && Array.isArray(customers.data)) ? customers.data.length : 0,
+        services: 0, // Will add service integration later
       });
 
       // Lấy 5 đơn hàng gần nhất
-      if (orders.data && orders.data.length > 0) {
+      if (orders.success && Array.isArray(orders.data) && orders.data.length > 0) {
         setRecentOrders(
           orders.data.slice(0, 5).map((order: any) => ({
             id: order._id,

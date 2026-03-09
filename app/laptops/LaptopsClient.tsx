@@ -3,49 +3,15 @@
 import { useEffect, useState, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ProductCard from './ProductCard';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { getFilterOptions, getProducts, getProductSpecs, getBrands } from '@/lib/api/products';
+import { Product, Category, Brand } from '@/types/api';
 import { ChevronDown, ChevronLeft, ChevronRight, X, Search as SearchIcon } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import TechLoader from '@/components/ui/TechLoader';
 import FilterDrawer from './FilterDrawer';
 import { SlidersHorizontal } from 'lucide-react';
 
-interface LaptopSpec {
-    cpu: string;
-    gpu: string;
-    ram: string;
-    ssd: string;
-    screen: string;
-    battery: string;
-}
 
-interface Category {
-    _id: string;
-    name: string;
-    slug: string;
-}
-
-interface Brand {
-    _id: string;
-    name: string;
-    slug: string;
-    logo?: string;
-}
-
-interface Product {
-    _id: string;
-    name: string;
-    model: string;
-    price: number;
-    image: string;
-    images: string[];
-    slug?: string;
-    specs: LaptopSpec;
-    categoryId: Category;
-    brandId: Brand;
-    status: string;
-}
 
 export default function LaptopsClient() {
     return (
@@ -133,12 +99,44 @@ function LaptopsContent() {
     useEffect(() => {
         const fetchOptions = async () => {
             try {
-                const res = await fetch('/api/products/filter-options');
-                const result = await res.json();
-                if (result.success) {
-                    setFilterOptions(result.data);
-                    setCategories(result.data.categories || []);
-                    setBrands(result.data.brands || []);
+                // Get basic options and laptop-specific brands
+                const [filterRes, brandsRes] = await Promise.all([
+                    getFilterOptions(),
+                    getBrands({ categorySlug: 'laptop', hasProducts: true, limit: 100 })
+                ]);
+
+                if (filterRes.success && filterRes.data) {
+                    setCategories(filterRes.data.categories || []);
+                }
+
+                if (brandsRes.success && brandsRes.data) {
+                    // Filter brands to only show laptop-related manufacturers
+                    const LAPTOP_BRANDS = [
+                        'Dell', 'HP', 'ASUS', 'MSI', 'Acer', 'Lenovo', 'ThinkPad',
+                        'Apple', 'MacBook', 'Gigabyte', 'Razer', 'Microsoft', 'Surface',
+                        'LG', 'Samsung'
+                    ];
+
+                    const laptopOnlyBrands = brandsRes.data.filter(b =>
+                        LAPTOP_BRANDS.some(lb => b.name.toLowerCase().includes(lb.toLowerCase()))
+                    );
+
+                    setBrands(laptopOnlyBrands);
+                }
+
+                // Get granular specs for laptop category
+                const specsRes = await getProductSpecs('laptop');
+                if (specsRes.success && specsRes.data) {
+                    const { filters } = specsRes.data;
+                    setFilterOptions({
+                        cpus: filters['CPU'] || [],
+                        ssds: filters['Ổ cứng'] || [],
+                        gpus: filters['GPU'] || [],
+                        rams: filters['RAM'] || [],
+                        screens: filters['Kích thước màn hình'] || [],
+                        hzs: filters['Tần số quét'] || [],
+                        resolutions: filters['Độ phân giải'] || [],
+                    } as any);
                 }
             } catch (error) {
                 console.error('Error fetching filter options:', error);
@@ -203,33 +201,47 @@ function LaptopsContent() {
             try {
                 const activePriceRanges = filters.priceRanges.map(label => priceRanges.find(r => r.label === label)).filter(Boolean);
 
-                const res = await fetch('/api/products/filter', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        page: currentPage,
-                        limit: itemsPerPage,
-                        search: searchQuery,
-                        categories: filters.categories,
-                        brands: filters.brands,
-                        cpus: filters.cpus,
-                        ssds: filters.ssds,
-                        rams: filters.rams,
-                        gpus: filters.gpus,
-                        screens: filters.screens,
-                        hzs: filters.hzs,
-                        resolutions: filters.resolutions,
-                        statuses: filters.statuses,
-                        priceRanges: activePriceRanges,
-                        sort: sortBy
-                    })
+                // Build spec filters for NexGear API
+                const specParts: string[] = [];
+
+                // Helper to map selected normalized values to combined raw values
+                const mapSpec = (key: string, selected: string[], options: any[]) => {
+                    if (selected.length === 0) return;
+                    const allRaw: string[] = [];
+                    selected.forEach(norm => {
+                        const opt = options.find(o => o.normalized === norm);
+                        if (opt) allRaw.push(...opt.rawValues);
+                    });
+                    if (allRaw.length > 0) specParts.push(`${key}:${allRaw.join('|')}`);
+                };
+
+                mapSpec('CPU', filters.cpus, filterOptions.cpus);
+                mapSpec('RAM', filters.rams, filterOptions.rams);
+                mapSpec('Ổ cứng', filters.ssds, filterOptions.ssds);
+                mapSpec('GPU', filters.gpus, filterOptions.gpus);
+                mapSpec('Tần số quét', filters.hzs, filterOptions.hzs);
+
+                // For screens, we might have multiple NexGear keys map to one LapLap filter group
+                // But NexGear separates 'Kích thước màn hình' and 'Độ phân giải'
+                mapSpec('Màn hình', filters.screens, filterOptions.screens); // If user wants exact match on Màn hình field
+                // Add secondary screen filters if they were split by NexGear
+                if (filters.resolutions.length > 0) mapSpec('Màn hình', filters.resolutions, filterOptions.resolutions);
+
+                const res = await getProducts({
+                    active: true,
+                    page: currentPage,
+                    limit: itemsPerPage,
+                    search: searchQuery,
+                    categorySlug: 'laptop',
+                    brand: filters.brands.join(','),
+                    sort: sortBy,
+                    specs: specParts.length > 0 ? specParts.join(',') : undefined
                 });
 
-                const result = await res.json();
-                if (result.success) {
-                    setProducts(result.data);
-                    setTotalPages(result.totalPages);
-                    setTotalProducts(result.total);
+                if (res.success && res.data) {
+                    setProducts(res.data);
+                    setTotalPages(Math.ceil((res.pagination?.total || 1) / itemsPerPage));
+                    setTotalProducts(res.pagination?.total || 0);
                 }
             } catch (error) {
                 console.error("Error fetching paginated products:", error);
@@ -432,8 +444,8 @@ function LaptopsContent() {
                                 <div className="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl z-50 min-w-[200px] overflow-hidden">
                                     {[
                                         { value: '', label: 'Mới nhất' },
-                                        { value: 'price_asc', label: 'Giá tăng dần' },
-                                        { value: 'price_desc', label: 'Giá giảm dần' }
+                                        { value: 'price-asc', label: 'Giá tăng dần' },
+                                        { value: 'price-desc', label: 'Giá giảm dần' }
                                     ].map(opt => (
                                         <button
                                             key={opt.value}
@@ -464,42 +476,27 @@ function LaptopsContent() {
                         </button>
                     </div>
 
-                    {/* Brand Logos Filter */}
+                    {/* Brand Filter Tags */}
                     {brands.length > 0 && (
                         <div className="mb-8">
                             <h2 className="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2">
                                 <span className="w-1 h-6 bg-blue-600 rounded-full"></span>
-                                Thương hiệu nổi bật
+                                Thương hiệu Laptop
                             </h2>
-                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+                            <div className="flex flex-wrap gap-2">
                                 {brands.map(brand => (
                                     <button
                                         key={brand._id}
                                         onClick={() => toggleFilter('brands', brand._id)}
                                         className={`
-                                            flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 group
+                                            px-4 py-2 rounded-lg border text-sm font-bold transition-all duration-200
                                             ${filters.brands.includes(brand._id)
-                                                ? 'bg-blue-50 border-blue-500 shadow-md ring-1 ring-blue-500'
-                                                : 'bg-white border-gray-200 hover:border-blue-300 hover:shadow-lg hover:-translate-y-1'
+                                                ? 'bg-blue-600 text-white border-blue-600 shadow-md'
+                                                : 'bg-white border-gray-200 text-gray-600 hover:border-blue-400 hover:text-blue-600 hover:shadow-sm'
                                             }
                                         `}
                                     >
-                                        <div className="w-12 h-12 relative mb-2 flex items-center justify-center bg-white rounded-full p-2">
-                                            {brand.logo ? (
-                                                <img
-                                                    src={brand.logo}
-                                                    alt={brand.name}
-                                                    className="w-full h-full object-contain"
-                                                />
-                                            ) : (
-                                                <span className="text-xl font-black text-gray-400 uppercase">
-                                                    {brand.name.substring(0, 1)}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <span className={`text-xs font-bold text-center ${filters.brands.includes(brand._id) ? 'text-blue-700' : 'text-gray-600 group-hover:text-blue-600'}`}>
-                                            {brand.name}
-                                        </span>
+                                        {brand.name}
                                     </button>
                                 ))}
                             </div>
@@ -596,15 +593,15 @@ function LaptopsContent() {
                                 </button>
                                 {openDropdown === 'cpus' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px] max-h-[300px] overflow-y-auto">
-                                        {filterOptions.cpus.map(cpu => (
-                                            <label key={cpu} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                        {filterOptions.cpus.map((cpu: any) => (
+                                            <label key={cpu.normalized} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
                                                 <input
                                                     type="checkbox"
-                                                    checked={filters.cpus.includes(cpu)}
-                                                    onChange={() => toggleFilter('cpus', cpu)}
+                                                    checked={filters.cpus.includes(cpu.normalized)}
+                                                    onChange={() => toggleFilter('cpus', cpu.normalized)}
                                                     className="w-4 h-4"
                                                 />
-                                                <span className="text-sm">{cpu}</span>
+                                                <span className="text-sm">{cpu.normalized}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -626,15 +623,15 @@ function LaptopsContent() {
                                 </button>
                                 {openDropdown === 'rams' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px] max-h-[300px] overflow-y-auto">
-                                        {filterOptions.rams.map(ram => (
-                                            <label key={ram} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                        {filterOptions.rams.map((ram: any) => (
+                                            <label key={ram.normalized} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
                                                 <input
                                                     type="checkbox"
-                                                    checked={filters.rams.includes(ram)}
-                                                    onChange={() => toggleFilter('rams', ram)}
+                                                    checked={filters.rams.includes(ram.normalized)}
+                                                    onChange={() => toggleFilter('rams', ram.normalized)}
                                                     className="w-4 h-4"
                                                 />
-                                                <span className="text-sm">{ram}</span>
+                                                <span className="text-sm">{ram.normalized}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -656,15 +653,15 @@ function LaptopsContent() {
                                 </button>
                                 {openDropdown === 'ssds' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px] max-h-[300px] overflow-y-auto">
-                                        {filterOptions.ssds.map(ssd => (
-                                            <label key={ssd} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                        {filterOptions.ssds.map((ssd: any) => (
+                                            <label key={ssd.normalized} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
                                                 <input
                                                     type="checkbox"
-                                                    checked={filters.ssds.includes(ssd)}
-                                                    onChange={() => toggleFilter('ssds', ssd)}
+                                                    checked={filters.ssds.includes(ssd.normalized)}
+                                                    onChange={() => toggleFilter('ssds', ssd.normalized)}
                                                     className="w-4 h-4"
                                                 />
-                                                <span className="text-sm">{ssd}</span>
+                                                <span className="text-sm">{ssd.normalized}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -686,15 +683,15 @@ function LaptopsContent() {
                                 </button>
                                 {openDropdown === 'gpus' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px] max-h-[300px] overflow-y-auto">
-                                        {filterOptions.gpus.map(gpu => (
-                                            <label key={gpu} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                        {filterOptions.gpus.map((gpu: any) => (
+                                            <label key={gpu.normalized} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
                                                 <input
                                                     type="checkbox"
-                                                    checked={filters.gpus.includes(gpu)}
-                                                    onChange={() => toggleFilter('gpus', gpu)}
+                                                    checked={filters.gpus.includes(gpu.normalized)}
+                                                    onChange={() => toggleFilter('gpus', gpu.normalized)}
                                                     className="w-4 h-4"
                                                 />
-                                                <span className="text-sm">{gpu}</span>
+                                                <span className="text-sm">{gpu.normalized}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -746,15 +743,15 @@ function LaptopsContent() {
                                 </button>
                                 {openDropdown === 'screens' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[200px] max-h-[300px] overflow-y-auto">
-                                        {filterOptions.screens.map(screen => (
-                                            <label key={screen} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                        {filterOptions.screens.map((screen: any) => (
+                                            <label key={screen.normalized} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
                                                 <input
                                                     type="checkbox"
-                                                    checked={filters.screens.includes(screen)}
-                                                    onChange={() => toggleFilter('screens', screen)}
+                                                    checked={filters.screens.includes(screen.normalized)}
+                                                    onChange={() => toggleFilter('screens', screen.normalized)}
                                                     className="w-4 h-4"
                                                 />
-                                                <span className="text-sm">{screen}</span>
+                                                <span className="text-sm">{screen.normalized}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -776,15 +773,15 @@ function LaptopsContent() {
                                 </button>
                                 {openDropdown === 'hzs' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[160px] max-h-[300px] overflow-y-auto">
-                                        {filterOptions.hzs.map(hz => (
-                                            <label key={hz} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                        {filterOptions.hzs.map((hz: any) => (
+                                            <label key={hz.normalized} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
                                                 <input
                                                     type="checkbox"
-                                                    checked={filters.hzs.includes(hz)}
-                                                    onChange={() => toggleFilter('hzs', hz)}
+                                                    checked={filters.hzs.includes(hz.normalized)}
+                                                    onChange={() => toggleFilter('hzs', hz.normalized)}
                                                     className="w-4 h-4"
                                                 />
-                                                <span className="text-sm">{hz}</span>
+                                                <span className="text-sm">{hz.normalized}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -806,15 +803,15 @@ function LaptopsContent() {
                                 </button>
                                 {openDropdown === 'resolutions' && (
                                     <div className="absolute top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[180px] max-h-[300px] overflow-y-auto">
-                                        {filterOptions.resolutions.map(res => (
-                                            <label key={res} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
+                                        {filterOptions.resolutions.map((res: any) => (
+                                            <label key={res.normalized} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 cursor-pointer">
                                                 <input
                                                     type="checkbox"
-                                                    checked={filters.resolutions.includes(res)}
-                                                    onChange={() => toggleFilter('resolutions', res)}
+                                                    checked={filters.resolutions.includes(res.normalized)}
+                                                    onChange={() => toggleFilter('resolutions', res.normalized)}
                                                     className="w-4 h-4"
                                                 />
-                                                <span className="text-sm">{res}</span>
+                                                <span className="text-sm">{res.normalized}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -862,7 +859,7 @@ function LaptopsContent() {
                                 >
                                     <span className="truncate">
                                         <span className="text-gray-500 font-medium font-normal mr-1">Sắp xếp:</span>
-                                        {sortBy === 'price_asc' ? 'Giá tăng' : sortBy === 'price_desc' ? 'Giá giảm' : 'Mới nhất'}
+                                        {sortBy === 'price-asc' ? 'Giá tăng' : sortBy === 'price-desc' ? 'Giá giảm' : 'Mới nhất'}
                                     </span>
                                     <ChevronDown size={14} className="flex-shrink-0" />
                                 </button>
@@ -870,8 +867,8 @@ function LaptopsContent() {
                                     <div className="absolute top-full left-0 right-0 sm:right-auto mt-2 bg-white border border-gray-200 rounded-lg shadow-xl z-50">
                                         {[
                                             { value: '', label: 'Mới nhất' },
-                                            { value: 'price_asc', label: 'Giá tăng dần' },
-                                            { value: 'price_desc', label: 'Giá giảm dần' }
+                                            { value: 'price-asc', label: 'Giá tăng dần' },
+                                            { value: 'price-desc', label: 'Giá giảm dần' }
                                         ].map(opt => (
                                             <button
                                                 key={opt.value}

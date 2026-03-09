@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import StatItem from "@/components/StatItem";
 import ProductCard from "./laptops/ProductCard";
 import { useRef, useEffect, useState } from "react";
+import { getCategories, getProducts, getBrands } from '@/lib/api/products';
 import { MapPin, Truck, Shield, TestTube } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 import Button from "@/components/ui/Button";
@@ -21,61 +20,78 @@ interface LaptopSpec {
   battery: string;
 }
 
-interface Category {
-  _id: string;
-  name: string;
-  slug: string;
-}
+import { Category, Brand, Product } from '@/types/api';
 
-interface Brand {
-  _id: string;
-  name: string;
-  slug: string;
-}
-
-interface Product {
-  _id: string;
-  name: string;
-  slug?: string;
-  model: string;
-  price: number;
-  image: string;
-  images: string[];
-  specs: LaptopSpec;
-  categoryId: Category;
-  brandId: Brand;
-  status: string;
-}
+// adjust Product type imported above includes additional fields
 
 export default function HomeClient() {
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [laptopsByCategory, setLaptopsByCategory] = useState<{
-    [key: string]: Product[];
-  }>({});
+  const [laptopsByCategory, setLaptopsByCategory] = useState<{ [key: string]: Product[] }>({});
+  const [laptopsByBrand, setLaptopsByBrand] = useState<{ [key: string]: Product[] }>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const categoriesRes = await fetch("/api/admin/categories");
-        const categoriesData = await categoriesRes.json();
+        // 1. Fetch Categories and Brands
+        const [categoriesRes, brandsRes] = await Promise.all([
+          getCategories(),
+          getBrands({ categorySlug: 'laptop', hasProducts: true })
+        ]);
 
-        if (categoriesData.success) {
-          setCategories(categoriesData.data);
-          const laptopsRes = await fetch(`/api/admin/laptops`);
-          const laptopsData = await laptopsRes.json();
+        if (categoriesRes.success && categoriesRes.data) {
+          setCategories(categoriesRes.data);
+        }
 
-          if (laptopsData.success) {
-            const grouped: { [key: string]: Product[] } = {};
-            laptopsData.data.forEach((laptop: Product) => {
-              if (laptop.status === "active") {
-                const catId = laptop.categoryId?._id || "other";
-                if (!grouped[catId]) grouped[catId] = [];
-                grouped[catId].push(laptop);
+        if (brandsRes.success && brandsRes.data) {
+          setBrands(brandsRes.data);
+        }
+
+        // 2. Fetch a larger set of products to group on the frontend
+        const laptopsRes = await getProducts({
+          active: true,
+          limit: 100, // Fetch more to populate diverse sections
+          page: 1,
+          sort: '-createdAt',
+          categorySlug: 'laptop'
+        });
+
+        if (laptopsRes.success && laptopsRes.data) {
+          const catGrouped: { [key: string]: Product[] } = {};
+          const brandGrouped: { [key: string]: Product[] } = {};
+
+          laptopsRes.data.forEach((laptop: any) => {
+            // NexGear Uses isActive instead of status
+            if (laptop.isActive !== false) {
+              // Group by Category
+              const catId =
+                typeof laptop.category === 'object'
+                  ? laptop.category?._id
+                  : laptop.category || "other";
+
+              if (catId) {
+                if (!catGrouped[catId]) catGrouped[catId] = [];
+                catGrouped[catId].push(laptop);
               }
-            });
-            setLaptopsByCategory(grouped);
-          }
+
+              // Group by Brand
+              const brand = laptop.brand || laptop.brandId;
+              const brandId =
+                typeof brand === 'object'
+                  ? brand?._id
+                  : brand || "other";
+
+              if (brandId && brandId !== "other") {
+                if (!brandGrouped[brandId]) brandGrouped[brandId] = [];
+                brandGrouped[brandId].push(laptop);
+              }
+            }
+          });
+
+          setLaptopsByCategory(catGrouped);
+          setLaptopsByBrand(brandGrouped);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -215,14 +231,15 @@ export default function HomeClient() {
           <BenefitCard icon={TestTube} title="Test Miễn Phí" color="orange" />
         </motion.section>
 
+        {/* Categories Section */}
         {categories.map((category) => {
           const laptops = laptopsByCategory[category._id] || [];
           if (laptops.length === 0) return null;
           return (
             <section key={category._id} className="space-y-6">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-2">
                 <motion.h2
-                  className="text-2xl md:text-3xl font-bold text-gray-800 border-b-4 border-blue-600 pb-2 inline-block"
+                  className="text-2xl md:text-3xl font-black text-slate-800 border-b-4 border-blue-600 pb-2 inline-block uppercase tracking-tight"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                 >
@@ -230,6 +247,45 @@ export default function HomeClient() {
                 </motion.h2>
                 <Button
                   href={`/laptops?category=${category._id}`}
+                  variant="outline"
+                  size="sm"
+                  rounded="full"
+                >
+                  Xem tất cả
+                </Button>
+              </div>
+              <motion.div
+                className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6"
+                initial="hidden"
+                whileInView="visible"
+                variants={stagger}
+              >
+                {laptops.slice(0, 8).map((laptop) => (
+                  <motion.div key={laptop._id} variants={fadeInUp}>
+                    <ProductCard product={laptop} />
+                  </motion.div>
+                ))}
+              </motion.div>
+            </section>
+          );
+        })}
+
+        {/* Brands Section */}
+        {brands.map((brand) => {
+          const laptops = laptopsByBrand[brand._id] || [];
+          if (laptops.length === 0) return null;
+          return (
+            <section key={brand._id} className="space-y-6">
+              <div className="flex items-center justify-between mb-2">
+                <motion.h2
+                  className="text-2xl md:text-3xl font-black text-slate-800 border-b-4 border-cyan-500 pb-2 inline-block uppercase tracking-tight"
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                >
+                  Laptop {brand.name}
+                </motion.h2>
+                <Button
+                  href={`/laptops?brand=${brand._id}`}
                   variant="outline"
                   size="sm"
                   rounded="full"

@@ -1,16 +1,24 @@
 'use client';
 
-import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useJWTAuth } from '@/context/JWTAuthContext';
 import { Lock, Mail, AlertCircle, Eye, EyeOff, Laptop, BarChart3, Users, Package } from 'lucide-react';
 
 export default function LoginPage() {
     const router = useRouter();
+    const { login, isAuthenticated, isLoading: authLoading } = useJWTAuth();
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (!authLoading && isAuthenticated) {
+            router.push('/admin');
+        }
+    }, [isAuthenticated, authLoading, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -18,23 +26,33 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const result = await signIn('credentials', {
+            const result = await login({
                 email: formData.email,
                 password: formData.password,
-                redirect: false,
             });
 
-            if (result?.error) {
-                setError('Email hoặc mật khẩu không đúng');
-            } else if (result?.ok) {
-                router.push('/admin');
-                router.refresh();
+            if (result.success) {
+                setFormData({ email: '', password: '' });
+                setTimeout(() => {
+                    router.push('/admin');
+                    router.refresh();
+                }, 500);
+            } else {
+                setError(result.error || 'Email hoặc mật khẩu không đúng');
             }
         } catch {
-            setError('Đã xảy ra lỗi, vui lòng thử lại');
+            setError('Đã xảy ra lỗi, vui lòng thử lại. Kiểm tra xem NexGear API có chạy không.');
         } finally {
             setLoading(false);
         }
+    };
+
+    const fillDemoCredentials = () => {
+        setFormData({
+            email: 'admin@nexgear.vn',
+            password: 'password123',
+        });
+        setError('');
     };
 
     const stats = [
@@ -195,10 +213,27 @@ export default function LoginPage() {
                         </button>
                     </form>
 
-                    {/* Security notice */}
-                    <div className="mt-8 flex items-center justify-center gap-2 text-slate-600 text-xs">
-                        <Lock className="w-3 h-3" />
-                        <span>Kết nối được mã hoá · Bảo vệ brute-force</span>
+                    {/* Security notice & Demo credentials */}
+                    <div className="mt-8 space-y-4">
+                        <div className="p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+                            <p className="text-xs font-semibold text-blue-300 mb-2">Demo Credentials (Test):</p>
+                            <div className="space-y-1 text-xs text-blue-200 font-mono mb-3">
+                                <p>Email: admin@nexgear.vn</p>
+                                <p>Password: password123</p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={fillDemoCredentials}
+                                className="w-full text-xs font-medium text-blue-300 hover:text-blue-100 bg-blue-500/20 hover:bg-blue-500/30 py-2 rounded-lg transition-colors"
+                            >
+                                Điền thông tin demo
+                            </button>
+                        </div>
+
+                        <div className="flex items-center justify-center gap-2 text-slate-600 text-xs">
+                            <Lock className="w-3 h-3" />
+                            <span>NexGear API · Phase 4 JWT Auth</span>
+                        </div>
                     </div>
                 </div>
             </div>
