@@ -8,6 +8,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import FacebookMessenger from "@/components/FacebookMessenger";
 import type { Metadata } from "next";
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap" rel="stylesheet" />
 import JsonLd from "@/components/JsonLd";
 import { buildOrganizationJsonLd, buildWebSiteJsonLd, buildSiteNavigationJsonLd } from "@/lib/seo";
 

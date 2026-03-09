@@ -56,14 +56,50 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
     const resolution = getSpec(['Độ phân giải', 'resolution']);
     const hz = getSpec(['Tần số quét', 'hz']);
 
-    const specItems = [
-        { label: 'Vi xử lý (CPU)', value: cpu || 'N/A', icon: Cpu },
-        { label: 'Card đồ họa (VGA)', value: gpu || 'N/A', icon: Monitor },
-        { label: 'Bộ nhớ (RAM)', value: ram || 'N/A', icon: Zap },
-        { label: 'Ổ cứng (SSD)', value: ssd || 'N/A', icon: CreditCard },
-        { label: 'Màn hình', value: [screen, resolution, hz].filter(Boolean).join(' ') || 'N/A', icon: Monitor },
-        { label: 'Bảo hành', value: `${product.warrantyMonths || 12} Tháng`, icon: Shield, highlight: true },
+    // Known spec keys mapped to labels and icons
+    const knownSpecKeys: { keys: string[]; label: string; icon: any; combine?: string[][] }[] = [
+        { keys: ['CPU', 'cpu', 'Vi xử lý'], label: 'Vi xử lý (CPU)', icon: Cpu },
+        { keys: ['Card đồ họa', 'GPU', 'gpu', 'VGA'], label: 'Card đồ họa (VGA)', icon: Monitor },
+        { keys: ['RAM', 'ram', 'Bộ nhớ'], label: 'Bộ nhớ (RAM)', icon: Zap },
+        { keys: ['Ổ cứng', 'SSD', 'ssd', 'SSD/HDD'], label: 'Ổ cứng (SSD)', icon: CreditCard },
+        { keys: ['Màn hình', 'screen', 'Kích thước màn hình'], label: 'Màn hình', icon: Monitor },
     ];
+
+    const usedKeys = new Set<string>();
+    const specItems: { label: string; value: string; icon: any; highlight?: boolean }[] = [];
+
+    // Add known specs first
+    for (const spec of knownSpecKeys) {
+        let value: string | null = null;
+        for (const key of spec.keys) {
+            if (productSpecs[key]) {
+                value = productSpecs[key];
+                usedKeys.add(key);
+                break;
+            }
+        }
+        // For screen, also combine resolution and hz
+        if (spec.label === 'Màn hình') {
+            const res = getSpec(['Độ phân giải', 'resolution']);
+            const hzVal = getSpec(['Tần số quét', 'hz']);
+            if (res) usedKeys.add(Object.keys(productSpecs).find(k => ['Độ phân giải', 'resolution'].includes(k) && productSpecs[k] === res) || '');
+            if (hzVal) usedKeys.add(Object.keys(productSpecs).find(k => ['Tần số quét', 'hz'].includes(k) && productSpecs[k] === hzVal) || '');
+            value = [value, res, hzVal].filter(Boolean).join(' ') || null;
+        }
+        if (value) {
+            specItems.push({ label: spec.label, value, icon: spec.icon });
+        }
+    }
+
+    // Add ALL remaining specs from API dynamically
+    for (const [key, value] of Object.entries(productSpecs)) {
+        if (!usedKeys.has(key) && value) {
+            specItems.push({ label: key, value: String(value), icon: Info });
+        }
+    }
+
+    // Always add warranty at the end
+    specItems.push({ label: 'Bảo hành', value: `${product.warrantyMonths || 12} Tháng`, icon: Shield, highlight: true });
 
     const basePrice = product.basePrice || product.price || 0;
     const salePrice = product.salePrice || 0;
@@ -244,11 +280,6 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                                 {product.name}
                             </h1>
 
-                            {product.description && (
-                                <p className="text-sm text-slate-500 mb-4 line-clamp-2 italic leading-relaxed">
-                                    {product.description}
-                                </p>
-                            )}
 
                             {/* Tags */}
                             <div className="flex flex-wrap gap-2 mb-5">
@@ -418,8 +449,8 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                     </h2>
                     <div className="text-slate-700 leading-relaxed text-[15px] md:text-base">
                         {product.description ? (
-                            <div className="whitespace-pre-line space-y-4">
-                                {product.description}
+                            <div className="prose prose-slate max-w-none prose-headings:text-slate-900 prose-h2:text-xl prose-h3:text-lg prose-p:text-slate-700 prose-li:text-slate-700 prose-img:rounded-xl prose-img:shadow-md">
+                                <div dangerouslySetInnerHTML={{ __html: product.description }} />
                                 <div className="mt-6 pt-6 border-t border-slate-100 flex flex-col items-center justify-center opacity-60">
                                     <p className="italic text-sm text-slate-400">Nội dung chi tiết bằng hình ảnh đang được cập nhật...</p>
                                 </div>
