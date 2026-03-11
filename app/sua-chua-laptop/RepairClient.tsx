@@ -17,6 +17,7 @@ import {
 import RepairProcess from "./components/RepairProcess";
 import CommonErrors from "./components/CommonErrors";
 import ServiceCommitment from "./components/ServiceCommitment";
+import { apiClient } from "@/lib/api";
 
 export default function RepairClient() {
   const [formData, setFormData] = useState({
@@ -67,12 +68,14 @@ export default function RepairClient() {
     try {
       // 1) Upload ảnh nếu có
       let uploadedImageUrls: string[] = [];
+      const BASE_URL = (process.env.NEXT_PUBLIC_NEXGEAR_API_URL || 'https://nex-gear.vercel.app/api').replace(/\/+$/, '');
+
       if (imageFiles.length > 0) {
         const uploadResults = await Promise.all(
           imageFiles.map(async (file) => {
             const fd = new FormData();
             fd.append("file", file);
-            const res = await fetch("/api/upload", {
+            const res = await fetch(`${BASE_URL}/upload`, {
               method: "POST",
               body: fd,
             });
@@ -86,32 +89,29 @@ export default function RepairClient() {
       }
 
       // 2) Tạo đơn sửa chữa
-      const serviceRes = await fetch("/api/services", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customerName: formData.customerName,
-          customerPhone: formData.customerPhone,
-          productInfo: {
-            brand: formData.productBrand,
-            model: formData.productModel,
-          },
-          images: uploadedImageUrls,
-          serviceType: formData.serviceType,
-          priority: formData.priority,
-          issueDescription: formData.issueDescription,
-          status: "pending",
-          estimatedCost: 0,
-          actualCost: 0,
-        }),
+      const genServiceNum = "SV-" + Date.now();
+      const serviceData = await apiClient.post("/services", {
+        serviceNumber: genServiceNum,
+        customerName: formData.customerName,
+        customerPhone: formData.customerPhone,
+        productInfo: {
+          brand: formData.productBrand,
+          model: formData.productModel,
+        },
+        images: uploadedImageUrls,
+        serviceType: formData.serviceType,
+        priority: formData.priority,
+        issueDescription: formData.issueDescription,
+        status: "pending",
+        estimatedCost: 0,
+        actualCost: 0,
       });
 
-      const serviceData = await serviceRes.json();
-      if (!serviceRes.ok || !serviceData?.success) {
+      if (!serviceData?.success) {
         throw new Error(serviceData?.error || "Không thể tạo yêu cầu sửa chữa");
       }
 
-      setServiceNumber(serviceData.data.serviceNumber);
+      setServiceNumber((serviceData.data as any)?.serviceNumber || genServiceNum);
       setSubmitted(true);
     } catch (error) {
       console.error("Submit error:", error);

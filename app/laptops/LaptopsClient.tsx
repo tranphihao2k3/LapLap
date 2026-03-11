@@ -3,13 +3,13 @@
 import { useEffect, useState, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ProductCard from './ProductCard';
-import { getFilterOptions, getProducts, getProductSpecs, getBrands } from '@/lib/api/products';
 import { Product, Category, Brand } from '@/types/api';
 import { ChevronDown, ChevronLeft, ChevronRight, X, Search as SearchIcon } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import TechLoader from '@/components/ui/TechLoader';
 import FilterDrawer from './FilterDrawer';
 import { SlidersHorizontal } from 'lucide-react';
+import { useFilterOptions, useBrands, useProductSpecs, useProducts } from '@/hooks/use-products';
 
 
 
@@ -27,10 +27,6 @@ function LaptopsContent() {
     const router = useRouter();
     const initialSearch = searchParams.get('search') || '';
 
-    const [products, setProducts] = useState<Product[]>([]);
-    const [brands, setBrands] = useState<Brand[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState(initialSearch);
     const [sortBy, setSortBy] = useState<string>('');
 
@@ -82,68 +78,34 @@ function LaptopsContent() {
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
 
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalProducts, setTotalProducts] = useState(0);
+    // ── React Query: filter options, brands, specs ─────────────
+    const LAPTOP_BRANDS = [
+        'Dell', 'HP', 'ASUS', 'MSI', 'Acer', 'Lenovo', 'ThinkPad',
+        'Apple', 'MacBook', 'Gigabyte', 'Razer', 'Microsoft', 'Surface',
+        'LG', 'Samsung'
+    ];
 
-    const [filterOptions, setFilterOptions] = useState({
-        cpus: [] as string[],
-        ssds: [] as string[],
-        gpus: [] as string[],
-        rams: [] as string[],
-        screens: [] as string[],
-        hzs: [] as string[],
-        resolutions: [] as string[],
-    });
+    const { data: filterData } = useFilterOptions();
+    const categories = filterData?.categories ?? [];
 
-    // Fetch static filter options (brands, categories, and distinct specs)
-    useEffect(() => {
-        const fetchOptions = async () => {
-            try {
-                // Get basic options and laptop-specific brands
-                const [filterRes, brandsRes] = await Promise.all([
-                    getFilterOptions(),
-                    getBrands({ categorySlug: 'laptop', hasProducts: true, limit: 100 })
-                ]);
+    const { data: allBrands } = useBrands({ categorySlug: 'laptop', hasProducts: true, limit: 100 });
+    const brands = useMemo(() =>
+        (allBrands ?? []).filter(b =>
+            LAPTOP_BRANDS.some(lb => b.name.toLowerCase().includes(lb.toLowerCase()))
+        ),
+        [allBrands]
+    );
 
-                if (filterRes.success && filterRes.data) {
-                    setCategories(filterRes.data.categories || []);
-                }
-
-                if (brandsRes.success && brandsRes.data) {
-                    // Filter brands to only show laptop-related manufacturers
-                    const LAPTOP_BRANDS = [
-                        'Dell', 'HP', 'ASUS', 'MSI', 'Acer', 'Lenovo', 'ThinkPad',
-                        'Apple', 'MacBook', 'Gigabyte', 'Razer', 'Microsoft', 'Surface',
-                        'LG', 'Samsung'
-                    ];
-
-                    const laptopOnlyBrands = brandsRes.data.filter(b =>
-                        LAPTOP_BRANDS.some(lb => b.name.toLowerCase().includes(lb.toLowerCase()))
-                    );
-
-                    setBrands(laptopOnlyBrands);
-                }
-
-                // Get granular specs for laptop category
-                const specsRes = await getProductSpecs('laptop');
-                if (specsRes.success && specsRes.data) {
-                    const { filters } = specsRes.data;
-                    setFilterOptions({
-                        cpus: filters['CPU'] || [],
-                        ssds: filters['Ổ cứng'] || [],
-                        gpus: filters['GPU'] || [],
-                        rams: filters['RAM'] || [],
-                        screens: filters['Kích thước màn hình'] || [],
-                        hzs: filters['Tần số quét'] || [],
-                        resolutions: filters['Độ phân giải'] || [],
-                    } as any);
-                }
-            } catch (error) {
-                console.error('Error fetching filter options:', error);
-            }
-        };
-        fetchOptions();
-    }, []);
+    const { data: specsData } = useProductSpecs('laptop');
+    const filterOptions = useMemo(() => ({
+        cpus: specsData?.['CPU'] ?? [],
+        ssds: specsData?.['Ổ cứng'] ?? [],
+        gpus: specsData?.['GPU'] ?? [],
+        rams: specsData?.['RAM'] ?? [],
+        screens: specsData?.['Kích thước màn hình'] ?? [],
+        hzs: specsData?.['Tần số quét'] ?? [],
+        resolutions: specsData?.['Độ phân giải'] ?? [],
+    }), [specsData]);
 
     // Sync filters from URL params (Landing Page support)
     useEffect(() => {
@@ -194,68 +156,49 @@ function LaptopsContent() {
         { label: 'Trên 2kg (Gaming)', value: 'heavy' },
     ];
 
-    // Fetch paginated products based on filters
-    useEffect(() => {
-        const fetchProducts = async () => {
-            setLoading(true);
-            try {
-                const activePriceRanges = filters.priceRanges.map(label => priceRanges.find(r => r.label === label)).filter(Boolean);
-
-                // Build spec filters for NexGear API
-                const specParts: string[] = [];
-
-                // Helper to map selected normalized values to combined raw values
-                const mapSpec = (key: string, selected: string[], options: any[]) => {
-                    if (selected.length === 0) return;
-                    const allRaw: string[] = [];
-                    selected.forEach(norm => {
-                        const opt = options.find(o => o.normalized === norm);
-                        if (opt) allRaw.push(...opt.rawValues);
-                    });
-                    if (allRaw.length > 0) specParts.push(`${key}:${allRaw.join('|')}`);
-                };
-
-                mapSpec('CPU', filters.cpus, filterOptions.cpus);
-                mapSpec('RAM', filters.rams, filterOptions.rams);
-                mapSpec('Ổ cứng', filters.ssds, filterOptions.ssds);
-                mapSpec('GPU', filters.gpus, filterOptions.gpus);
-                mapSpec('Tần số quét', filters.hzs, filterOptions.hzs);
-
-                // For screens, we might have multiple NexGear keys map to one LapLap filter group
-                // But NexGear separates 'Kích thước màn hình' and 'Độ phân giải'
-                mapSpec('Màn hình', filters.screens, filterOptions.screens); // If user wants exact match on Màn hình field
-                // Add secondary screen filters if they were split by NexGear
-                if (filters.resolutions.length > 0) mapSpec('Màn hình', filters.resolutions, filterOptions.resolutions);
-
-                const res = await getProducts({
-                    active: true,
-                    page: currentPage,
-                    limit: itemsPerPage,
-                    search: searchQuery,
-                    categorySlug: 'laptop',
-                    brand: filters.brands.join(','),
-                    sort: sortBy,
-                    specs: specParts.length > 0 ? specParts.join(',') : undefined
-                });
-
-                if (res.success && res.data) {
-                    setProducts(res.data);
-                    setTotalPages(Math.ceil((res.pagination?.total || 1) / itemsPerPage));
-                    setTotalProducts(res.pagination?.total || 0);
-                }
-            } catch (error) {
-                console.error("Error fetching paginated products:", error);
-            } finally {
-                setLoading(false);
-            }
+    // ── React Query: products with filters ─────────────────────
+    const buildSpecsParam = useMemo(() => {
+        const specParts: string[] = [];
+        const mapSpec = (key: string, selected: string[], options: any[]) => {
+            if (selected.length === 0) return;
+            const allRaw: string[] = [];
+            selected.forEach(norm => {
+                const opt = options.find((o: any) => o.normalized === norm);
+                if (opt) allRaw.push(...opt.rawValues);
+            });
+            if (allRaw.length > 0) specParts.push(`${key}:${allRaw.join('|')}`);
         };
+        mapSpec('CPU', filters.cpus, filterOptions.cpus);
+        mapSpec('RAM', filters.rams, filterOptions.rams);
+        mapSpec('Ổ cứng', filters.ssds, filterOptions.ssds);
+        mapSpec('GPU', filters.gpus, filterOptions.gpus);
+        mapSpec('Tần số quét', filters.hzs, filterOptions.hzs);
+        mapSpec('Màn hình', filters.screens, filterOptions.screens);
+        if (filters.resolutions.length > 0) mapSpec('Màn hình', filters.resolutions, filterOptions.resolutions);
+        return specParts.length > 0 ? specParts.join(',') : undefined;
+    }, [filters, filterOptions]);
 
-        const timeoutId = setTimeout(() => {
-            fetchProducts();
-        }, 300); // 300ms debounce
+    // Debounce search query for API
+    const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
+    useEffect(() => {
+        const t = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+        return () => clearTimeout(t);
+    }, [searchQuery]);
 
-        return () => clearTimeout(timeoutId);
-    }, [searchQuery, filters, currentPage, sortBy]);
+    const { data: productsData, isLoading: loading } = useProducts({
+        active: true,
+        page: currentPage,
+        limit: itemsPerPage,
+        search: debouncedSearch || undefined,
+        categorySlug: 'laptop',
+        brand: filters.brands.join(',') || undefined,
+        sort: sortBy || undefined,
+        specs: buildSpecsParam,
+    });
+
+    const products = productsData?.data ?? [];
+    const totalProducts = productsData?.pagination?.total ?? 0;
+    const totalPages = Math.ceil(totalProducts / itemsPerPage) || 1;
 
     // Reset to page 1 when filters change
     useEffect(() => {

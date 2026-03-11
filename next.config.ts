@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  compiler: {
+    styledComponents: true,
+  },
   images: {
     // ✅ Giữ nguyên format gốc, ưu tiên WebP (lossless hơn JPEG)
     formats: ["image/webp", "image/avif"],

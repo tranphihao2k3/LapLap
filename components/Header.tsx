@@ -178,8 +178,8 @@ export default function Header() {
     >
       {/* Logo */}
       <div className="bg-white">
-        <div className="container mx-auto max-w-7xl px-4 py-3 flex flex-wrap md:flex-row justify-between items-center gap-y-4 md:gap-6">
-          <div className="flex-shrink-0 min-w-[200px]">
+        <div className="container mx-auto max-w-7xl px-4 py-3 grid grid-cols-2 lg:grid-cols-[auto_1fr_auto] gap-4 lg:gap-6 items-center">
+          <div className="flex items-center min-w-[150px]">
             <Link href="/" className="group relative z-10 block">
               <motion.div
                 className="flex items-center origin-left"
@@ -229,7 +229,7 @@ export default function Header() {
           {/* Search Bar */}
           <form
             onSubmit={handleSearchSubmit}
-            className="w-full md:flex-1 max-w-md md:mx-4 relative order-3 md:order-none"
+            className="w-full col-span-2 lg:col-span-1 order-3 lg:order-none relative"
           >
             <motion.div
               className="relative"
@@ -408,8 +408,8 @@ export default function Header() {
             </AnimatePresence>
           </form>
 
-          <div className="flex items-center gap-2 sm:gap-4 order-2 md:order-none ml-auto md:ml-0">
-            <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 shadow-sm">
+          <div className="flex items-center justify-end gap-2 sm:gap-4 order-2 lg:order-none">
+            <div className="hidden lg:flex items-center gap-2 text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100 shadow-sm flex-shrink-0">
               <motion.div
                 animate={{ y: [0, -4, 0] }}
                 transition={{
@@ -424,7 +424,7 @@ export default function Header() {
             </div>
 
             {/* Fanpage Button - Unified Component */}
-            <div className="hidden sm:block">
+            <div className="hidden md:block flex-shrink-0">
               <Button
                 href="https://facebook.com/profile.php?id=61582947329036"
                 variant="facebook"
@@ -439,7 +439,7 @@ export default function Header() {
             {/* Wishlist/Compare (Future) */}
 
             {/* Cart Button */}
-            <div className="relative">
+            <div className="relative flex-shrink-0">
               <motion.button
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors relative"
                 onClick={() => setIsCartOpen(true)}
@@ -464,7 +464,7 @@ export default function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0"
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? (

@@ -6,7 +6,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import FacebookMessenger from "@/components/FacebookMessenger";
 import type { Metadata } from "next";
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap" rel="stylesheet" />
 import JsonLd from "@/components/JsonLd";
@@ -97,13 +96,13 @@ import ComparisonBar from "@/components/ComparisonBar";
 import { CartProvider } from "@/context/CartContext";
 import CartDrawer from "@/components/CartDrawer";
 import { JWTAuthProvider } from "@/context/JWTAuthContext";
+import { QueryProvider } from "@/components/QueryProvider";
+import StyledComponentsRegistry from "@/lib/styled-components-registry";
 
 import MobileBottomMenu from "@/components/MobileBottomMenu";
 import WelcomeBanner from "@/components/WelcomeBanner";
 
 // ... (omitted imports)
-
-import FloatingContact from "@/components/FloatingContact";
 
 // ... (omitted imports)
 
@@ -120,20 +119,22 @@ export default function RootLayout({
         <JsonLd id="website-jsonld" data={buildWebSiteJsonLd()} />
         <JsonLd id="navigation-jsonld" data={buildSiteNavigationJsonLd()} />
 
-        <JWTAuthProvider>
-          <CartProvider>
-            <ComparisonProvider>
-              {children}
-              <div className="md:hidden h-20"></div> {/* Spacer for Mobile Bottom Menu */}
-              <ComparisonBar />
-            </ComparisonProvider>
-            <CartDrawer />
-            <MobileBottomMenu />
-            <WelcomeBanner />
-          </CartProvider>
-          <FloatingContact />
-        </JWTAuthProvider>
-        <FacebookMessenger />
+        <StyledComponentsRegistry>
+          <QueryProvider>
+            <JWTAuthProvider>
+              <CartProvider>
+                <ComparisonProvider>
+                  {children}
+                  <div className="md:hidden h-20"></div> {/* Spacer for Mobile Bottom Menu */}
+                  <ComparisonBar />
+                </ComparisonProvider>
+                <CartDrawer />
+                <MobileBottomMenu />
+                <WelcomeBanner />
+              </CartProvider>
+            </JWTAuthProvider>
+          </QueryProvider>
+        </StyledComponentsRegistry>
         <SpeedInsights />
         <Analytics />
         <Script

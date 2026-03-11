@@ -81,8 +81,8 @@ const Footer = () => {
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
 
                     {/* Brand Column */}
-                    <motion.div variants={itemVariants} className="space-y-4 md:space-y-6 col-span-2 lg:col-span-1">
-                        <Link href="/" className="inline-block">
+                    <motion.div variants={itemVariants} className="flex flex-col gap-5 col-span-2 lg:col-span-1">
+                        <Link href="/" className="inline-block mt-1">
                             <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
                                 LapLap
                             </h2>
@@ -93,7 +93,7 @@ const Footer = () => {
                         </p>
 
                         {/* Visitor Counter */}
-                        <div className="pt-2">
+                        <div>
                             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-2xl border border-white/10 shadow-inner group">
                                 <div className="p-1.5 bg-blue-500/20 rounded-lg text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
                                     <Users size={14} className="animate-pulse" />
@@ -111,7 +111,7 @@ const Footer = () => {
                             </div>
                         </div>
 
-                        <div className="flex space-x-4 pt-4">
+                        <div className="flex items-center gap-4">
                             {socialLinks.map((social, index) => (
                                 <motion.a
                                     key={index}
@@ -129,7 +129,7 @@ const Footer = () => {
                         </div>
 
                         {/* Nút tải tool */}
-                        <div className="pt-6">
+                        <div className="mt-2">
                             <motion.a
                                 href="https://drive.google.com/drive/folders/1AWTDENyKPw4NWpHIU0ThUzIro-f4CJ7B?usp=sharing"
                                 target="_blank"
@@ -267,7 +267,7 @@ const Footer = () => {
             <div className="relative border-t border-white/5 bg-black/20 backdrop-blur-sm">
                 <div className="container mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
                     <p>&copy; {currentYear} LapLap - Laptop Cũ Cần Thơ. All rights reserved.</p>
-                    <div className="flex space-x-6 mt-4 md:mt-0">
+                    <div className="flex items-center gap-6 mt-4 md:mt-0">
                         <Link href="/terms" className="hover:text-white transition-colors">Điều khoản</Link>
                         <Link href="/privacy" className="hover:text-white transition-colors">Bảo mật</Link>
                     </div>
