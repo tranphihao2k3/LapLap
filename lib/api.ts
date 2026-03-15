@@ -1,6 +1,6 @@
 import { ApiResponse } from '@/types/api';
 
-const BASE_URL = (process.env.NEXT_PUBLIC_NEXGEAR_API_URL || 'https://nex-gear.vercel.app/api').replace(/\/+$/, '');
+const BASE_URL = (process.env.NEXT_PUBLIC_NEXGEAR_API_URL || 'https://nexgzone.top/api').replace(/\/+$/, '');
 
 function getToken(): string | null {
   if (typeof window === 'undefined') return null;

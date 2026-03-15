@@ -68,7 +68,7 @@ export default function RepairClient() {
     try {
       // 1) Upload ảnh nếu có
       let uploadedImageUrls: string[] = [];
-      const BASE_URL = (process.env.NEXT_PUBLIC_NEXGEAR_API_URL || 'https://nex-gear.vercel.app/api').replace(/\/+$/, '');
+      const BASE_URL = (process.env.NEXT_PUBLIC_NEXGEAR_API_URL || 'https://nexgzone.top/api').replace(/\/+$/, '');
 
       if (imageFiles.length > 0) {
         const uploadResults = await Promise.all(
