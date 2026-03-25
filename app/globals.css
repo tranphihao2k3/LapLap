@@ -109,6 +109,16 @@ body {
   animation: float 6s ease-in-out infinite;
 }
 
+/* Shimmer skeleton for image loading */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 /* Custom Scrollbar for Tags */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;

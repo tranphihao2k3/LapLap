@@ -100,10 +100,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         return notFound();
     }
 
-    let relatedProducts: any[] = [];
-    if (product.category && typeof product.category === 'object' && 'slug' in product.category) {
-        relatedProducts = await getRelatedProducts((product.category as any).slug, product._id.toString());
-    }
+    // Related products are loaded lazily client-side for faster page transitions
+    const categorySlugs = product.category && typeof product.category === 'object' && 'slug' in product.category
+        ? (product.category as any).slug
+        : null;
 
     // Build JSON-LD data
     const categoryName = product.categoryId && typeof product.categoryId === 'object' && 'name' in product.categoryId
@@ -158,7 +158,12 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             <JsonLd id="breadcrumb-product-jsonld" data={breadcrumbJsonLd} />
             <JsonLd id="faq-product-jsonld" data={faqJsonLd} />
             {/* Cast to any to avoid strict type checking issues with Mongoose lean objects vs Interfaces */}
-            <ProductDetailClient product={product as any} relatedProducts={relatedProducts as any} />
+            <ProductDetailClient
+                product={product as any}
+                relatedProducts={[]}
+                categorySlug={categorySlugs}
+                productId={product._id.toString()}
+            />
         </>
     );
 }

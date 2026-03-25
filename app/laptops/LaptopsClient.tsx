@@ -828,9 +828,29 @@ function LaptopsContent() {
                     </div>
 
                     {/* Loading State */}
-                    {/* Loading State */}
                     {loading ? (
-                        <TechLoader />
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6 mb-8">
+                            {Array.from({ length: 8 }).map((_, i) => (
+                                <div key={i} className="rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm">
+                                    {/* Image skeleton */}
+                                    <div
+                                        className="w-full aspect-[4/3]"
+                                        style={{
+                                            background: 'linear-gradient(90deg, #f0f0f0 25%, #e8eef5 50%, #f0f0f0 75%)',
+                                            backgroundSize: '200% 100%',
+                                            animation: 'shimmer 1.4s infinite',
+                                        }}
+                                    />
+                                    {/* Content skeleton */}
+                                    <div className="p-3 md:p-4 space-y-2">
+                                        <div className="h-3 rounded-full bg-gray-100" style={{ width: '90%', background: 'linear-gradient(90deg, #f0f0f0 25%, #e8eef5 50%, #f0f0f0 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite 0.1s' }} />
+                                        <div className="h-3 rounded-full" style={{ width: '65%', background: 'linear-gradient(90deg, #f0f0f0 25%, #e8eef5 50%, #f0f0f0 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite 0.15s' }} />
+                                        <div className="h-5 rounded-full mt-3" style={{ width: '50%', marginLeft: 'auto', marginRight: 'auto', background: 'linear-gradient(90deg, #dbeafe 25%, #bfdbfe 50%, #dbeafe 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite 0.2s' }} />
+                                        <div className="h-8 rounded-xl mt-2" style={{ background: 'linear-gradient(90deg, #f0f0f0 25%, #e8eef5 50%, #f0f0f0 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite 0.25s' }} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     ) : (
                         <>
                             {/* Products Grid */}

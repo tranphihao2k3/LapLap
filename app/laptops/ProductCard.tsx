@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import {
   Cpu,
   HardDrive,
@@ -29,6 +30,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
   const { isAuthenticated, user } = useJWTAuth();
   const isSelected = selectedProducts.some((p) => p._id === product._id);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   // Check if product is new (created within 24 hours)
   const isNew = product.createdAt
@@ -160,6 +162,17 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* ====== IMAGE ZONE ====== */}
         <div className="relative w-full aspect-[4/3] bg-gradient-to-br from-slate-50 via-white to-blue-50/30 overflow-hidden">
+          {/* Shimmer skeleton — hiện khi ảnh chưa load xong */}
+          {!imageLoaded && (
+            <div
+              className="absolute inset-0 z-10"
+              style={{
+                background: "linear-gradient(90deg, #f0f0f0 25%, #e0e8f0 50%, #f0f0f0 75%)",
+                backgroundSize: "200% 100%",
+                animation: "shimmer 1.4s infinite",
+              }}
+            />
+          )}
           <Image
             src={
               (product.images && product.images[0]) ||
@@ -168,9 +181,12 @@ export default function ProductCard({ product }: ProductCardProps) {
             }
             alt={`${product.name} - Laptop Cần Thơ - LapLap`}
             fill
-            quality={100}
+            quality={85}
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-            className="object-contain p-4 transition-all duration-700 ease-out group-hover:scale-110 group-hover:drop-shadow-2xl"
+            onLoad={() => setImageLoaded(true)}
+            className={`object-contain p-4 transition-all duration-700 ease-out group-hover:scale-110 group-hover:drop-shadow-2xl ${
+              imageLoaded ? "opacity-100" : "opacity-0"
+            }`}
           />
 
           {/* Hover Overlay — Desktop Only (hidden on mobile via md:) */}

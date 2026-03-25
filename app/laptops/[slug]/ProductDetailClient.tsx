@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronRight, Cpu, Monitor, CheckCircle, Zap, Shield, TrendingUp, Gift, CreditCard, Facebook, MessageCircle, Star, ShoppingBag, Truck, Headphones, BadgeCheck, Search, Info, Home, Share2, Check, RefreshCw, Eye, ChevronDown } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,19 +13,40 @@ import { Product } from '@/types/api';
 import { useCart } from '@/context/CartContext';
 import { useRouter } from 'next/navigation';
 import ProductReviews from '@/components/ProductReviews';
+import { getProducts } from '@/lib/api/products';
 
 interface ProductDetailClientProps {
     product: any;
     relatedProducts: any[];
+    categorySlug?: string | null;
+    productId?: string;
 }
 
-export default function ProductDetailClient({ product, relatedProducts }: ProductDetailClientProps) {
+export default function ProductDetailClient({ product, relatedProducts: initialRelated, categorySlug, productId }: ProductDetailClientProps) {
     const [selectedImage, setSelectedImage] = useState(0);
     const [imageLoading, setImageLoading] = useState(false);
     const [isInstallmentOpen, setInstallmentOpen] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
+    const [relatedProducts, setRelatedProducts] = useState<any[]>(initialRelated);
+    const [relatedLoading, setRelatedLoading] = useState(!!categorySlug);
     const { addToCart } = useCart();
     const router = useRouter();
+
+    // Fetch related products lazily after page renders
+    useEffect(() => {
+        if (!categorySlug || !productId) return;
+        setRelatedLoading(true);
+        getProducts({ categorySlug, limit: 8, active: true })
+            .then(res => {
+                if (res.success && res.data) {
+                    setRelatedProducts(
+                        res.data.filter((p: any) => p._id !== productId).slice(0, 4)
+                    );
+                }
+            })
+            .catch(() => { /* silent fail */ })
+            .finally(() => setRelatedLoading(false));
+    }, [categorySlug, productId]);
 
     const handleImageChange = (index: number) => {
         setImageLoading(true);
@@ -464,7 +485,22 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                 </div>
 
                 {/* ========== RELATED PRODUCTS ========== */}
-                {relatedProducts.length > 0 && (
+                {relatedLoading ? (
+                    <div className="mt-12 md:mt-16 border-t border-slate-200 pt-10">
+                        <div className="h-8 w-56 rounded-full mb-8" style={{ background: 'linear-gradient(90deg, #f0f0f0 25%, #e8eef5 50%, #f0f0f0 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite' }} />
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {[...Array(4)].map((_, i) => (
+                                <div key={i} className="rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm">
+                                    <div className="w-full aspect-[4/3]" style={{ background: 'linear-gradient(90deg, #f0f0f0 25%, #e8eef5 50%, #f0f0f0 75%)', backgroundSize: '200% 100%', animation: `shimmer 1.4s infinite ${i * 0.07}s` }} />
+                                    <div className="p-3 space-y-2">
+                                        <div className="h-3 rounded-full" style={{ width: '90%', background: 'linear-gradient(90deg, #f0f0f0 25%, #e8eef5 50%, #f0f0f0 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite' }} />
+                                        <div className="h-5 rounded-full" style={{ width: '50%', marginLeft: 'auto', marginRight: 'auto', background: 'linear-gradient(90deg, #dbeafe 25%, #bfdbfe 50%, #dbeafe 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite' }} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ) : relatedProducts.length > 0 ? (
                     <div className="mt-12 md:mt-16 border-t border-slate-200 pt-10">
                         <h2 className="text-2xl font-black text-slate-800 mb-8 flex items-center gap-3">
                             <span className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30">
@@ -478,7 +514,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                             ))}
                         </div>
                     </div>
-                )}
+                ) : null}
 
                 {/* ========== FAQ ========== */}
                 <div className="mt-8 bg-white rounded-2xl p-6 md:p-8 shadow-lg shadow-slate-200/50 border border-slate-100">
